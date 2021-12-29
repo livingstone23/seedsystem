@@ -1,0 +1,53 @@
+﻿@page "/category"
+@inject ICategoryService CategoryServices
+@inject IMostrarMensajes mostrarMensajes
+
+<h3>Indice Géneros</h3>
+
+<div class="btn-group">
+    <a class="btn btn-info" href="generos/crear">Agregar Género</a>
+</div>
+
+<ListadoGenerico Listado="Categories">
+    <HayRegistrosCompleto>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Categories)
+                {
+                    <tr>
+                        <td>
+                            <a href="/category/editar/@item.Id" class="btn btn-success">Editar</a>
+                            
+                        </td>
+                        <td>@item.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </HayRegistrosCompleto>
+
+</ListadoGenerico>
+
+@code {
+
+    public List<Category> Categories { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+
+    private async Task Cargar()
+    {
+        var result = await CategoryServices.GetCategories();
+        Categories = result.ToList();
+    }
+
+}
