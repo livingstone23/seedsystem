@@ -22,11 +22,11 @@ namespace blazormovie.Client
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             //Servicios
-            builder.Services.AddScoped<IBudgetService, BudgetService>();
+            //builder.Services.AddScoped<IBudgetService, BudgetService>();
             //builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<IInitiativeService, InitiativeService>();
-            builder.Services.AddScoped<IPOSPayService, POSPayService>();
-            builder.Services.AddScoped<IProjectService, ProjectService>();
+            //builder.Services.AddScoped<IInitiativeService, InitiativeService>();
+            //builder.Services.AddScoped<IPOSPayService, POSPayService>();
+            //builder.Services.AddScoped<IProjectService, ProjectService>();
 
             ConfigureServices(builder.Services);
 
@@ -40,6 +40,10 @@ namespace blazormovie.Client
             services.AddScoped<IRepositorio, Repositorio>();
             services.AddScoped<IMostrarMensajes, MostrarMensajes>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IBudgetService, BudgetService>();
+            services.AddScoped<IInitiativeService, InitiativeService>();
+            services.AddScoped<IPOSPayService, POSPayService>();
+            services.AddScoped<IProjectService, ProjectService>();
 
             services.AddAuthorizationCore();
 

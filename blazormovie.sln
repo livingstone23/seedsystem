@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazormovie.Client", "blazo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazormovie.Shared", "blazormovie\Shared\blazormovie.Shared.csproj", "{68BDC302-70C1-47FF-AD88-587D23BF82AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blazormovie.repository", "blazormovie.repository\blazormovie.repository.csproj", "{49D5D058-9494-46FD-AFCF-291A87857789}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "blazormovie.repository", "blazormovie.repository\blazormovie.repository.csproj", "{49D5D058-9494-46FD-AFCF-291A87857789}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,55 @@
+﻿@page "/initiative"
+@inject IInitiativeService InitiativeService
+@inject IMostrarMensajes mostrarMensajes
+
+<h3>Initiatives index</h3>
+
+<div class="btn-group">
+    <a class="btn btn-info" href="generos/crear">Agregar Género</a>
+</div>
+
+<ListadoGenerico Listado="Initiatives">
+    <HayRegistrosCompleto>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Initiatives)
+                {
+                    <tr>
+                        <td>
+                            <a href="/category/editar/@item.Id" class="btn btn-success">Editar</a>
+                            
+                        </td>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </HayRegistrosCompleto>
+
+</ListadoGenerico>
+
+@code {
+
+    public List<Initiative> Initiatives { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+
+    private async Task Cargar()
+    {
+        var result = await InitiativeService.GetInitiatives();
+        Initiatives = result.ToList();
+    }
+
+}

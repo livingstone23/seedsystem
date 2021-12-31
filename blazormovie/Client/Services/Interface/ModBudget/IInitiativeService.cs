@@ -6,7 +6,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
 {
     public interface IInitiativeService
     {
-        Task<IEnumerable<Budget>> GetInitiatives();
+        Task<IEnumerable<Initiative>> GetInitiatives();
 
     }
 }
