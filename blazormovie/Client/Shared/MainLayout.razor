@@ -3,6 +3,15 @@
 @inject IJSRuntime js
 @inject NavigationManager navigationManager
 
+<MudThemeProvider/>
+<MudDialogProvider FullWidth="true"
+                   MaxWidth="MaxWidth.Large"
+                   CloseButton="true"
+                   DisableBackdropClick="true"
+                   NoHeader="true"
+                   Position="DialogPosition.Center"
+                    />
+<MudSnackbarProvider/>
 
 <div class="page">
     <div class="sidebar">

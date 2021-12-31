@@ -8,5 +8,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     {
         Task<IEnumerable<Project>> GetProjects();
 
+        Task<IEnumerable<Project>> GetByInitiative(int initiativeId);
+
     }
 }

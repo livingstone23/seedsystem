@@ -15,5 +15,7 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<bool> Delete(int id);
         Task<bool> Update(Project project);
 
+        Task<IEnumerable<Project>> GetByInitiative(int initiativeid);
+
     }
 }

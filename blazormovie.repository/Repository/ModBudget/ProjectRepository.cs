@@ -35,6 +35,16 @@ namespace blazormovie.repository.Repository.ModBudget
 
         }
 
+        public async  Task<IEnumerable<Project>> GetByInitiative(int initiativeid)
+        {
+            var sql = @"Select Id, Name, Description, AmountDefined, IdInitiative 
+                        From Project
+                        Where  IdInitiative = @Id ";
+
+
+            return await _dbConnection.QueryAsync<Project>(sql, new { Id = initiativeid  });
+        }
+
         public async Task<Project> GetById(int id)
         {
             var sql = @"    ";
@@ -42,6 +52,8 @@ namespace blazormovie.repository.Repository.ModBudget
             return await _dbConnection.QueryFirstOrDefaultAsync<Project>(sql, new { Id = id });
 
         }
+
+        
 
         public async Task<bool> Insert(Project project)
         {

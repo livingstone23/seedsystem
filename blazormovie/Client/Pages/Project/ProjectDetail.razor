@@ -1,0 +1,54 @@
+﻿@page "/iniciativedetail"
+@inject IInitiativeService InitiativeService
+
+
+<h3>ProjectDetail</h3>
+<p>@Message</p>
+
+
+@if (Project != null && initiatives != null)
+{
+    <EditForm Model=@Project>
+        <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
+            @foreach (var item in initiatives)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+    </InputSelect>
+
+    </EditForm>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+
+    public Project Project;
+
+    public IEnumerable<Initiative> initiatives;
+
+    public string Message  { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+
+            Project = new Project();
+            initiatives = await InitiativeService.GetInitiatives();
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+
+
+}

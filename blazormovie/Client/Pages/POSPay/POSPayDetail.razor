@@ -1,0 +1,89 @@
+﻿@page "/pospaiddetail"
+@inject IInitiativeService InitiativeService
+@inject IProjectService ProjectService
+
+<h3>POSPayDetail</h3>
+<p>@Message</p>
+
+
+@if (POSPay != null && initiatives != null)
+{
+    <EditForm Model=@POSPay>
+        <InputSelect class="form-control col-sm-5" 
+                    Value="@POSPay.IdInitiative"
+                    ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
+                    ValueExpression="@(() => POSPay.IdInitiative)"
+                    >
+                    @foreach (var item in initiatives)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+        </InputSelect>
+
+         <InputSelect class="form-control col-sm-5" 
+                    @bind-Value="@proyectId">
+                    @foreach (var item in Projects)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+        </InputSelect>
+
+    </EditForm>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+
+
+@code {
+
+    public POSPay POSPay; 
+
+    public IEnumerable<Initiative> initiatives = new List<Initiative>();
+    public IEnumerable<Project> Projects = new List<Project>();
+    public string Message  { get; set; }
+    public int proyectId { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+
+            POSPay = new POSPay() { IdInitiative = 1 };
+            initiatives = await InitiativeService.GetInitiatives();
+            if (initiatives != null && initiatives.Any())
+            {
+                POSPay.IdInitiative = initiatives.FirstOrDefault().Id;
+                await LoadProjects(POSPay.IdInitiative);
+            }
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+    protected async Task InitiativeHasChanged(int initiativeId)
+    {
+        POSPay.IdInitiative = initiativeId;
+
+        if (POSPay.IdInitiative > 0)
+            await LoadProjects(POSPay.IdInitiative);
+
+    }
+
+
+
+    private async Task LoadProjects(int initiativeId)
+    {
+        Projects = await ProjectService.GetByInitiative(initiativeId);
+       
+    }
+
+}

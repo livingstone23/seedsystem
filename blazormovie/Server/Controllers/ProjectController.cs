@@ -27,6 +27,12 @@ namespace SeedSystem.Server.Controllers
         }
 
 
+        [HttpGet("GetByInitiative/{initiativeId}")]
+        public async Task<IEnumerable<Project>> GetByInitiative(int initiativeId)
+        {
+            return await _projectRepository.GetByInitiative(initiativeId);
+        }
+
 
 
     }

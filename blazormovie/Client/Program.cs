@@ -6,6 +6,7 @@ using blazormovie.Client.Services.ModBudget;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ namespace blazormovie.Client
             //builder.Services.AddScoped<IProjectService, ProjectService>();
 
             ConfigureServices(builder.Services);
+
+            builder.Services.AddMudServices();
 
             await builder.Build().RunAsync();
 
