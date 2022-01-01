@@ -9,6 +9,7 @@ namespace blazormovie.Client.Services.ModBudget
 {
     public class InitiativeService : IInitiativeService
     {
+        
         private readonly HttpClient _httpClient;
 
         public InitiativeService(HttpClient httpClient)
@@ -16,9 +17,33 @@ namespace blazormovie.Client.Services.ModBudget
             _httpClient = httpClient;
         }
 
+
         public async Task<IEnumerable<Initiative>> GetInitiatives()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<Initiative>>($"api/initiative");
         }
+
+
+        public async Task<Initiative> GetById(int id)
+        {
+            var result = await _httpClient.GetFromJsonAsync<Initiative>($"api/project/GetById/{id}");
+            return result;
+        }
+
+
+        public async Task SaveInitiative(Initiative initiative)
+        {
+            if (initiative.Id == 0)
+                await _httpClient.PostAsJsonAsync<Initiative>($"api/Initiative/", initiative);
+            
+        }
+
+
+        public async Task DeleteInitiative(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
     }
 }

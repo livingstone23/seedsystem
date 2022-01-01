@@ -18,41 +18,49 @@ namespace blazormovie.repository.Repository.ModBudget
             _dbConnection = dbConnection;
         }
 
-        public async Task<bool> Delete(int id)
-        {
-            var sql = @"   ";
-
-            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
-
-            return result > 0;
-        }
+        
 
         public async Task<IEnumerable<Initiative>> GetAll()
         {
-            var sql = @"Select Id, Name,  Description from Initiative";
+            var sql = @"Select Id, Name,  Description from Initiative order by Id";
 
             return await _dbConnection.QueryAsync<Initiative>(sql, new { });
         }
 
         public async Task<Initiative> GetById(int id)
         {
-            var sql = @"    ";
+            var sql = @"Select Id, Name, Description
+                        From Initiative
+                        Where  Id = @Id ";
 
             return await _dbConnection.QueryFirstOrDefaultAsync<Initiative>(sql, new { Id = id });
         }
 
         public async Task<bool> Insert(Initiative initiative)
         {
-            var sql = @"   ";
+            var sql = @" INSERT INTO   Initiative( Name,  Description) 
+                                           Values(@Name, @Description)";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
-
+                    Name = initiative.Name,
+                    Description = initiative.Description
                 });
 
             return result > 0;
         }
+
+
+
+
+
+
+
+
+
+
+
 
         public async Task<bool> Update(Initiative initiative)
         {
@@ -67,6 +75,13 @@ namespace blazormovie.repository.Repository.ModBudget
             return result > 0;
         }
 
+        public async Task<bool> Delete(int id)
+        {
+            var sql = @"   ";
 
+            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+
+            return result > 0;
+        }
     }
 }

@@ -18,41 +18,68 @@ namespace blazormovie.repository.Repository.ModBudget
             _dbConnection = dbConnection;
         }
 
-        public async Task<bool> Delete(int id)
-        {
-            var sql = @"   ";
-
-            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
-
-            return result > 0;
-        }
-
-        public async Task<IEnumerable<POSPay>> GetAll()
+        
+        public async Task<IEnumerable<POSPay>> GetPOSPays()
         {
             var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust from POSPay";
 
             return await _dbConnection.QueryAsync<POSPay>(sql, new { });
         }
 
+
         public async Task<POSPay> GetById(int id)
         {
-            var sql = @"    ";
+            var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust 
+                        from POSPay Where Id = @Id ";
 
             return await _dbConnection.QueryFirstOrDefaultAsync<POSPay>(sql, new { Id = id });
         }
 
-        public async Task<bool> Insert(POSPay posPay)
+
+        public async Task<IEnumerable<POSPay>> GetByInitiative(int initiativeId)
         {
-            var sql = @"   ";
+            var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust 
+                        from POSPay Where IdInitiative = @Id ";
+
+            return await _dbConnection.QueryAsync<POSPay>(sql, new { Id = initiativeId });
+        }
+
+
+        public async Task<IEnumerable<POSPay>> GetByProject(int projectId)
+        {
+            var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust 
+                        from POSPay Where  IdProject = @Id ";
+
+            return await _dbConnection.QueryAsync<POSPay>(sql, new { Id = projectId });
+        }
+
+
+        public async Task<bool> SavePOSPay(POSPay posPay)
+        {
+            var sql = @" INSERT INTO POSPay(  PayDay,  CurrencyPay,  DescriptionPOS,  NumberTransfer,  PayAmount,  RateChange,  IdInitiative,  IdProject,  IdPOSPaysAdjust)
+                                    values ( @PayDay, @CurrencyPay, @DescriptionPOS, @NumberTransfer, @PayAmount, @RateChange, @IdInitiative, @IdProject, @IdPOSPaysAdjust) ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
-
+                    PayDay = posPay.PayDay,
+                    CurrencyPay = posPay.CurrencyPay,
+                    DescriptionPOS = posPay.DescriptionPOS,
+                    NumberTransfer = posPay.NumberTransfer,
+                    PayAmount = posPay.PayAmount,
+                    RateChange = posPay.RateChange,
+                    IdInitiative = posPay.IdInitiative,
+                    IdProject = posPay.IdProject,
+                    IdPOSPaysAdjust = posPay.IdPOSPaysAdjust
                 });
 
             return result > 0;
         }
+
+
+
+
+
 
         public async Task<bool> Update(POSPay posPay)
         {
@@ -66,5 +93,16 @@ namespace blazormovie.repository.Repository.ModBudget
 
             return result > 0;
         }
+
+        public async Task<bool> Delete(int id)
+        {
+            var sql = @"   ";
+
+            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+
+            return result > 0;
+        }
+
+       
     }
 }

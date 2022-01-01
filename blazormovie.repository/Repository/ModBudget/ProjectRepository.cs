@@ -17,21 +17,21 @@ namespace blazormovie.repository.Repository.ModBudget
             _dbConnection = dbConnection;
         }
 
-        public async Task<bool> Delete(int id)
-        {
-            var sql = @"   ";
-
-            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
-
-            return result > 0;
-
-        }
-
-        public async Task<IEnumerable<Project>> GetAll()
+        public async Task<IEnumerable<Project>> GetProjects()
         {
             var sql = @"Select Id, Name, Description, AmountDefined, IdInitiative from Project;";
 
             return await _dbConnection.QueryAsync<Project>(sql, new { });
+
+        }
+
+        public async Task<Project> GetById(int id)
+        {
+            var sql = @" Select Id, Name, Description, AmountDefined, IdInitiative 
+                         From Project
+                         Where  Id = @Id     ";
+
+            return await _dbConnection.QueryFirstOrDefaultAsync<Project>(sql, new { Id = id });
 
         }
 
@@ -45,17 +45,31 @@ namespace blazormovie.repository.Repository.ModBudget
             return await _dbConnection.QueryAsync<Project>(sql, new { Id = initiativeid  });
         }
 
-        public async Task<Project> GetById(int id)
+        public async Task<bool> SaveProject(Project project)
         {
-            var sql = @"    ";
+            var sql = @" INSERT INTO Project (  Name,  Description,  AmountDefined,  IdInitiative) 
+                                      VALUES ( @Name, @Description, @AmountDefined, @IdInitiative) ";
 
-            return await _dbConnection.QueryFirstOrDefaultAsync<Project>(sql, new { Id = id });
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new
+                {
+                    Name = project.Name,
+                    Description = project.Description,  
+                    AmountDefined= project.AmountDefined,
+                    IdInitiative = project.IdInitiative
+                });
+
+            return result > 0;
 
         }
 
-        
 
-        public async Task<bool> Insert(Project project)
+
+
+
+
+
+        public async Task<bool> Update(Project project)
         {
             var sql = @"   ";
 
@@ -69,15 +83,11 @@ namespace blazormovie.repository.Repository.ModBudget
 
         }
 
-        public async Task<bool> Update(Project project)
+        public async Task<bool> Delete(int id)
         {
             var sql = @"   ";
 
-            var result = await _dbConnection.ExecuteAsync(sql,
-                new
-                {
-
-                });
+            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
 
             return result > 0;
 

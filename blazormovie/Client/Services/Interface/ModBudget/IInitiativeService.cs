@@ -7,6 +7,15 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     public interface IInitiativeService
     {
         Task<IEnumerable<Initiative>> GetInitiatives();
+        Task<Initiative> GetById(int id);
+        Task SaveInitiative(Initiative initiative);
+
+
+
+
+
+        //pendiente de implementar
+        Task DeleteInitiative(int id);
 
     }
 }

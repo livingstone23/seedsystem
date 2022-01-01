@@ -1,0 +1,103 @@
+﻿@page "/initiativedetail"
+@page "/initiativedetail/{id:int}"
+@inject IInitiativeService InitiativeService
+@inject NavigationManager NavigationManager
+
+
+<p>@Message</p>
+
+
+    <EditForm Model=@Initiative  OnValidSubmit="SaveInitiative">
+
+        <div class="card">
+            <h5 class="card-header">Initiative Details</h5>
+            @*cuerpo de la clase*@
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                         <div class="col-md-4 mb-3">
+                             
+                        </div>
+                         <div class="col-md-4 mb-3">
+                             <input type="submit" class="btn btn-success" value="Save"/>
+                             <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
+                        </div>
+                    </div>
+              
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">Name</label>
+                            <InputText class="form-control" @bind-Value="@Initiative.Name" />
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="">Description</label>
+                            <InputText class="form-control" @bind-Value="@Initiative.Description" />
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </EditForm>
+
+
+
+@code {
+
+    public Initiative Initiative;
+
+    public string Message  { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (id >0)
+            {
+                
+                Initiative = await InitiativeService.GetById(1);
+            }
+            else
+            {
+                Initiative = new Initiative();
+            }
+            
+            
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+    protected async Task SaveInitiative()
+    {
+        await InitiativeService.SaveInitiative(Initiative);
+        NavigateToHome();
+    }
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
+
+}

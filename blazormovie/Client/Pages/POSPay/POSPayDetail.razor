@@ -1,15 +1,97 @@
-﻿@page "/pospaiddetail"
+﻿@page "/pospaydetail"
 @inject IInitiativeService InitiativeService
 @inject IProjectService ProjectService
+@inject IPOSPayService POSPayService
+@inject NavigationManager NavigationManager
 
-<h3>POSPayDetail</h3>
 <p>@Message</p>
-
 
 @if (POSPay != null && initiatives != null)
 {
-    <EditForm Model=@POSPay>
-        <InputSelect class="form-control col-sm-5" 
+    <EditForm Model=@POSPay OnValidSubmit="SavePays">
+
+
+        <div class="card">
+            <h5 class="card-header">Pays Details</h5>
+            @*cuerpo de la clase*@
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                         <div class="col-md-4 mb-3">
+                             
+                        </div>
+                         <div class="col-md-4 mb-3">
+                             <input type="submit" class="btn btn-success" value="Save"/>
+                             <input type="submit" class="btn btn-secondary" value="Cancel"  @onclick="Cancel" />
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">Description PAY</label>
+                            <InputText class="form-control" @bind-Value="@POSPay.DescriptionPOS" />
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="">Number of Transfer</label>
+                            <InputText class="form-control" @bind-Value="@POSPay.NumberTransfer" />
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">Initiative</label>
+                            <InputSelect class="form-control" 
+                                        Value="@POSPay.IdInitiative"
+                                        ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
+                                        ValueExpression="@(() => POSPay.IdInitiative)"
+                                        >
+                                        @foreach (var item in initiatives)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                            </InputSelect>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="">Project</label>
+                            <InputSelect class="form-control" 
+                                        Value="@POSPay.IdProject"
+                                        ValueChanged="@((int projectId) => ProjectHasChanged(projectId))"
+                                        ValueExpression="@(() => POSPay.IdProject)"
+                            >
+                                        @foreach (var item in Projects)
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                            </InputSelect>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">Date of transfer</label>
+                           <InputDate class="form-control" @bind-Value="@POSPay.PayDay" />
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <MudNumericField Label="Pay Amount" @bind-Value="@POSPay.PayAmount" />
+                        </div>
+                    </div>
+
+
+               </div>
+
+            </div>
+        </div>
+
+
+@*        <InputSelect class="form-control col-sm-5" 
                     Value="@POSPay.IdInitiative"
                     ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
                     ValueExpression="@(() => POSPay.IdInitiative)"
@@ -26,9 +108,11 @@
                     {
                         <option value="@item.Id">@item.Name</option>
                     }
-        </InputSelect>
+        </InputSelect>*@
+
 
     </EditForm>
+
 }
 else
 {
@@ -43,6 +127,7 @@ else
 
     public IEnumerable<Initiative> initiatives = new List<Initiative>();
     public IEnumerable<Project> Projects = new List<Project>();
+    public Project Project = new Project();
     public string Message  { get; set; }
     public int proyectId { get; set; }
 
@@ -54,7 +139,7 @@ else
         try
         {
 
-            POSPay = new POSPay() { IdInitiative = 1 };
+            POSPay = new POSPay() { IdInitiative = 1, RateChange = 1 };
             initiatives = await InitiativeService.GetInitiatives();
             if (initiatives != null && initiatives.Any())
             {
@@ -69,6 +154,7 @@ else
         }
     }
 
+
     protected async Task InitiativeHasChanged(int initiativeId)
     {
         POSPay.IdInitiative = initiativeId;
@@ -79,11 +165,40 @@ else
     }
 
 
-
     private async Task LoadProjects(int initiativeId)
     {
         Projects = await ProjectService.GetByInitiative(initiativeId);
-       
+
     }
+
+
+    protected async Task SavePays()
+    {
+        await POSPayService.SavePOSPay(POSPay);
+        NavigateToHome();
+    }
+
+
+    protected async Task ProjectHasChanged(int projectId)
+    {
+        if (projectId > 0)
+        {
+            Project = await ProjectService.GetById(projectId);
+            POSPay.IdProject = Project.Id;
+        }
+    }
+
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
+
 
 }

@@ -13,8 +13,9 @@ namespace blazormovie.Shared.SeedEntities
         public string Description { get; set; }
         public decimal AmountDefined { get; set; }
         public int IdInitiative { get; set; }
+        public int TotalPays { get; set; }
+        List<POSPay> POSPays { get; set; }
 
-        
     }
 
 }

@@ -7,11 +7,14 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
-@*        <li class="nav-item px-3">
+
+        <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
+
+@*        
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span> Counter
@@ -21,23 +24,24 @@
             <NavLink class="nav-link" href="fetchdata">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
-        </li>*@
+        </li>
+        
+         <li class="nav-item px-3">
+            <NavLink class="nav-link" href="generos">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Generos
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="personas">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Personas
+            </NavLink>
+        </li>
+        *@
 
         <AuthorizeView Roles="admin">
             <Authorized>
-
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="generos">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Generos
-                    </NavLink>
-                </li>
-
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="personas">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Personas
-                    </NavLink>
-                </li>
-
+    
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="usuarios">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Usuarios
@@ -46,14 +50,20 @@
                 
 
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="iniciativedetail">
+                    <NavLink class="nav-link" href="initiativedetail">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Initiative
                     </NavLink>
                 </li>
 
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="pospaiddetail">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> pospaiddetail
+                    <NavLink class="nav-link" href="projectdetail">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> project
+                    </NavLink>
+                </li>
+
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="pospaydetail">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> pospaydetail
                     </NavLink>
                 </li>
          

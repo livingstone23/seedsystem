@@ -75,14 +75,10 @@ namespace blazormovie.Server
             //Repositorios
             services.AddScoped<IBudgetRepository, BudgetRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<IProjectRepository, ProjectRepository>();
+
             services.AddScoped<IInitiaiveRepository, InitiativeRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IPOSPayRepository, POSPayRepository>();
-            services.AddScoped<IBudgetRepository, BudgetRepository>();
-
-
-
-
 
             services.AddControllersWithViews();
             services.AddRazorPages();

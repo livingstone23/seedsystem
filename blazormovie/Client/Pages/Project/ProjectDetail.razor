@@ -1,20 +1,87 @@
-﻿@page "/iniciativedetail"
+﻿@page "/projectdetail"
+@page "/projectdetail/{id:int}"
 @inject IInitiativeService InitiativeService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
 
-
-<h3>ProjectDetail</h3>
 <p>@Message</p>
 
 
 @if (Project != null && initiatives != null)
 {
-    <EditForm Model=@Project>
-        <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
+    <EditForm Model=@Project OnValidSubmit="SaveProject">
+
+        <div class="card">
+            <h5 class="card-header">Project Details</h5>
+            @*cuerpo de la clase*@
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                         <div class="col-md-4 mb-3">
+                            
+                        </div>
+                         <div class="col-md-4 mb-3">
+                             <input type="submit" class="btn btn-success" value="Save"/>
+                             <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
+                        </div>
+                    </div>
+               </div>
+
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="">Name</label>
+                            <InputText class="form-control" @bind-Value="@Project.Name" />
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="">Description</label>
+                            <InputText class="form-control" @bind-Value="@Project.Description" />
+                        </div>
+                    </div>
+               </div>
+
+               <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="">Initiative</label>
+                            <InputSelect class="form-control" @bind-Value="@Project.IdInitiative">
+                                @foreach (var item in initiatives)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+               </div>
+
+               <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" />
+                      
+                        </div>
+                    </div>
+               </div>
+
+
+            </div>
+        </div>
+
+
+
+@*        <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
             @foreach (var item in initiatives)
             {
                 <option value="@item.Id">@item.Name</option>
             }
-    </InputSelect>
+    </InputSelect>*@
 
     </EditForm>
 }
@@ -38,8 +105,14 @@ else
     {
         try
         {
-
-            Project = new Project();
+            if(id >0)
+            {
+                Project = await ProjectService.GetById(id);
+            } 
+            else
+            {
+                Project = new Project();
+            }
             initiatives = await InitiativeService.GetInitiatives();
 
         }
@@ -49,6 +122,21 @@ else
         }
     }
 
+    protected async Task SaveProject()
+    {
+        await ProjectService.SaveProject(Project);
+        NavigateToHome();
+    }
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
 
 
 }

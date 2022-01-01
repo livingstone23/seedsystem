@@ -3,6 +3,7 @@ using blazormovie.repository.Interface.ModBudget;
 using blazormovie.Shared.SeedEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace SeedSystem.Server.Controllers
 {
@@ -24,6 +25,31 @@ namespace SeedSystem.Server.Controllers
         }
 
 
+        [HttpGet("GetById/{id}")]
+        public async Task<Initiative> GetById(int id)
+        {
+            return await _initiativeRepository.GetById(id);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Initiative initiative)
+        {
+            if (initiative == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _initiativeRepository.Insert(initiative);
+
+                scope.Complete();
+            }
+
+            return NoContent();
+        }
 
     }
 

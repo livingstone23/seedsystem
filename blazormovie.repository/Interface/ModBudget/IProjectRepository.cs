@@ -9,13 +9,20 @@ namespace blazormovie.repository.Interface.ModBudget
 {
     public interface IProjectRepository
     {
-        Task<IEnumerable<Project>> GetAll();
-        Task<bool> Insert(Project project);
+        Task<IEnumerable<Project>> GetProjects();
         Task<Project> GetById(int id);
+        Task<IEnumerable<Project>> GetByInitiative(int initiativeid);
+        Task<bool> SaveProject(Project project);
+        
+
+
+
+
+        //Pendiente de implementar
         Task<bool> Delete(int id);
         Task<bool> Update(Project project);
 
-        Task<IEnumerable<Project>> GetByInitiative(int initiativeid);
+        
 
     }
 }

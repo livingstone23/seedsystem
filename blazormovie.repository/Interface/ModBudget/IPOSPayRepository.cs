@@ -9,9 +9,17 @@ namespace blazormovie.repository.Interface.ModBudget
 {
     public interface IPOSPayRepository
     {
-        Task<IEnumerable<POSPay>> GetAll();
-        Task<bool> Insert(POSPay posPay);
+        Task<IEnumerable<POSPay>> GetPOSPays();
         Task<POSPay> GetById(int id);
+        Task<IEnumerable<POSPay>> GetByInitiative(int initiativeId);
+        Task<IEnumerable<POSPay>> GetByProject(int projectId);
+        Task<bool> SavePOSPay(POSPay posPay);
+        
+
+
+
+
+
         Task<bool> Delete(int id);
         Task<bool> Update(POSPay posPay);
 

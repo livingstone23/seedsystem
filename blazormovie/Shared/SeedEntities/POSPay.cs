@@ -12,7 +12,7 @@ namespace blazormovie.Shared.SeedEntities
 
         public DateTime PayDay { get; set; }
 
-        public int CurrencyPay { get; set; }
+        public string CurrencyPay { get; set; }
 
         public string DescriptionPOS { get; set; }
 
