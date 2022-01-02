@@ -1,5 +1,81 @@
 ﻿<h3>InitiativeDetail</h3>
+@inject IInitiativeService InitiativeService
+@inject ISnackbar Snackbar
+
+<MudDialog> 
+    <TitleContent>
+        New Initiative
+    </TitleContent>
+
+    <DialogContent>
+         <EditForm Model="@Initiative">
+             <div class="card">
+                <div class="card-body">
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </EditForm>
+
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddInitiative">Add</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+
+
+
 
 @code {
+
+    public Initiative Initiative = new Initiative();
+
+    public string Message  { get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+                     
+            
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+    protected async Task AddInitiative()
+    {
+        Snackbar.Add("Product added", Severity.Success, a => a.VisibleStateDuration = 200);
+        MudDialog.Close(DialogResult.Ok(Initiative));
+
+    }
+
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 
 }

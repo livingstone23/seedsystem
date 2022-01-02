@@ -3,6 +3,7 @@
 @inject IInitiativeService InitiativeService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 
 <p>@Message</p>
 
@@ -28,10 +29,10 @@
                              <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
                         </div>
                     </div>
-               </div>
+               
 
 
-                <div class="container">
+                
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="">Name</label>
@@ -43,9 +44,9 @@
                             <InputText class="form-control" @bind-Value="@Project.Description" />
                         </div>
                     </div>
-               </div>
+              
 
-               <div class="container">
+               
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label for="">Initiative</label>
@@ -57,9 +58,9 @@
                             </InputSelect>
                         </div>
                     </div>
-               </div>
+               
 
-               <div class="container">
+               
                     <div class="row">
                         <div class="col-md-6 mb-3">
                         </div>
@@ -68,20 +69,34 @@
                       
                         </div>
                     </div>
-               </div>
+               
+                    <div class="row">
+           
+                        <div class="col-md-4 mb-3">
 
-
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                                <input type="submit" class="btn btn-secondary" value="New Project" @onclick="NewProject"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
 
+        
 
-@*        <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
+
+@*        
+        <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
             @foreach (var item in initiatives)
             {
                 <option value="@item.Id">@item.Name</option>
             }
-    </InputSelect>*@
+        </InputSelect>
+*@
 
     </EditForm>
 }
@@ -125,7 +140,11 @@ else
     protected async Task SaveProject()
     {
         await ProjectService.SaveProject(Project);
-        NavigateToHome();
+        if(Project.Name != null)
+        {
+            NavigateToHome();
+        }
+        
     }
 
     private void NavigateToHome()
@@ -137,6 +156,20 @@ else
     {
         NavigateToHome();
     }
+
+    protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+                await ProjectService.SaveProject(Project);
+        }
+    }
+
 
 
 }

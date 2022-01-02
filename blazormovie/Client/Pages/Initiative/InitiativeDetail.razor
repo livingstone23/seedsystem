@@ -2,6 +2,7 @@
 @page "/initiativedetail/{id:int}"
 @inject IInitiativeService InitiativeService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 
 
 <p>@Message</p>
@@ -67,15 +68,15 @@
         {
             if (id >0)
             {
-                
+
                 Initiative = await InitiativeService.GetById(1);
             }
             else
             {
                 Initiative = new Initiative();
             }
-            
-            
+
+
 
         }
         catch(Exception e)
@@ -83,11 +84,14 @@
             Message = "There was an error..." + e.Message;
         }
     }
-
     protected async Task SaveInitiative()
     {
         await InitiativeService.SaveInitiative(Initiative);
-        NavigateToHome();
+        if(Initiative.Name!= null)
+        {
+            NavigateToHome();
+        }
+        
     }
 
     private void NavigateToHome()
@@ -98,6 +102,20 @@
     protected void Cancel()
     {
         NavigateToHome();
+    }
+
+
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+                await  InitiativeService.SaveInitiative(Initiative);
+        }
     }
 
 }

@@ -1,5 +1,102 @@
-﻿<h3>ProjectModal</h3>
+﻿@inject IInitiativeService InitiativeService
+@inject IProjectService ProjectService
+@inject ISnackbar Snackbar
+
+
+<MudDialog> 
+    <TitleContent>
+        New Project
+    </TitleContent>
+
+    <DialogContent>
+         <EditForm Model="@Project">
+             <div class="card">
+                <div class="card-body">
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="">Name</label>
+                                <InputText class="form-control" @bind-Value="@Project.Name" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="">Description</label>
+                                <InputText class="form-control" @bind-Value="@Project.Description" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="">Initiative</label>
+                                <InputSelect class="form-control" @bind-Value="@Project.IdInitiative">
+                                    @foreach (var item in initiatives)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </EditForm>
+
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="NewProject">Add</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+
 
 @code {
+
+    public Project Project = new Project();
+    public IEnumerable<Initiative> initiatives =  new List<Initiative>();
+
+    public string Message  { get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            initiatives = await InitiativeService.GetInitiatives();
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+    protected async Task NewProject()
+    {
+
+        Snackbar.Add("Product added", Severity.Success, a => a.VisibleStateDuration = 200);
+        MudDialog.Close(DialogResult.Ok(Project));
+
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 
 }

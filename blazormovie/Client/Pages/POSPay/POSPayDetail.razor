@@ -139,7 +139,7 @@ else
         try
         {
 
-            POSPay = new POSPay() { IdInitiative = 1, RateChange = 1 };
+            POSPay = new POSPay() { IdInitiative = 1, RateChange = 1, CurrencyPay = "EURO" };
             initiatives = await InitiativeService.GetInitiatives();
             if (initiatives != null && initiatives.Any())
             {
@@ -160,7 +160,10 @@ else
         POSPay.IdInitiative = initiativeId;
 
         if (POSPay.IdInitiative > 0)
+        {
             await LoadProjects(POSPay.IdInitiative);
+        }
+        
 
     }
 
@@ -168,6 +171,10 @@ else
     private async Task LoadProjects(int initiativeId)
     {
         Projects = await ProjectService.GetByInitiative(initiativeId);
+        if (Projects != null && Projects.Any())
+        {
+            POSPay.IdProject = Projects.FirstOrDefault().Id;
+        }
 
     }
 
@@ -183,8 +190,10 @@ else
     {
         if (projectId > 0)
         {
-            Project = await ProjectService.GetById(projectId);
-            POSPay.IdProject = Project.Id;
+            POSPay.IdProject = projectId;
+
+            //Project = await ProjectService.GetById(projectId);
+            //POSPay.IdProject = Project.Id;
         }
     }
 
