@@ -17,7 +17,7 @@ namespace blazormovie.Shared.SeedEntities
         public string Description { get; set; }
 
         public int TotalProjects { get; set; }
-        List<Project> Projects { get; set; }
+        public List<Project> Projects { get; set; }
 
     }
 }

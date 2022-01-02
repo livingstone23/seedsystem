@@ -25,7 +25,7 @@
                             
                         </div>
                          <div class="col-md-4 mb-3">
-                             <input type="submit" class="btn btn-success" value="Save"/>
+                             <input type="submit" class="btn btn-success" value="Edit"/>
                              <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
                         </div>
                     </div>
@@ -77,16 +77,35 @@
                         </div>
                         <div class="col-md-4 mb-3">
                         </div>
-                        <div class="col-md-4 mb-3">
+@*                        <div class="col-md-4 mb-3">
                                 <input type="submit" class="btn btn-secondary" value="New Project" @onclick="NewProject"/>
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>
         </div>
 
 
-        
+        @if(Project.POSPays != null && Project.POSPays.Any())
+        {
+            <MudTable Items="@Project.POSPays" Hover = "true" Breakpoint="Breakpoint.Sm">
+                 <ToolBarContent>
+                     <MudText typeof="Typo.h6">Pays</MudText>
+                 </ToolBarContent>
+                 <HeaderContent>
+                     <MudTh>DescriptionPOS</MudTh>
+                     <MudTh>Number Transfer</MudTh>
+                     <MudTh>Amount</MudTh>
+                     <MudTh>Day</MudTh>
+                 </HeaderContent>
+                 <RowTemplate Context="POSPaysContext">
+                     <MudTd DataLabel="Name">@POSPaysContext.DescriptionPOS </MudTd>
+                     <MudTd DataLabel="Price">@POSPaysContext.NumberTransfer </MudTd>
+                     <MudTd DataLabel="Quantity">@POSPaysContext.PayAmount </MudTd>
+                     <MudTd DataLabel="Quantity">@POSPaysContext.PayDay </MudTd>
+                 </RowTemplate>
+             </MudTable>
+        }
 
 
 @*        
@@ -149,7 +168,7 @@ else
 
     private void NavigateToHome()
     {
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/projects");
     }
 
     protected void Cancel()
@@ -157,18 +176,18 @@ else
         NavigateToHome();
     }
 
-    protected async Task NewProject()
-    {
-        var dialog = DialogService.Show<ProjectModal>("New Project");
-        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+    //protected async Task NewProject()
+    //{
+    //    var dialog = DialogService.Show<ProjectModal>("New Project");
+    //    var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
 
-        if(!result.Cancelled)
-        {
-            var Project = (Project)result.Data;
-            if (Project.Name != null)
-                await ProjectService.SaveProject(Project);
-        }
-    }
+    //    if(!result.Cancelled)
+    //    {
+    //        var Project = (Project)result.Data;
+    //        if (Project.Name != null)
+    //            await ProjectService.SaveProject(Project);
+    //    }
+    //}
 
 
 

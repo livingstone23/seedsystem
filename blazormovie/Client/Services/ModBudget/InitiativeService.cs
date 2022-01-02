@@ -26,7 +26,7 @@ namespace blazormovie.Client.Services.ModBudget
 
         public async Task<Initiative> GetById(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<Initiative>($"api/project/GetById/{id}");
+            var result = await _httpClient.GetFromJsonAsync<Initiative>($"api/initiative/GetById/{id}");
             return result;
         }
 

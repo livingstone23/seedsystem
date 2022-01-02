@@ -1,5 +1,5 @@
-﻿@page "/initiativedetail"
-@page "/initiativedetail/{id:int}"
+﻿@page "/initiativedetails"
+@page "/initiativedetails/{id:int}"
 @inject IInitiativeService InitiativeService
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
@@ -11,7 +11,7 @@
     <EditForm Model=@Initiative  OnValidSubmit="SaveInitiative">
 
         <div class="card">
-            <h5 class="card-header">Initiative Details</h5>
+            <h5 class="card-header">Initiative Details2</h5>
             @*cuerpo de la clase*@
             <div class="card-body">
                 <div class="container">
@@ -23,7 +23,7 @@
                              
                         </div>
                          <div class="col-md-4 mb-3">
-                             <input type="submit" class="btn btn-success" value="Save"/>
+                             <input type="submit" class="btn btn-success" value="Edit"/>
                              <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
                         </div>
                     </div>
@@ -42,10 +42,42 @@
                     </div>
 
 
+                    <div class="row">
+           
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        </div>
+@*                        <div class="col-md-4 mb-3">
+                                <input type="submit" class="btn btn-secondary" value="New Initiative" @onclick="NewInitiative"/>
+                        </div>*@
+                    </div>
+
+
                 </div>
 
             </div>
         </div>
+
+        @if(Initiative.Projects != null && Initiative.Projects.Any())
+        {
+            <MudTable Items="@Initiative.Projects" Hover = "true" Breakpoint="Breakpoint.Sm">
+                 <ToolBarContent>
+                     <MudText typeof="Typo.h6">Projects per Initiative</MudText>
+                 </ToolBarContent>
+                 <HeaderContent>
+                     <MudTh>Name</MudTh>
+                     <MudTh>Description</MudTh>
+                     <MudTh>Amount Defined</MudTh>
+                 </HeaderContent>
+                 <RowTemplate Context="ProjectsContext">
+                     <MudTd DataLabel="Name">@ProjectsContext.Name</MudTd>
+                     <MudTd DataLabel="Price">@ProjectsContext.Description </MudTd>
+                     <MudTd DataLabel="Quantity">@ProjectsContext.AmountDefined </MudTd>
+                 </RowTemplate>
+             </MudTable>
+        }
 
 
 
@@ -68,7 +100,7 @@
         {
             if (id >0)
             {
-
+                Initiative = new Initiative();
                 Initiative = await InitiativeService.GetById(1);
             }
             else
@@ -96,7 +128,7 @@
 
     private void NavigateToHome()
     {
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/initiative");
     }
 
     protected void Cancel()
@@ -104,18 +136,5 @@
         NavigateToHome();
     }
 
-
-    protected async Task NewInitiative()
-    {
-        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
-        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
-
-        if(!result.Cancelled)
-        {
-            var Initiative = (Initiative)result.Data;
-            if (Initiative.Name != null)
-                await  InitiativeService.SaveInitiative(Initiative);
-        }
-    }
 
 }

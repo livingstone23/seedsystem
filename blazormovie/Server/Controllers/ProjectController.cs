@@ -5,6 +5,7 @@ using blazormovie.Shared.SeedEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Linq;
 
 namespace SeedSystem.Server.Controllers
 {
@@ -14,24 +15,37 @@ namespace SeedSystem.Server.Controllers
     {
 
         private readonly IProjectRepository _projectRepository;
+        private readonly IPOSPayRepository _pOSPayRepository;
 
-        public ProjectController(IProjectRepository projectRepository)
+        public ProjectController(IProjectRepository projectRepository, IPOSPayRepository pOSPayRepository)
         {
             _projectRepository = projectRepository;
+            _pOSPayRepository = pOSPayRepository;
         }
 
 
         [HttpGet]
         public async Task<IEnumerable<Project>> Get()
         {
-            return await _projectRepository.GetProjects();
+            var projects = await _projectRepository.GetProjects();
+            foreach (var item in projects)
+            {
+                item.POSPays = (List<POSPay>)await _pOSPayRepository.GetByProject(item.Id);
+            }
+            return projects;
         }
 
 
         [HttpGet("GetById/{id}")]
         public async Task<Project> GetById(int id)
         {
-            return await _projectRepository.GetById(id);
+            var project =  await _projectRepository.GetById(id);
+            var POSPays = await _pOSPayRepository.GetByProject(project.Id);
+            if(project != null && POSPays != null)
+            {
+                project.POSPays = POSPays.ToList();
+            }
+            return project;
         }
 
 

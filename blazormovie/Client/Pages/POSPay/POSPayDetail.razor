@@ -3,6 +3,8 @@
 @inject IProjectService ProjectService
 @inject IPOSPayService POSPayService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
 
 <p>@Message</p>
 
@@ -85,31 +87,22 @@
                     </div>
 
 
+                    <div class="row">
+           
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                                <input type="submit" class="btn btn-secondary" value="New Pay" @onclick="NewPOSPay"/>
+                        </div>
+                    </div>
+
                </div>
 
             </div>
         </div>
-
-
-@*        <InputSelect class="form-control col-sm-5" 
-                    Value="@POSPay.IdInitiative"
-                    ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
-                    ValueExpression="@(() => POSPay.IdInitiative)"
-                    >
-                    @foreach (var item in initiatives)
-                    {
-                        <option value="@item.Id">@item.Name</option>
-                    }
-        </InputSelect>
-
-         <InputSelect class="form-control col-sm-5" 
-                    @bind-Value="@proyectId">
-                    @foreach (var item in Projects)
-                    {
-                        <option value="@item.Id">@item.Name</option>
-                    }
-        </InputSelect>*@
-
 
     </EditForm>
 
@@ -182,7 +175,11 @@ else
     protected async Task SavePays()
     {
         await POSPayService.SavePOSPay(POSPay);
-        NavigateToHome();
+        if(POSPay.NumberTransfer != null)
+        {
+            NavigateToHome();
+        }
+
     }
 
 
@@ -209,5 +206,18 @@ else
         NavigateToHome();
     }
 
+
+    protected async Task NewPOSPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New Pay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var POSPay = (POSPay)result.Data;
+            if (POSPay.NumberTransfer != null)
+                await POSPayService.SavePOSPay(POSPay);
+        }
+    }
 
 }

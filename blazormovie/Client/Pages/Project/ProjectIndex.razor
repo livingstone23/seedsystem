@@ -1,0 +1,103 @@
+﻿@page "/projects"
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<p>@Message</p>
+
+@if (Projects != null && Projects.Any())
+{
+     <MudTable Items="@Projects" Hover="true" Breakpoint="Breakpoint.Sm">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Projects</MudText>
+            <MudSpacer />
+            <MudFab OnClick="@(NewProject)"
+                    Color="Color.Primary"
+                    Icon="@Icons.Material.Filled.Add"
+                    Size="Size.Small"
+                    IconSize="Size.Small">
+            </MudFab>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Amount Defined</MudTh>
+            <MudTh>Number of Pays</MudTh>
+            <MudTh>
+                
+            </MudTh>
+            <MudTh></MudTh>
+            
+        </HeaderContent>
+        <RowTemplate Context="ProjectContext">
+            <MudTd DataLabel="Name">@ProjectContext.Name</MudTd>
+            <MudTd DataLabel="Description">@ProjectContext.Description</MudTd>
+            <MudTd DataLabel="AmountDefined">@ProjectContext.AmountDefined.ToString("C")</MudTd>
+            <MudTd DataLabel="Number of Pays">@ProjectContext.POSPays.Count().ToString()</MudTd>
+
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Edit(ProjectContext.Id))"
+                        Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.Edit"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Delete(ProjectContext.Id))"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Delete"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+        </RowTemplate>
+     </MudTable>
+}
+
+
+@code {
+    
+    public List<Project> Projects;
+    public string Message { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Projects = (List<Project>)await ProjectService.GetProjects();
+        }
+        catch (Exception e)
+        {
+
+            Message = "Error... " + e.Message;
+        }
+    }
+
+    protected async Task Edit(int id)
+    {
+        NavigationManager.NavigateTo($"/projectdetail/{id}");
+    }
+
+    protected async Task Delete(int id)
+    {
+        //await ProjectService.DeleteOrder(id);
+        //Orders.RemoveAll(p => p.Id == id);
+    }
+
+    protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+                await ProjectService.SaveProject(Project);
+        }
+        Projects = (List<Project>)await ProjectService.GetProjects();
+    }
+
+
+}

@@ -1,5 +1,4 @@
-﻿<h3>InitiativeDetail</h3>
-@inject IInitiativeService InitiativeService
+﻿@inject IInitiativeService InitiativeService
 @inject ISnackbar Snackbar
 
 <MudDialog> 
@@ -14,11 +13,14 @@
                     <div class="container">
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                
+                             <div class="col-md-6 mb-3">
+                                <label for="">Name</label>
+                                <InputText class="form-control" @bind-Value="@Initiative.Name" />
                             </div>
+                        
                             <div class="col-md-6 mb-3">
-                                
+                                <label for="">Description</label>
+                                <InputText class="form-control" @bind-Value="@Initiative.Description" />
                             </div>
                         </div>
                     </div>
@@ -65,7 +67,7 @@
 
     protected async Task AddInitiative()
     {
-        Snackbar.Add("Product added", Severity.Success, a => a.VisibleStateDuration = 200);
+        Snackbar.Add("Initiative added", Severity.Success, a => a.VisibleStateDuration = 200);
         MudDialog.Close(DialogResult.Ok(Initiative));
 
     }

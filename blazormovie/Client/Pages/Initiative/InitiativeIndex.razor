@@ -1,0 +1,98 @@
+﻿@page "/initiative"
+@inject IInitiativeService InitiativeService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<p>@Message</p>
+
+@if (Initiatives != null && Initiatives.Any())
+{
+     <MudTable Items="@Initiatives" Hover="true" Breakpoint="Breakpoint.Sm">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Initiatives</MudText>
+            <MudSpacer />
+            <MudFab OnClick="@(NewInitiative)"
+                    Color="Color.Primary"
+                    Icon="@Icons.Material.Filled.Add"
+                    Size="Size.Small"
+                    IconSize="Size.Small">
+            </MudFab>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Total Projects</MudTh>
+           
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate Context="InitiativeContext">
+            <MudTd DataLabel="Name">@InitiativeContext.Name</MudTd>
+            <MudTd DataLabel="Description">@InitiativeContext.Description</MudTd>
+            <MudTd DataLabel="Total">@InitiativeContext.Projects.Count().ToString()</MudTd>
+           
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Edit(InitiativeContext.Id))"
+                        Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.Edit"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Delete(InitiativeContext.Id))"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Delete"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+        </RowTemplate>
+     </MudTable>
+}
+
+
+@code {
+
+    public List<Initiative> Initiatives;
+    public string Message { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Initiatives = (List<Initiative>)await InitiativeService.GetInitiatives();
+        }
+        catch (Exception e)
+        {
+
+            Message = "Error... " + e.Message;
+        }
+    }
+
+    protected async Task Edit(int id)
+    {
+        NavigationManager.NavigateTo($"/initiativedetails/{id}");
+    }
+
+    protected async Task Delete(int id)
+    {
+        //await OrderService.DeleteOrder(id);
+        //Orders.RemoveAll(p => p.Id == id);
+    }
+
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+                await  InitiativeService.SaveInitiative(Initiative);
+        }
+        Initiatives = (List<Initiative>)await InitiativeService.GetInitiatives();
+    }
+
+}
