@@ -11,5 +11,7 @@ namespace blazormovie.repository.Interface.ModBudget
     {
         Task<IEnumerable<Budget>> GetAll();
 
+        //copiar la vista
+
     }
 }

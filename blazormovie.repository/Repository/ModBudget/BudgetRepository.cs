@@ -20,14 +20,14 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<IEnumerable<Budget>> GetAll()
         {
-            var sql = @"";
+            var sql = "execute SP_BUDGET";
 
             return await _dbConnection.QueryAsync<Budget>(sql, new { });
         }
 
-        Task<IEnumerable<Budget>> IBudgetRepository.GetAll()
-        {
-            throw new NotImplementedException();
-        }
+        //Task<IEnumerable<Budget>> IBudgetRepository.GetAll()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

@@ -10,7 +10,7 @@ namespace blazormovie.Shared.SeedEntities
     {
         public string InitiativeName { get; set; }
 
-        public string ProjectName { get; set; }
+        public string NameProject { get; set; }
 
         public decimal AmountInvoice { get; set; }
 
