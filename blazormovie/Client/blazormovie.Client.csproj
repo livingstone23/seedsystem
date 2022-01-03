@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Budget\" />
     <Folder Include="Pages\Peliculas\" />
   </ItemGroup>
 

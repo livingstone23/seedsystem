@@ -22,7 +22,7 @@ namespace blazormovie.Client.Services.ModBudget
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<Initiative>>($"api/initiative");
         }
-
+        
 
         public async Task<Initiative> GetById(int id)
         {

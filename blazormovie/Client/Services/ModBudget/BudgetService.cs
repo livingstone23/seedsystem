@@ -2,6 +2,7 @@
 using blazormovie.Shared.SeedEntities;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace blazormovie.Client.Services.ModBudget
@@ -15,10 +16,13 @@ namespace blazormovie.Client.Services.ModBudget
             _httpClient = httpClient;
         }
 
-        public Task<IEnumerable<Budget>> GetBudgets()
+        public async Task<IEnumerable<Budget>> GetBudgets()
         {
-            throw new System.NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<IEnumerable<Budget>>($"api/budget");
         }
+
+
+
+
     }
 }
-//fijar en initiative

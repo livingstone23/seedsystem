@@ -1,0 +1,127 @@
+﻿@page "/budget"
+@using blazormovie.Client.Pages.Initiative
+@using blazormovie.Client.Pages.Project
+@inject IInitiativeService InitiativeService
+@inject IBudgetService BudgetService
+@inject IProjectService ProjectService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+
+<p>@Message</p>
+
+@if (Budgets != null && Budgets.Any())
+{
+     <MudTable Items="@Budgets" Hover="true" Breakpoint="Breakpoint.Sm">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Projects</MudText>
+            <MudSpacer />
+            <MudFab OnClick="@(NewInitiative)"
+                    Color="Color.Primary"
+                    Icon="@Icons.Material.Filled.AddBox"
+                    Size="Size.Small"
+                    IconSize="Size.Small">
+            </MudFab>
+            <MudSpacer />
+            <MudFab OnClick="@(NewProject)"
+                    Color="Color.Primary"
+                    Icon="@Icons.Material.Filled.AddBusiness"
+                    Size="Size.Small"
+                    IconSize="Size.Small">
+            </MudFab>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Initiative</MudTh>
+            <MudTh>Project</MudTh>
+            <MudTh>Amount Invoice</MudTh>
+            <MudTh>POsReceived</MudTh>
+            <MudTh>Balance</MudTh>
+            <MudTh>Adjustment</MudTh>
+            <MudTh>FinalBalance</MudTh>
+            <MudTh>Notes</MudTh>
+            <MudTh>
+                
+            </MudTh>
+            <MudTh></MudTh>
+            
+        </HeaderContent>
+        <RowTemplate Context="BudgetContext">
+            <MudTd DataLabel="Initiative">@BudgetContext.InitiativeName</MudTd>
+            <MudTd DataLabel="Project">@BudgetContext.NameProject</MudTd>
+            <MudTd DataLabel="AmountInvoiced">@BudgetContext.AmountInvoice.ToString("C")</MudTd>
+            <MudTd DataLabel="POsReceived">@BudgetContext.POSreceived.ToString()</MudTd>
+            <MudTd DataLabel="POsReceived">@BudgetContext.Balance.ToString()</MudTd>
+            <MudTd DataLabel="POsReceived">@BudgetContext.Adjustment.ToString()</MudTd>
+            <MudTd DataLabel="POsReceived">@BudgetContext.FinalBalance.ToString()</MudTd>
+            <MudTd DataLabel="POsReceived">@BudgetContext.Notes.ToString()</MudTd>
+
+            <MudTd DataLabel="">
+              
+            </MudTd>
+            <MudTd DataLabel="">
+                
+            </MudTd>
+        </RowTemplate>
+     </MudTable>
+}
+
+
+@code {
+
+    public List<Budget> Budgets;
+    public string Message { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Budgets = (List<Budget>)await BudgetService.GetBudgets();
+        }
+        catch (Exception e)
+        {
+
+            Message = "Error... " + e.Message;
+        }
+    }
+
+    protected async Task Edit()
+    {
+        
+    }
+
+    protected async Task Delete()
+    {
+        //await ProjectService.DeleteOrder(id);
+        //Orders.RemoveAll(p => p.Id == id);
+    }
+
+    
+    protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+                await ProjectService.SaveProject(Project);
+        }
+
+    }
+
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+                await  InitiativeService.SaveInitiative(Initiative);
+        }
+
+    }
+
+}
