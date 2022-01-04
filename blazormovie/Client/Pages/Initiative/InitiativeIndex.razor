@@ -2,15 +2,26 @@
 @inject IInitiativeService InitiativeService
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
-
+@using OfficeOpenXml;
+@using OfficeOpenXml.Style;
+@using System.IO
+@using iText.IO.Font.Constants
+@using iText.Kernel.Font
+@using iText.Kernel.Pdf
+@using iText.Layout
+@using iText.Layout.Element
+@inject IJSRuntime jsRuntime;
 <p>@Message</p>
 
 @if (Initiatives != null && Initiatives.Any())
-{
+{   <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+     <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
      <MudTable Items="@Initiatives" Hover="true" Breakpoint="Breakpoint.Sm">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Initiatives</MudText>
+            
             <MudSpacer />
+            
             <MudFab OnClick="@(NewInitiative)"
                     Color="Color.Primary"
                     Icon="@Icons.Material.Filled.Add"
@@ -56,7 +67,8 @@
 
     public List<Initiative> Initiatives;
     public string Message { get; set; }
-
+    public string excel = "";
+    public string pdf = "";
     protected async override Task OnInitializedAsync()
     {
         try
@@ -94,5 +106,88 @@
         }
         Initiatives = (List<Initiative>)await InitiativeService.GetInitiatives();
     }
+    public void exportarPdf()
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            PdfWriter writer = new PdfWriter(ms);
+            using(var pdfDoc = new PdfDocument(writer))
+            {
+                PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                Document doc = new Document(pdfDoc);
+                Paragraph p1 = new Paragraph("Report");
+                p1.SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER);
+                p1.SetFontSize(20);
+                doc.Add(p1);
+                //creamos las cabeceras
+                Table tabla = new Table(3).UseAllAvailableWidth();
+                Cell celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Name")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Description")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Total")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                //rellenamos la tabla
+                foreach(var item in Initiatives)
+                {
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Name.ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Description.ToString()));
+                    tabla.AddCell(celda);
+                     celda = new Cell();
+                    celda.Add(new Paragraph(item.Projects.Count().ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                }
+                doc.Add(tabla);
+                doc.Close();
+                writer.Close();
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                pdf = "data:application/pdf;base64,"+base64;
+                jsRuntime.InvokeVoidAsync("descargarPdf", pdf);
+            }
 
+        }
+    }
+    public void exportarExcel()
+    {
+        using(MemoryStream ms = new MemoryStream())
+        {
+            using (ExcelPackage ep = new ExcelPackage())
+            {
+                ep.Workbook.Worksheets.Add("hoja");
+                //solo para una hoja
+                ExcelWorksheet ew = ep.Workbook.Worksheets[0];
+                ew.Column(1).Width = 50;
+                ew.Cells[1, 1].RichText.Add("Name").Bold = true;
+                ew.Column(2).Width = 50;
+                ew.Cells[1, 2].RichText.Add("Description").Bold = true;
+                ew.Column(3).Width = 50;
+                ew.Cells[1, 3].RichText.Add("Total Projects").Bold =true ;
+                int fila = 2;
+                int colum = 1;
+                //List<Initiative> ltInis = Initiatives.ToList();
+                foreach(var item in Initiatives)
+                {
+
+                    ew.Cells[fila, 1].Value = item.Name.ToString();
+                    ew.Cells[fila, 2].Value = item.Description.ToString();
+                    ew.Cells[fila, 3].Value = item.TotalProjects.ToString();
+                    fila++;
+                }
+
+                ep.SaveAs(ms);
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                excel = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + base64;
+            }
+         
+        }
+    }
 }

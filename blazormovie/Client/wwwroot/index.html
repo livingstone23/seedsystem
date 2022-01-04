@@ -29,6 +29,17 @@
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="js/Utilidades.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script>
+
+        function descargarPdf(pdf) {
+            var a = document.createElement("a");
+            a.href = pdf;
+            a.download = "pdfReport.pdf";
+            a.click();
+
+        }
+
+    </script>
 </body>
 
 </html>
