@@ -10,6 +10,8 @@ namespace blazormovie.repository.Interface.ModBudget
     public interface IPOSPayRepository
     {
         Task<IEnumerable<POSPay>> GetPOSPays();
+        Task <PagingResponseModel<List<POSPay>>> GetPOSPaysByPagination(int currentPageNumber, int pageSize);
+
         Task<POSPay> GetById(int id);
         Task<IEnumerable<POSPay>> GetByInitiative(int initiativeId);
         Task<IEnumerable<POSPay>> GetByProject(int projectId);

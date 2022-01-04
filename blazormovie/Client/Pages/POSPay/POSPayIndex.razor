@@ -1,5 +1,54 @@
-﻿<h3>POSPayIndex</h3>
+﻿@page "/pospays"
+@using System.Net.Http.Json;
+@inject IPOSPayService POSPayService
+
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<POSPay>>>(LoadTodos))" @ref="table">
+    <ToolBarContent>Total PAYS</ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>POS Description</MudTh>
+        <MudTh># Transfer</MudTh>
+        <MudTh>Amount</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="POS Description">@context.DescriptionPOS</MudTd>
+        <MudTd DataLabel="# Transfer">@context.NumberTransfer</MudTd>
+        <MudTd DataLabel="Amount">@context.PayAmount.ToString()</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+    </PagerContent>
+</MudTable>
+
+
 
 @code {
+
+    private int[] pageSizeOptions = new int[] { 5, 10, 15 };
+
+    private MudTable<POSPay> table;
+
+    public POSPayIndex()
+    {
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        table.SetRowsPerPage(5);
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task<TableData<POSPay>> LoadTodos(TableState state)
+    {
+        //var response = await _httpClient.GetFromJsonAsync<POSPayPagination>($"/api/Todo?currentPageNumber={(state.Page + 1)}&pagesize={state.PageSize}");
+
+        var response = await POSPayService.GetByPagination((state.Page + 1), state.PageSize);
+ 
+        return new TableData<POSPay>() { Items = response.Data, TotalItems = response.TotalRecords };
+    }
+
+
 
 }

@@ -22,6 +22,12 @@ namespace blazormovie.Client.Services.ModBudget
             return await _httpClient.GetFromJsonAsync<IEnumerable<POSPay>>($"api/pospay");
         }
 
+        public async Task<POSPayPagination> GetByPagination(int page, int pagesize)
+        {
+            //return await _httpClient.GetFromJsonAsync<POSPayPagination>($"api/pospay/getbypagination/?currentPageNumber={(page + 1)}&pagesize={pagesize}");
+            return await _httpClient.GetFromJsonAsync<POSPayPagination>($"api/pospay/getbypagination/{(page)}/{pagesize}");
+        }
+
 
         public async Task<POSPay> GetById(int id)
         {
@@ -54,5 +60,7 @@ namespace blazormovie.Client.Services.ModBudget
         {
             throw new System.NotImplementedException();
         }
+
+        
     }
 }
