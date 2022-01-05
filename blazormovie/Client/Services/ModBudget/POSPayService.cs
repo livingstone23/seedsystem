@@ -24,8 +24,13 @@ namespace blazormovie.Client.Services.ModBudget
 
         public async Task<POSPayPagination> GetByPagination(int page, int pagesize)
         {
-            //return await _httpClient.GetFromJsonAsync<POSPayPagination>($"api/pospay/getbypagination/?currentPageNumber={(page + 1)}&pagesize={pagesize}");
             return await _httpClient.GetFromJsonAsync<POSPayPagination>($"api/pospay/getbypagination/{(page)}/{pagesize}");
+        }
+
+
+        public async Task<POSPayDTOPagination> GetByPaginationDto(int page, int pagesize)
+        {
+            return await _httpClient.GetFromJsonAsync<POSPayDTOPagination>($"api/pospay/getbypaginationdto/{(page)}/{pagesize}");
         }
 
 

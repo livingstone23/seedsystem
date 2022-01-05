@@ -4,6 +4,7 @@ using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace blazormovie.repository.Repository.ModBudget
@@ -25,7 +26,35 @@ namespace blazormovie.repository.Repository.ModBudget
 
         }
 
-        public async Task<Project> GetById(int id)
+        public async Task<PagingResponseModel<List<Project>>> GetProjectByPagination(int currentPageNumber, int pageSize)
+        {
+            int maxPagSize = 50;
+            pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+            int skip = (currentPageNumber - 1) * pageSize;
+            int take = pageSize;
+
+            var sql = @"SELECT 
+                        COUNT(*)
+                        FROM Project
+
+                        Select Id, Name, Description, AmountDefined, IdInitiative 
+                        from Project
+                        ORDER BY Id
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
+
+            var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
+
+            int count = reader.Read<int>().FirstOrDefault();
+            List<Project> allTodos = reader.Read<Project>().ToList();
+
+            //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
+            var result = new PagingResponseModel<List<Project>>(allTodos, count, currentPageNumber, pageSize);
+            return result;
+        }
+
+
+            public async Task<Project> GetById(int id)
         {
             var sql = @" Select Id, Name, Description, AmountDefined, IdInitiative 
                          From Project

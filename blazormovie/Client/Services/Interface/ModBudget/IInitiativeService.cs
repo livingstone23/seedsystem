@@ -7,6 +7,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     public interface IInitiativeService
     {
         Task<IEnumerable<Initiative>> GetInitiatives();
+        Task<InitiativePagination> GetByPagination(int currentPage, int pagesize);
         Task<Initiative> GetById(int id);
         Task SaveInitiative(Initiative initiative);
 

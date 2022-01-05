@@ -3,24 +3,83 @@
 @inject IPOSPayService POSPayService
 
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<POSPay>>>(LoadTodos))" @ref="table">
-    <ToolBarContent>Total PAYS</ToolBarContent>
+
+
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Iniciatives</MudText>
+                <MudText Typo="Typo.h5">3,125,000</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Project</MudText>
+                <MudText Typo="Typo.h5">150,000</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Public" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Pays</MudText>
+                <MudText Typo="Typo.h5">12%</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12">
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<POSPayDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">PAYS</MudText>
+        <MudSpacer />
+
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+
     <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>POS Description</MudTh>
-        <MudTh># Transfer</MudTh>
-        <MudTh>Amount</MudTh>
+        <MudTh><MudTableSortLabel SortLabel="id_field" T="POSPayDTO">Id</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="desc_field" T="POSPayDTO">DescriptionPOS</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="nrmt_field" T="POSPayDTO">NroTransfer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="pay_field" T="POSPayDTO">Amount Pay</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="day_field" T="POSPayDTO">DayPay</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="init_field" T="POSPayDTO">Initiative</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="proj_field" T="POSPayDTO">Project</MudTableSortLabel></MudTh>
     </HeaderContent>
+
+
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="POS Description">@context.DescriptionPOS</MudTd>
-        <MudTd DataLabel="# Transfer">@context.NumberTransfer</MudTd>
-        <MudTd DataLabel="Amount">@context.PayAmount.ToString()</MudTd>
+        <MudTd DataLabel="Desc">@context.DescriptionPOS</MudTd>
+        <MudTd DataLabel="Nrmt">@context.NumberTransfer</MudTd>
+        <MudTd DataLabel="Pay">@context.PayAmount</MudTd>
+        <MudTd DataLabel="Day">@context.PayDay</MudTd>
+        <MudTd DataLabel="Init">@context.InitiativeName</MudTd>
+        <MudTd DataLabel="Proj">@context.ProjectName</MudTd>
+        
     </RowTemplate>
     <PagerContent>
         <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
     </PagerContent>
 </MudTable>
+</MudItem>
+
+
+
+
+</MudGrid>	
+
+
 
 
 
@@ -28,11 +87,9 @@
 
     private int[] pageSizeOptions = new int[] { 5, 10, 15 };
 
-    private MudTable<POSPay> table;
+    private MudTable<POSPayDTO> table;
 
-    public POSPayIndex()
-    {
-    }
+    private string searchString = null;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -40,15 +97,61 @@
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    public async Task<TableData<POSPay>> LoadTodos(TableState state)
+    public async Task<TableData<POSPayDTO>> LoadTodos(TableState state)
     {
-        //var response = await _httpClient.GetFromJsonAsync<POSPayPagination>($"/api/Todo?currentPageNumber={(state.Page + 1)}&pagesize={state.PageSize}");
+        
 
-        var response = await POSPayService.GetByPagination((state.Page + 1), state.PageSize);
+        var response = await POSPayService.GetByPaginationDto((state.Page + 1), state.PageSize);
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.DescriptionPOS.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.NumberTransfer.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.ProjectName} {element.InitiativeName} {element.PayAmount}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        //totalItems = data.Count();
+        switch (state.SortLabel)
+        {
+            case "id_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Id);
+                break;
+            case "desc_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.DescriptionPOS);
+                break;
+            case "nrmt_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.NumberTransfer);
+                break;
+            case "pay_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.PayAmount);
+                break;
+            case "day_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.PayDay);
+                break;
+           case "init_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.InitiativeName);
+                break;
+           case "proj_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.ProjectName);
+                break;
+        }
+
+
  
-        return new TableData<POSPay>() { Items = response.Data, TotalItems = response.TotalRecords };
+        return new TableData<POSPayDTO>() { Items = response.Data, TotalItems = response.TotalRecords };
     }
 
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
 
 
 }

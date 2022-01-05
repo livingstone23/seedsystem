@@ -34,6 +34,13 @@ namespace SeedSystem.Server.Controllers
         }
 
 
+        [HttpGet("GetByPagination/{currentPageNumber}/{pageSize}")]
+        public async Task<PagingResponseModel<List<Initiative>>> GetByPagination(int currentPageNumber, int pageSize)
+        {
+            return await _initiativeRepository.GetInitiativesByPagination(currentPageNumber, pageSize);
+        }
+
+
         [HttpGet("GetById/{id}")]
         public async Task<Initiative> GetById(int id)
         {

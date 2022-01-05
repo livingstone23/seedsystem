@@ -22,7 +22,13 @@ namespace blazormovie.Client.Services.ModBudget
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<Initiative>>($"api/initiative");
         }
-        
+
+
+        public async Task<InitiativePagination> GetByPagination(int page, int pagesize)
+        {
+            return await _httpClient.GetFromJsonAsync<InitiativePagination>($"api/initiative/getbypagination/{(page)}/{pagesize}");
+        }
+
 
         public async Task<Initiative> GetById(int id)
         {

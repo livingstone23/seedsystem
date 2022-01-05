@@ -17,6 +17,7 @@ namespace SeedSystem.Server.Controllers
         private readonly IProjectRepository _projectRepository;
         private readonly IPOSPayRepository _pOSPayRepository;
 
+
         public ProjectController(IProjectRepository projectRepository, IPOSPayRepository pOSPayRepository)
         {
             _projectRepository = projectRepository;
@@ -33,6 +34,13 @@ namespace SeedSystem.Server.Controllers
                 item.POSPays = (List<POSPay>)await _pOSPayRepository.GetByProject(item.Id);
             }
             return projects;
+        }
+
+
+        [HttpGet("GetByPagination/{currentPageNumber}/{pageSize}")]
+        public async Task<PagingResponseModel<List<Project>>> GetByPagination(int currentPageNumber, int pageSize)
+        {
+            return await _projectRepository.GetProjectByPagination(currentPageNumber, pageSize);
         }
 
 

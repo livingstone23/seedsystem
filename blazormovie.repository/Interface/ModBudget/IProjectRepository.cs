@@ -10,6 +10,7 @@ namespace blazormovie.repository.Interface.ModBudget
     public interface IProjectRepository
     {
         Task<IEnumerable<Project>> GetProjects();
+        Task<PagingResponseModel<List<Project>>> GetProjectByPagination(int currentPageNumber, int pageSize);
         Task<Project> GetById(int id);
         Task<IEnumerable<Project>> GetByInitiative(int initiativeid);
         Task<bool> SaveProject(Project project);

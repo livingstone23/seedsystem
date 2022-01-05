@@ -9,18 +9,27 @@ namespace blazormovie.Client.Services.ModBudget
 {
     public class ProjectService : IProjectService
     {
+        
         private readonly HttpClient _httpClient;
+
 
         public ProjectService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-
+        
         
         public async Task<IEnumerable<Project>> GetProjects()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<Project>>($"api/project");
         }
+
+
+        public async Task<ProjectPagination> GetByPagination(int page, int pagesize)
+        {
+            return await _httpClient.GetFromJsonAsync<ProjectPagination>($"api/project/getbypagination/{(page)}/{pagesize}");
+        }
+
 
         public async Task<Project> GetById(int id)
         {

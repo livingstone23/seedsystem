@@ -54,10 +54,35 @@ namespace blazormovie.repository.Repository.ModBudget
             return result;
         }
 
-        //Task<PagingResponseModel<List<POSPay>>> IPOSPayRepository.GetPOSPaysByPagination(int currentPageNumber, int pageSize)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async Task<PagingResponseModel<List<POSPayDTO>>> GetPOSPayDtosByPagination(int currentPageNumber, int pageSize)
+        {
+            int maxPagSize = 50;
+            pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+            int skip = (currentPageNumber - 1) * pageSize;
+            int take = pageSize;
+
+            var sql = @"SELECT 
+                        COUNT(*)
+                        FROM POSPay
+
+                        Select a.Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, a.IdProject, a.IdInitiative, IdPOSPaysAdjust, b.name as ProjectName, c.name as InitiativeName 
+                        from POSPay a
+                        left join Project b   on a.IdProject  = b.Id
+                        left join Initiative c on a.IdInitiative  = c.Id
+                        ORDER BY a.Id
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
+
+            var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
+
+            int count = reader.Read<int>().FirstOrDefault();
+            List<POSPayDTO> allTodos = reader.Read<POSPayDTO>().ToList();
+
+            //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
+            var result = new PagingResponseModel<List<POSPayDTO>>(allTodos, count, currentPageNumber, pageSize);
+            return result;
+        }
+
 
         public async Task<POSPay> GetById(int id)
         {
