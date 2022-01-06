@@ -43,6 +43,7 @@ else
     [Parameter] public RenderFragment NoHayRegistros { get; set; }
     [Parameter] public RenderFragment<Titem> HayRegistros { get; set; }
     [Parameter] public RenderFragment HayRegistrosCompleto { get; set; }
+    [Parameter] public bool PerimitirExcel { get; set; } = false;
     [Parameter] public List<Titem> Listado { get; set; }
 
 }
