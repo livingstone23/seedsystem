@@ -1,4 +1,5 @@
 ﻿@page "/budget"
+@using System.IO
 @using blazormovie.Client.Pages.Initiative
 @using blazormovie.Client.Pages.POSPay
 @using blazormovie.Client.Pages.Project
@@ -8,9 +9,17 @@
 @inject IPOSPayService POSPayService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@using OfficeOpenXml
+@using iText.IO.Font.Constants
+@using iText.Kernel.Font
+@using iText.Layout
+@using iText.Layout.Element
+@using iText.Pdfa;
+@using iText.Kernel.Pdf;
+@inject IJSRuntime jsRuntime;
 
-
-
+<a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+<a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">BUDGET</MudText>
 <MudGrid>
     <MudItem xs="12" sm="6" md="4">
@@ -126,6 +135,9 @@
     private int[] pageSizeOptions = new int[] { 25, 50, 75 };
 
     private MudTable<BudgetDTO> table;
+    private IEnumerable<BudgetDTO> DataPrint = new List<BudgetDTO>();
+    public string excel = "";
+    public string pdf = "";
 
     private string searchString = null;
 
@@ -137,7 +149,7 @@
 
     public async Task<TableData<BudgetDTO>> LoadTodos(TableState state)
     {
-        
+
 
         var response = await BudgetService.GetByPaginationDto((state.Page + 1), state.PageSize);
 
@@ -173,16 +185,16 @@
             case "bal_field":
                 response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Balance);
                 break;
-           case "adj_field":
+            case "adj_field":
                 response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Adjustment);
                 break;
-           case "fin_field":
+            case "fin_field":
                 response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.FinalBalance);
                 break;
         }
 
 
- 
+        DataPrint = response.Data;
         return new TableData<BudgetDTO>() { Items = response.Data, TotalItems = response.TotalRecords };
     }
 
@@ -194,7 +206,7 @@
     }
 
 
-    
+
     protected async Task NewProject()
     {
         var dialog = DialogService.Show<ProjectModal>("New Project");
@@ -236,5 +248,126 @@
         }
 
     }
+    public void exportarPdf()
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            PdfWriter writer = new PdfWriter(ms);
+            using(var pdfDoc = new PdfDocument(writer))
+            {
+                //Rellenar Pdf
+                Document doc = new Document(pdfDoc);
 
+                Paragraph p1 = new Paragraph("Report");
+                p1.SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER);
+                p1.SetFontSize(20);
+                doc.Add(p1);
+                //creamos las cabeceras
+                PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                Table tabla = new Table(7).UseAllAvailableWidth();
+                Cell celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Initiative")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Project")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Amount Invoice")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("POsReceived")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Balance")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Adjustment")).SetFont(font);
+                tabla.AddHeaderCell(celda);       
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("FinalBalance")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                foreach(var item in DataPrint)
+                {
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.InitiativeName.ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.NameProject.ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.SetHorizontalAlignment(iText.Layout.Properties.HorizontalAlignment.RIGHT);
+                    celda.Add(new Paragraph(item.AmountInvoiced.ToString("N2")+" €"));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.POSreceived.ToString("N2")+" €"));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Balance.ToString("N2")+" €"));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Adjustment.ToString("N2")+" €"));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.FinalBalance.ToString("N2")+" €"));
+                    tabla.AddCell(celda);
+                }
+                doc.Add(tabla);
+                //liberamos memoria
+                doc.Close();
+                writer.Close();
+                //para descargar
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                pdf = "data:application/pdf;base64,"+base64;
+                jsRuntime.InvokeVoidAsync("descargarPdf", pdf);
+            }
+
+        }
+    }
+    public void exportarExcel()
+    {
+        using(MemoryStream ms = new MemoryStream())
+        {
+            using (ExcelPackage ep = new ExcelPackage())
+            {
+                ep.Workbook.Worksheets.Add("hoja");
+                //solo para una hoja
+                ExcelWorksheet ew = ep.Workbook.Worksheets[0];
+                ew.Column(1).Width = 50;
+                ew.Cells[1, 1].RichText.Add("Initiative").Bold = true;
+                ew.Column(2).Width = 50;
+                ew.Cells[1, 2].RichText.Add("Project").Bold = true;
+                ew.Column(3).Width = 50;
+                ew.Cells[1, 3].RichText.Add("Project").Bold =true ;
+                ew.Column(4).Width = 50;
+                ew.Cells[1, 4].RichText.Add("POsReceived").Bold =true ;
+                ew.Column(5).Width = 50;
+                ew.Cells[1, 5].RichText.Add("Balance").Bold =true ;
+                ew.Column(6).Width = 50;
+                ew.Cells[1, 6].RichText.Add("Adjustment").Bold =true ;       
+                ew.Column(7).Width = 50;
+                ew.Cells[1, 7].RichText.Add("Final Balance").Bold =true ;
+                int fila = 2;
+                int colum = 1;
+                //List<Initiative> ltInis = Initiatives.ToList();
+                foreach(var item in DataPrint)
+                {
+
+                    ew.Cells[fila, 1].Value = item.InitiativeName.ToString();
+                    ew.Cells[fila, 2].Value = item.NameProject.ToString();
+                    ew.Cells[fila, 3].Value = item.AmountInvoiced.ToString("N2")+" €";
+                    ew.Cells[fila, 4].Value = item.POSreceived.ToString("N2")+" €";
+                    ew.Cells[fila, 5].Value = item.Balance.ToString("N2")+" €";
+                    ew.Cells[fila, 6].Value = item.Adjustment.ToString("N2")+" €";
+                    ew.Cells[fila, 7].Value = item.FinalBalance.ToString("N2")+" €";
+                    fila++;
+                }
+
+                ep.SaveAs(ms);
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                excel = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + base64;
+            }
+        }
+    }
 }
