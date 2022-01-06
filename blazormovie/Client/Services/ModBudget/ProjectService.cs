@@ -47,8 +47,9 @@ namespace blazormovie.Client.Services.ModBudget
         public async Task SaveProject(Project project)
         {
             if (project.Id == 0)
-                await _httpClient.PostAsJsonAsync<Project>($"api/project/", project);
-
+            {
+                var respuesta = await _httpClient.PostAsJsonAsync<Project>($"api/project/", project);
+            }
         }
 
 

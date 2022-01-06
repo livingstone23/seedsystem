@@ -27,6 +27,7 @@ namespace blazormovie.repository.Repository.ModBudget
             return await _dbConnection.QueryAsync<POSPay>(sql, new { });
         }
 
+
         public async Task <PagingResponseModel<List<POSPay>>> GetPOSPaysByPagination(int currentPageNumber, int pageSize)
         {
             int maxPagSize = 50;
@@ -53,6 +54,7 @@ namespace blazormovie.repository.Repository.ModBudget
             var result = new PagingResponseModel<List<POSPay>>(allTodos, count, currentPageNumber, pageSize);
             return result;
         }
+
 
         public async Task<PagingResponseModel<List<POSPayDTO>>> GetPOSPayDtosByPagination(int currentPageNumber, int pageSize)
         {

@@ -3,19 +3,17 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" >
             <Authorizing>
-                <text>Autorizando...</text>
+                <text>Authorizing...</text>
             </Authorizing>
             <NotAuthorized>
-                <text>No estas autorizado para ver este contenido</text>
+                <text>You are not authorized to view this content</text>
             </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
 
     <NotFound>
         <CascadingAuthenticationState>
-
              <CustomerNotFound> </CustomerNotFound>
-
         </CascadingAuthenticationState>
     </NotFound>
 

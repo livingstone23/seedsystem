@@ -4,15 +4,14 @@
 @inject NavigationManager navigationManager
 @inject ILoginService loginService
 @inject IMostrarMensajes mostrarMensajes
+@layout LoginLayout
 
 @using blazormovie.Client.Auth
-
-<h3>Login</h3>
 
 <EditForm Model="@userInfo" OnValidSubmit="LoginUsuario">
     <DataAnnotationsValidator />
 
-    <div class="form-group">
+@*    <div class="form-group">
         <label>Email:</label>
         <div>
             <InputText Class="form-control" @bind-Value="@userInfo.Email" />
@@ -28,12 +27,46 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary">Login</button>*@
+
+
+
+
+<MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
+
+<MudText>Don't have an account? <MudLink Href="/Registro">Sign Up</MudLink></MudText>
+
+<MudTextField T="string" @bind-Value="@userInfo.Email" Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+<ValidationMessage For="@(() => userInfo.Email)" />
+
+
+<MudTextField @bind-Value="@userInfo.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+<ValidationMessage For="@(() => userInfo.Password)" />
+
+<div Class="d-flex justify-space-between align-center">
+@*    
+    <MudCheckBox T="bool" Label="Remember me?" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+    <MudLink Href="/pages/authentication/forgot-password">Forgot pwd?</MudLink>
+*@
+
+
+
+</div>
+
+<MudButton  OnClick="@LoginUsuario" Variant="Variant.Filled" Color="Color.Primary" Class="my-6" Size="Size.Large" FullWidth="true">Sign In</MudButton>
 
 </EditForm>
 
+
+
+
+
 @code {
     private UserInfo userInfo = new UserInfo();
+
+    bool PasswordVisibility;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     private async Task LoginUsuario()
     {
@@ -41,12 +74,29 @@
 
         if (httpResponse.Error)
         {
+            String errorMeesage = httpResponse.Error.ToString();
             await mostrarMensajes.MostrarMensajeError(await httpResponse.GetBody());
         }
         else
         {
             await loginService.Login(httpResponse.Response);
             navigationManager.NavigateTo("");
+        }
+    }
+
+    void TogglePasswordVisibility()
+    {
+        @if (PasswordVisibility)
+        {
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
         }
     }
 }

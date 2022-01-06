@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace blazormovie.Shared.SeedEntities
 {
-    public class Budget
+    public class BudgetDTO
     {
         public string InitiativeName { get; set; }
 
@@ -22,7 +22,6 @@ namespace blazormovie.Shared.SeedEntities
 
         public decimal FinalBalance { get; set; }
 
-        public string  Notes { get; set; }
-
+        public string Notes { get; set; }
     }
 }

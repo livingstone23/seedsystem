@@ -1,0 +1,55 @@
+﻿@page "/pages/utility/faq"
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">FAQ</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="12" md="10">
+        <MudPaper  Class="px-4 pb-3 mb-8">
+            <MudTextField T="string" Placeholder="Search" DisableUnderLine="true" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search"></MudTextField>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="12" md="2"></MudItem>
+    <MudItem xs="12" sm="12" md="10">
+        <MudText Typo="Typo.h6" GutterBottom="true">General</MudText>
+        <MudExpansionPanels >
+            <MudExpansionPanel Text="How do i use Seed System?">
+                <MudText Typo="Typo.body2">Please check the installation instructions <MudLink Href="https://mudblazor.com/getting-started/installation">here</MudLink></MudText>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="Whats the purpose of this system">
+                <MudText Typo="Typo.body2">Mostly for demonstration purposes but can be stripped and used for any project, in any way.</MudText>
+            </MudExpansionPanel>
+            
+            <MudExpansionPanel Text="I have a question or a problem regarding this system">
+                <MudText Typo="Typo.body2">While we dont offer any real support, you can always try to ask for help in one of our community groups.</MudText>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        <MudText Typo="Typo.h6" GutterBottom="true" Class="mt-8">Licensing</MudText>
+        <MudExpansionPanels >
+
+            <MudExpansionPanel Text="Commercial">
+                <MudText Typo="Typo.body2">It is for all your purposes!</MudText>
+            </MudExpansionPanel>
+
+        </MudExpansionPanels>
+
+        <MudText Typo="Typo.h6" GutterBottom="true" Class="mt-8">Security politics</MudText>
+        <MudExpansionPanels >
+            <MudExpansionPanel Text="Security">
+                <MudText Typo="Typo.body2">please do not share your username.</MudText>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="if i lose the password?">
+                <MudText Typo="Typo.body2">Call support they will gladly assist you.</MudText>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </MudItem>
+    <MudItem xs="12" sm="12" md="2">
+        <MudText Typo="Typo.h6" GutterBottom="true">Categorys</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" Class="d-flex">General</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" Class="d-flex">Licenses</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" Class="d-flex">Security politics</MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+}

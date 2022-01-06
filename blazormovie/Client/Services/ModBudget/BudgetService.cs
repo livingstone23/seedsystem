@@ -9,12 +9,15 @@ namespace blazormovie.Client.Services.ModBudget
 {
     public class BudgetService : IBudgetService
     {
+
         private readonly HttpClient _httpClient;
+
 
         public BudgetService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
+
 
         public async Task<IEnumerable<Budget>> GetBudgets()
         {
@@ -22,6 +25,10 @@ namespace blazormovie.Client.Services.ModBudget
         }
 
 
+        public async Task<BudgetDTOPagination> GetByPaginationDto(int page, int pagesize)
+        {
+            return await _httpClient.GetFromJsonAsync<BudgetDTOPagination>($"api/budget/getbypaginationdto/{(page)}/{pagesize}");
+        }
 
 
     }

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace blazormovie.Shared.SeedEntities
 {
-    public class POSPayDTOPagination
+    public class BudgetDTOPagination
     {
         public int TotalRecords { get; set; }
-        public IEnumerable<POSPayDTO> Data { get; set; }
+        public IEnumerable<BudgetDTO> Data { get; set; }
 
     }
 }

@@ -10,6 +10,7 @@ namespace blazormovie.repository.Interface.ModBudget
     public interface IBudgetRepository
     {
         Task<IEnumerable<Budget>> GetAll();
+        Task<PagingResponseModel<List<BudgetDTO>>> GetBudgetDtosByPagination(int currentPageNumber, int pageSize);
 
         //copiar la vista
 

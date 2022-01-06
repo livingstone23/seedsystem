@@ -1,99 +1,198 @@
 ﻿@page "/budget"
 @using blazormovie.Client.Pages.Initiative
+@using blazormovie.Client.Pages.POSPay
 @using blazormovie.Client.Pages.Project
 @inject IInitiativeService InitiativeService
 @inject IBudgetService BudgetService
 @inject IProjectService ProjectService
+@inject IPOSPayService POSPayService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
 
-<p>@Message</p>
 
-@if (Budgets != null && Budgets.Any())
-{
-     <MudTable Items="@Budgets" Hover="true" Breakpoint="Breakpoint.Sm">
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">BUDGET</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Iniciatives</MudText>
+                <MudText Typo="Typo.h5">3,125,000</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Project</MudText>
+                <MudText Typo="Typo.h5">150,000</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.Public" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
+            <div>
+                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Pays</MudText>
+                <MudText Typo="Typo.h5">12%</MudText>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="12" md="12">
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<BudgetDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
+
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Projects</MudText>
+            <MudText Typo="Typo.h6">PAYS</MudText>
             <MudSpacer />
-            <MudFab OnClick="@(NewInitiative)"
-                    Color="Color.Primary"
-                    Icon="@Icons.Material.Filled.AddBox"
-                    Size="Size.Small"
-                    IconSize="Size.Small">
-            </MudFab>
-            <MudSpacer />
-            <MudFab OnClick="@(NewProject)"
-                    Color="Color.Primary"
-                    Icon="@Icons.Material.Filled.AddBusiness"
-                    Size="Size.Small"
-                    IconSize="Size.Small">
-            </MudFab>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Initiative</MudTh>
-            <MudTh>Project</MudTh>
-            <MudTh>Amount Invoice</MudTh>
-            <MudTh>POsReceived</MudTh>
-            <MudTh>Balance</MudTh>
-            <MudTh>Adjustment</MudTh>
-            <MudTh>FinalBalance</MudTh>
-            <MudTh>Notes</MudTh>
-            <MudTh>
-                
-            </MudTh>
-            <MudTh></MudTh>
-            
-        </HeaderContent>
-        <RowTemplate Context="BudgetContext">
-            <MudTd DataLabel="Initiative">@BudgetContext.InitiativeName</MudTd>
-            <MudTd DataLabel="Project">@BudgetContext.NameProject</MudTd>
-            <MudTd DataLabel="AmountInvoiced">@BudgetContext.AmountInvoice.ToString("C")</MudTd>
-            <MudTd DataLabel="POsReceived">@BudgetContext.POSreceived.ToString()</MudTd>
-            <MudTd DataLabel="POsReceived">@BudgetContext.Balance.ToString()</MudTd>
-            <MudTd DataLabel="POsReceived">@BudgetContext.Adjustment.ToString()</MudTd>
-            <MudTd DataLabel="POsReceived">@BudgetContext.FinalBalance.ToString()</MudTd>
-            <MudTd DataLabel="POsReceived">@BudgetContext.Notes.ToString()</MudTd>
 
-            <MudTd DataLabel="">
-              
-            </MudTd>
-            <MudTd DataLabel="">
-                
-            </MudTd>
-        </RowTemplate>
-     </MudTable>
-}
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+
+
+            
+
+            <div Class="d-flex justify-space-between align-center">
+
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewInitiative)" Color="Color.Success">Initiative</MudButton>
+
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewProject)" Color="Color.Info">Project</MudButton>
+
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewPay)" Color="Color.Primary">POSPay</MudButton>
+   
+            </div>
+
+
+           
+
+        </ToolBarContent>
+
+             <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="ini_field" T="BudgetDTO">Initiative</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="pro_field" T="BudgetDTO">Project</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="amo_field" T="BudgetDTO">Amount Invoice</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="pos_field" T="BudgetDTO">POsReceived</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="bal_field" T="BudgetDTO">Balance</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="adj_field" T="BudgetDTO">Adjustment</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="fin_field" T="BudgetDTO">FinalBalance</MudTableSortLabel></MudTh>
+            </HeaderContent>
+
+
+            <RowTemplate Context="BudgetContext">
+                <MudTd DataLabel="Initiative">@BudgetContext.InitiativeName</MudTd>
+                <MudTd DataLabel="Project">@BudgetContext.NameProject</MudTd>
+                <MudTd DataLabel="AmountInvoiced">@BudgetContext.AmountInvoiced.ToString("C")</MudTd>
+                <MudTd DataLabel="POsReceived">@BudgetContext.POSreceived.ToString()</MudTd>
+                <MudTd DataLabel="POsReceived">@BudgetContext.Balance.ToString()</MudTd>
+                <MudTd DataLabel="POsReceived">@BudgetContext.Adjustment.ToString()</MudTd>
+                <MudTd DataLabel="POsReceived">@BudgetContext.FinalBalance.ToString()</MudTd>
+                <MudTd DataLabel="POsReceived">@BudgetContext.Notes.ToString()</MudTd>
+
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+            </PagerContent>
+
+        </MudTable>
+    </MudItem>
+</MudGrid>	
+
+
 
 
 @code {
 
-    public List<Budget> Budgets;
-    public string Message { get; set; }
+    //public List<Budget> Budgets;
+    //public string Message { get; set; }
 
-    protected async override Task OnInitializedAsync()
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    try
+    //    {
+    //        Budgets = (List<Budget>)await BudgetService.GetBudgets();
+    //    }
+    //    catch (Exception e)
+    //    {
+
+    //        Message = "Error... " + e.Message;
+    //    }
+    //}
+
+
+
+    private int[] pageSizeOptions = new int[] { 25, 50, 75 };
+
+    private MudTable<BudgetDTO> table;
+
+    private string searchString = null;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        try
-        {
-            Budgets = (List<Budget>)await BudgetService.GetBudgets();
-        }
-        catch (Exception e)
-        {
-
-            Message = "Error... " + e.Message;
-        }
+        table.SetRowsPerPage(25);
+        return base.OnAfterRenderAsync(firstRender);
     }
 
-    protected async Task Edit()
+    public async Task<TableData<BudgetDTO>> LoadTodos(TableState state)
     {
         
+
+        var response = await BudgetService.GetByPaginationDto((state.Page + 1), state.PageSize);
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.InitiativeName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.NameProject.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Notes.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.AmountInvoiced} {element.POSreceived} {element.Balance}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        //totalItems = data.Count();
+        switch (state.SortLabel)
+        {
+            case "ini_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.InitiativeName);
+                break;
+            case "pro_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.NameProject);
+                break;
+            case "amo_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.AmountInvoiced);
+                break;
+            case "pos_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.POSreceived);
+                break;
+            case "bal_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Balance);
+                break;
+           case "adj_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Adjustment);
+                break;
+           case "fin_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.FinalBalance);
+                break;
+        }
+
+
+ 
+        return new TableData<BudgetDTO>() { Items = response.Data, TotalItems = response.TotalRecords };
     }
 
-    protected async Task Delete()
+
+    private void OnSearch(string text)
     {
-        //await ProjectService.DeleteOrder(id);
-        //Orders.RemoveAll(p => p.Id == id);
+        searchString = text;
+        table.ReloadServerData();
     }
+
 
     
     protected async Task NewProject()
@@ -120,6 +219,20 @@
             var Initiative = (Initiative)result.Data;
             if (Initiative.Name != null)
                 await  InitiativeService.SaveInitiative(Initiative);
+        }
+
+    }
+
+    protected async Task NewPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+                await  POSPayService.SavePOSPay(pOSPay);
         }
 
     }

@@ -1,69 +1,104 @@
 ﻿@inject IInitiativeService InitiativeService
 @inject IProjectService ProjectService
 @inject ISnackbar Snackbar
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using FluentValidation
+@using MudBlazor
+
 
 
 <MudDialog> 
-    <TitleContent>
-        New Project
-    </TitleContent>
+
 
     <DialogContent>
-         <EditForm Model="@Project">
-             <div class="card">
-                <div class="card-body">
-                    <div class="container">
+         <EditForm Model="@Project" OnValidSubmit="@OnValidSubmit" >
+             <DataAnnotationsValidator />
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="">Name</label>
-                                <InputText class="form-control" @bind-Value="@Project.Name" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="">Description</label>
-                                <InputText class="form-control" @bind-Value="@Project.Description" />
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="">Initiative</label>
-                                <InputSelect class="form-control" @bind-Value="@Project.IdInitiative">
-                                    @foreach (var item in initiatives)
-                                    {
-                                        <option value="@item.Id">@item.Name</option>
-                                    }
-                                </InputSelect>
-                            </div>
-                            
-                        </div>
+             <div style="max-width: 100%;">
+                <MudCard>
+                    <MudCardContent>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+			
+                            <MudTextField T="string" @bind-Value="@Project.Name" Label="Name" For="@(() => Project.Name)"/>
+                
+				            <MudTextField T="string" @bind-Value="@Project.Description" Label="Description"/>
+
+                            <label for="">Initiative</label>				
+                            <ValidationMessage For="@(() => Project.IdInitiative)" />
+				            <InputSelect class="form-control" @bind-Value="@Project.IdInitiative">
+					            @foreach (var item in initiatives)
+					            {
+						            <option value="@item.Id">@item.Name</option>
+					            }
+				            </InputSelect>
+								
+				            <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" For="(() => Project.AmountDefined)" Validation=@(orderDetailsValidator.ValidateValue) />				
+
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    </MudCardActions>
+                </MudCard>
+    
+   
             </div>
+             
+
          </EditForm>
 
 
     </DialogContent>
 
-    <DialogActions>
+@*    <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="NewProject">Add</MudButton>
-    </DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto">Register</MudButton>
+    </DialogActions>*@
 
 </MudDialog>
 
 
 
 @code {
+    bool success;
+    string[] errors = { };
+    MudForm form;
+    OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
+
+
+    public class OrderDetailsModelFluentValidator : AbstractValidator<Project>
+    {
+        public OrderDetailsModelFluentValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .Length(1,100);
+
+            RuleFor(x => x.AmountDefined)
+                .GreaterThan(0)
+                .LessThan(999);
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<Project>.CreateWithOptions((Project)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+            {
+                return Array.Empty<string>();
+            } 
+            else
+            {
+                return result.Errors.Select(e => e.ErrorMessage);
+            }
+
+
+        };
+    }
+
+
 
     public Project Project = new Project();
     public IEnumerable<Initiative> initiatives =  new List<Initiative>();
@@ -85,17 +120,50 @@
         }
     }
 
-    protected async Task NewProject()
-    {
+    //protected async Task NewProject()
+    //{
+    //    if (success)
+    //    {
+    //        Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+    //        MudDialog.Close(DialogResult.Ok(Project));
+    //    }
 
-        Snackbar.Add("Product added", Severity.Success, a => a.VisibleStateDuration = 200);
-        MudDialog.Close(DialogResult.Ok(Project));
 
-    }
+
+
+    //}
+
+    //protected async Task NewProjectSaved()
+    //{
+
+    //    //var httpResponse = await ProjectService.SaveProject(Project);
+
+
+    //    Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+    //    MudDialog.Close(DialogResult.Ok(Project));
+
+    //}
 
     private void Cancel()
     {
         MudDialog.Cancel();
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(Project));
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+         success = false;
     }
 
 

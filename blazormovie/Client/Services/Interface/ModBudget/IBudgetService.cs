@@ -8,5 +8,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     {
         Task<IEnumerable<Budget>> GetBudgets();
 
+        Task<BudgetDTOPagination> GetByPaginationDto(int currentPage, int pagesize);
+
     }
 }
