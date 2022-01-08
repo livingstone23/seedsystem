@@ -38,9 +38,11 @@ namespace blazormovie.repository.Repository.ModBudget
                         COUNT(*)
                         FROM Project
 
-                        Select Id, Name, Description, AmountDefined, IdInitiative 
-                        from Project
-                        ORDER BY Id
+                        Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, Count(b.IdProject) as TotalPays
+                        from dbo.Project a
+                        left join dbo.POSPay b on a.id = b.IdProject
+                        group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject
+                        order by a.Id
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
@@ -93,28 +95,42 @@ namespace blazormovie.repository.Repository.ModBudget
         }
 
 
-
-
-
-
-
         public async Task<bool> Update(Project project)
         {
-            var sql = @"   ";
+            try
+            {
+                var sql = @" 
+                        Update Project
+                            Set Name = @Name,
+                                Description = @Description,
+                                AmountDefined = @AmountDefined,
+                                IdInitiative = @IdInitiative
+                           Where Id = @Id ";
 
-            var result = await _dbConnection.ExecuteAsync(sql,
-                new
-                {
+                var result = await _dbConnection.ExecuteAsync(sql,
+                    new
+                    {
+                        Name = project.Name,
+                        Description =project.Description,
+                        AmountDefined = project.AmountDefined,
+                        IdInitiative = project.IdInitiative,
+                        Id = project.Id
+                    });
 
-                });
-
-            return result > 0;
+                return result > 0;
+            }
+            catch (Exception e)
+            {
+                var error = e.Message;
+                return false;
+            }
 
         }
 
+
         public async Task<bool> Delete(int id)
         {
-            var sql = @"   ";
+            var sql = @" Delete from Project Where  Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
 

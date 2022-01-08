@@ -84,6 +84,34 @@ namespace SeedSystem.Server.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _pOSPayRepository.Delete(id);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] POSPay pOSPay)
+        {
+
+            if (pOSPay == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _pOSPayRepository.Update(pOSPay);
+
+                scope.Complete();
+            }
+
+            return NoContent();
+        }
+
+
     }
 
 }

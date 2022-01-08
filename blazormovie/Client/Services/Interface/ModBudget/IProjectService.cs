@@ -7,6 +7,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     public interface IProjectService
     {
         Task<IEnumerable<Project>> GetProjects();
+        
         Task<ProjectPagination> GetByPagination(int currentPage, int pagesize);
 
         Task<Project> GetById(int id);
@@ -15,9 +16,6 @@ namespace blazormovie.Client.Services.Interface.ModBudget
 
         Task SaveProject(Project project);
                        
-
-
-        //TODO
         Task DeleteProject(int id);
     }
 }

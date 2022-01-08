@@ -2,108 +2,124 @@
 @inject IProjectService ProjectService
 @inject IPOSPayService POSPayService
 @inject ISnackbar Snackbar
+@inject IMostrarMensajes mostrarMensajes
 
 
 <MudDialog> 
-    <TitleContent>
-        New Initiative
-    </TitleContent>
+
 
     <DialogContent>
-         <EditForm Model="@POSPay">
-             <div class="card">
-                <div class="card-body">
-                    <div class="container">
+         <EditForm Model="@POSPay" OnValidSubmit="@OnValidSubmit" >
+            <DataAnnotationsValidator />
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="">Description PAY</label>
-                                <InputText class="form-control" @bind-Value="@POSPay.DescriptionPOS" />
-                            </div>
+            <div style="max-width: 100%;">
+                 <MudCard>
+                    <MudCardContent>
+
+                        <MudTextField T="string" @bind-Value="@POSPay.DescriptionPOS" Label="Description PO" For="@(() => POSPay.DescriptionPOS)"/>
                         
-                            <div class="col-md-6 mb-3">
-                                <label for="">Number of Transfer</label>
-                                <InputText class="form-control" @bind-Value="@POSPay.NumberTransfer" />
-                            </div>
-                        </div>
+                        <MudTextField T="string" @bind-Value="@POSPay.NumberTransfer" Label="NumberTransfer" For="@(() => POSPay.NumberTransfer)"/>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="">Initiative</label>
-                                <InputSelect class="form-control" 
-                                            Value="@POSPay.IdInitiative"
-                                            ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
-                                            ValueExpression="@(() => POSPay.IdInitiative)"
-                                            >
-                                            @foreach (var item in initiatives)
-                                            {
-                                                <option value="@item.Id">@item.Name</option>
-                                            }
-                                </InputSelect>
-                            </div>
+
+                        <label for="">Initiative</label>
+                        <InputSelect class="form-control" 
+                                    Value="@POSPay.IdInitiative"
+                                    ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
+                                    ValueExpression="@(() => POSPay.IdInitiative)"
+                                    >
+                                    <option value=0>Select a Initiative</option>
+                                    @foreach (var item in initiatives)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                        </InputSelect>
+
+                        <label for="">Project</label>
+                        <InputSelect class="form-control" 
+                                    Value="@POSPay.IdProject"
+                                    ValueChanged="@((int projectId) => ProjectHasChanged(projectId))"
+                                    ValueExpression="@(() => POSPay.IdProject)"
+                        >
+                                    @foreach (var item in Projects)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                        </InputSelect>
+
+                        <MudDatePicker Label="Day of pay" @bind-Date="POSPay.PayDay"  DateFormat="dd/MM/yyyy" />
                         
-                            <div class="col-md-6 mb-3">
-                                <label for="">Project</label>
-                                <InputSelect class="form-control" 
-                                            Value="@POSPay.IdProject"
-                                            ValueChanged="@((int projectId) => ProjectHasChanged(projectId))"
-                                            ValueExpression="@(() => POSPay.IdProject)"
-                                >
-                                            @foreach (var item in Projects)
-                                            {
-                                                <option value="@item.Id">@item.Name</option>
-                                            }
-                                </InputSelect>
-                            </div>
-                        </div>
+                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" For="@(() => POSPay.PayAmount)"/>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="">Date of transfer</label>
-                               <InputDate class="form-control" @bind-Value="@POSPay.PayDay" />
-                            </div>
+
                         
-                            <div class="col-md-6 mb-3">
-                                <MudNumericField Label="Pay Amount" @bind-Value="@POSPay.PayAmount" />
-                            </div>
-                        </div>
+
+                         
+
+                         <MudCheckBox T="bool" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
+                         
+                         <InputSelect hidden="@(!HideLabel)" class="form-control" @bind-Value="@POSPay.IdPOSPaysAdjust">
+                                    @foreach (var item in POSPayAdjust)
+                                    {
+                                        <option value="@item.Id">@item.DescriptionPOS</option>
+                                    }
+                         </InputSelect>
+                         
+                            
+                       
 
 
-                    </div>
-                </div>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    </MudCardActions>
+                </MudCard>
             </div>
+
          </EditForm>
 
     </DialogContent>
 
-    <DialogActions>
+   @* <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" OnClick="AddPOSPays">Add</MudButton>
-    </DialogActions>
+    </DialogActions>*@
 
 </MudDialog>
 
 @code {
 
+    private bool HideLabel   {get;set;} = false;
+    private void Toggle()
+    {
+        HideLabel =   !HideLabel;
+    }      
+
+
+    bool success;
     public POSPay POSPay = new POSPay();
     public IEnumerable<Initiative> initiatives = new List<Initiative>();
     public IEnumerable<Project> Projects = new List<Project>();
+    public IEnumerable<POSPay> POSPayAdjust = new List<POSPay>();
     public Project Project = new Project();
     public int proyectId { get; set; }
     public string Message  { get; set; }
+    public int NullProject { get; set; } = 0;
 
     [CascadingParameter] 
     MudDialogInstance MudDialog {get;set;}
 
 
 
-     protected async override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         try
         {
 
-            POSPay = new POSPay() { IdInitiative = 1, RateChange = 1, CurrencyPay = "EURO" };
+            POSPay = new POSPay() { RateChange = 1, CurrencyPay = "EURO", PayDay = DateTime.Now , IdPOSPaysAdjust = null};
             initiatives = await InitiativeService.GetInitiatives();
+            POSPayAdjust = await POSPayService.GetPOSPays();
             if (initiatives != null && initiatives.Any())
             {
                 POSPay.IdInitiative = initiatives.FirstOrDefault().Id;
@@ -123,9 +139,15 @@
         if (Projects != null && Projects.Any())
         {
             POSPay.IdProject = Projects.FirstOrDefault().Id;
+        } else
+        {
+            POSPay.IdProject = 0;
         }
 
     }
+
+
+
 
 
     protected async Task InitiativeHasChanged(int initiativeId)
@@ -136,7 +158,7 @@
         {
             await LoadProjects(POSPay.IdInitiative);
         }
-        
+
 
     }
 
@@ -163,6 +185,30 @@
     private void Cancel()
     {
         MudDialog.Cancel();
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        if (POSPay.IdInitiative == 0 || POSPay.IdProject == 0)
+        {
+            Snackbar.Add("You must select a Initiative and a Project", MudBlazor.Severity.Error, a => a.VisibleStateDuration = 350);
+
+            return;
+        }
+
+        if (HideLabel == false)
+        {
+            POSPay.IdPOSPaysAdjust = null;
+        }
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Pay added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(POSPay));
+        }
     }
 
 }

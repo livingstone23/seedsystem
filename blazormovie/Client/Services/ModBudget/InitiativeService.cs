@@ -40,14 +40,20 @@ namespace blazormovie.Client.Services.ModBudget
         public async Task SaveInitiative(Initiative initiative)
         {
             if (initiative.Id == 0)
+            {
                 await _httpClient.PostAsJsonAsync<Initiative>($"api/Initiative/", initiative);
+            }
+            else
+            {
+                await _httpClient.PutAsJsonAsync<Initiative>($"api/Initiative/{initiative.Id}", initiative);
+            }    
             
         }
 
 
         public async Task DeleteInitiative(int id)
         {
-            throw new System.NotImplementedException();
+            await _httpClient.DeleteAsync($"api/Initiative/{id}");
         }
 
 

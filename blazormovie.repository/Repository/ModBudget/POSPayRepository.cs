@@ -136,18 +136,34 @@ namespace blazormovie.repository.Repository.ModBudget
         }
 
 
-
-
-
-
         public async Task<bool> Update(POSPay posPay)
         {
-            var sql = @"   ";
+            var sql = @" 
+                        Update POSPay
+                            Set PayDay = @PayDay,
+                                CurrencyPay = @CurrencyPay,
+                                DescriptionPOS = @DescriptionPOS,
+                                NumberTransfer = @NumberTransfer,
+                                PayAmount = @PayAmount,
+                                RateChange = @RateChange,
+                                IdProject = @IdProject,
+                                IdInitiative = @IdInitiative,
+                                IdPOSPaysAdjust = @IdPOSPaysAdjust
+                        Where   Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
-
+                    posPay.PayDay,
+                    posPay.CurrencyPay,
+                    posPay.DescriptionPOS,
+                    posPay.NumberTransfer,
+                    posPay.PayAmount,
+                    posPay.RateChange,
+                    posPay.IdProject,
+                    posPay.IdInitiative,
+                    posPay.IdPOSPaysAdjust,
+                    posPay.Id
                 });
 
             return result > 0;
@@ -155,7 +171,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> Delete(int id)
         {
-            var sql = @"   ";
+            var sql = @" Delete from  POSPay Where Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
 

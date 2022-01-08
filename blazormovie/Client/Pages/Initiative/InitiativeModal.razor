@@ -2,39 +2,31 @@
 @inject ISnackbar Snackbar
 
 <MudDialog> 
-    <TitleContent>
-        New Initiative
-    </TitleContent>
 
     <DialogContent>
-         <EditForm Model="@Initiative">
-             <div class="card">
-                <div class="card-body">
-                    <div class="container">
+         <EditForm Model="@Initiative" OnValidSubmit="@OnValidSubmit" >
+             <DataAnnotationsValidator />
+             
+                 <div style="max-width: 100%;"> 
+                    <MudCard>
 
-                        <div class="row">
-                             <div class="col-md-6 mb-3">
-                                <label for="">Name</label>
-                                <InputText class="form-control" @bind-Value="@Initiative.Name" />
-                            </div>
-                        
-                            <div class="col-md-6 mb-3">
-                                <label for="">Description</label>
-                                <InputText class="form-control" @bind-Value="@Initiative.Description" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        <MudCardContent>
+                            <MudTextField T="string" @bind-Value="@Initiative.Name" Label="Name" For="@(() => Initiative.Name)"/>
+				            <MudTextField T="string" @bind-Value="@Initiative.Description" Label="Description" For="@(() => Initiative.Description)"/>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                            <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                        </MudCardActions>
+
+                    </MudCard>
+
+                 </div>
          </EditForm>
 
 
     </DialogContent>
-
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="AddInitiative">Add</MudButton>
-    </DialogActions>
 
 </MudDialog>
 
@@ -43,6 +35,10 @@
 
 
 @code {
+
+    bool success;
+    
+    string[] errors = { };
 
     public Initiative Initiative = new Initiative();
 
@@ -65,11 +61,23 @@
         }
     }
 
-    protected async Task AddInitiative()
-    {
-        Snackbar.Add("Initiative added", Severity.Success, a => a.VisibleStateDuration = 200);
-        MudDialog.Close(DialogResult.Ok(Initiative));
+    //protected async Task AddInitiative()
+    //{
+    //    Snackbar.Add("Initiative added", Severity.Success, a => a.VisibleStateDuration = 200);
+    //    MudDialog.Close(DialogResult.Ok(Initiative));
 
+    //}
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Project added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(Initiative));
+        }
     }
 
 

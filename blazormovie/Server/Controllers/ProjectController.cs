@@ -40,7 +40,10 @@ namespace SeedSystem.Server.Controllers
         [HttpGet("GetByPagination/{currentPageNumber}/{pageSize}")]
         public async Task<PagingResponseModel<List<Project>>> GetByPagination(int currentPageNumber, int pageSize)
         {
-            return await _projectRepository.GetProjectByPagination(currentPageNumber, pageSize);
+            var result = await _projectRepository.GetProjectByPagination(currentPageNumber, pageSize);
+
+
+            return result; 
         }
 
 
@@ -79,6 +82,34 @@ namespace SeedSystem.Server.Controllers
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await _projectRepository.SaveProject(project);
+
+                scope.Complete();
+            }
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _projectRepository.Delete(id);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Project project)
+        {
+
+            if (project == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _projectRepository.Update(project);
 
                 scope.Complete();
             }

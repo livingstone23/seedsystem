@@ -28,7 +28,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> Delete(int id)
         {
-            var sql = @"   ";
+            var sql = @" Delete From   ";
 
             var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
 

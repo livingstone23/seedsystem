@@ -3,6 +3,8 @@
 @using System.IO
 @inject IPOSPayService POSPayService
 @using OfficeOpenXml
+@using blazormovie.Client.Pages.Initiative
+@using blazormovie.Client.Pages.Project
 @using iText.IO.Font.Constants
 @using iText.Kernel.Font
 @using iText.Layout
@@ -10,41 +12,34 @@
 @using iText.Pdfa;
 @using iText.Kernel.Pdf;
 @inject IJSRuntime jsRuntime;
+@inject IDialogService DialogService
+@inject IProjectService ProjectService
+@inject IInitiativeService InitiativeService
 
 
+<MudDrawer @bind-Open="@open" Width="@width" Height="@height" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">New Documents</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewInitiative)" Icon="@Icons.Filled.Store">Iniciative</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewProject)" Icon="@Icons.Filled.LocalLibrary">Project</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewPay)"  Icon="@Icons.Filled.Payment">Pays</MudNavLink>
 
-<a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
-<a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+    </MudNavMenu>
 
-<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Print Budget</MudText>
+    </MudDrawerHeader>
+
+    <MudNavMenu>
+        <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+        <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+    </MudNavMenu>
+</MudDrawer>
+
+
 <MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
-            <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Iniciatives</MudText>
-                <MudText Typo="Typo.h5">3,125,000</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
-            <MudIcon Icon="@Icons.Material.Filled.Layers" Color="Color.Secondary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total Project</MudText>
-                <MudText Typo="Typo.h5">150,000</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
-            <MudIcon Icon="@Icons.Material.Filled.Public" Color="Color.Success" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
-            <div>
-                <MudText Typo="Typo.subtitle1" Class="mud-text-secondary mb-n1">Total POs</MudText>
-                <MudText Typo="Typo.h5">12%</MudText>
-            </div>
-        </MudPaper>
-    </MudItem>
 
     <MudItem xs="12" sm="12" md="12">
     <MudTable ServerData="@(new Func<TableState, Task<TableData<POSPayDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
@@ -55,6 +50,9 @@
 
         <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NewLabel" Color="Color.Primary" OnClick="@(() => OpenDrawer(Anchor.End))">New Documents</MudButton>
+
     </ToolBarContent>
 
     <HeaderContent>
@@ -94,6 +92,26 @@
 
 
 @code {
+
+    bool open;
+    Anchor anchor;
+    string width, height;
+
+    void OpenDrawer(Anchor anchor)
+    {
+        open = true;
+        this.anchor = anchor;
+
+        switch (anchor)
+        {
+            
+            case Anchor.End:
+                width = "400px";
+                height = "100%";
+                break;
+            
+        }
+    }
 
     private int[] pageSizeOptions = new int[] { 5, 10, 15 };
 
@@ -169,6 +187,8 @@
         searchString = text;
         table.ReloadServerData();
     }
+
+
     public void exportarExcel()
     {
          using(MemoryStream ms = new MemoryStream())
@@ -282,6 +302,48 @@
             }
 
         }
+    }
+
+     protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+                await ProjectService.SaveProject(Project);
+        }
+
+    }
+
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+                await  InitiativeService.SaveInitiative(Initiative);
+        }
+
+    }
+
+    protected async Task NewPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+                await  POSPayService.SavePOSPay(pOSPay);
+        }
+
     }
 
 

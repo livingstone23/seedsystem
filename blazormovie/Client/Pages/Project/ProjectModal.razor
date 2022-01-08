@@ -43,29 +43,22 @@
                     </MudCardActions>
                 </MudCard>
     
-   
             </div>
              
-
          </EditForm>
 
-
     </DialogContent>
-
-@*    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="NewProject">Add</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto">Register</MudButton>
-    </DialogActions>*@
 
 </MudDialog>
 
 
 
 @code {
+    
     bool success;
+    
     string[] errors = { };
-    MudForm form;
+    
     OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
 
 
@@ -120,29 +113,7 @@
         }
     }
 
-    //protected async Task NewProject()
-    //{
-    //    if (success)
-    //    {
-    //        Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
-    //        MudDialog.Close(DialogResult.Ok(Project));
-    //    }
 
-
-
-
-    //}
-
-    //protected async Task NewProjectSaved()
-    //{
-
-    //    //var httpResponse = await ProjectService.SaveProject(Project);
-
-
-    //    Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
-    //    MudDialog.Close(DialogResult.Ok(Project));
-
-    //}
 
     private void Cancel()
     {
@@ -156,15 +127,12 @@
         StateHasChanged();
         if (success)
         {
-            Snackbar.Add("Product added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            Snackbar.Add("Project added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
             MudDialog.Close(DialogResult.Ok(Project));
         }
     }
 
-    private void HandleInvalidSubmit()
-    {
-         success = false;
-    }
+
 
 
 }

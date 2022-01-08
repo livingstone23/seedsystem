@@ -76,6 +76,34 @@ namespace SeedSystem.Server.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _initiativeRepository.Delete(id);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Initiative initiative)
+        {
+
+            if (initiative == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _initiativeRepository.Update(initiative);
+
+                scope.Complete();
+            }
+
+            return NoContent();
+        }
+
+        
     }
 
 }

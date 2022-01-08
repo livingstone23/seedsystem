@@ -49,13 +49,18 @@ namespace blazormovie.Client.Services.ModBudget
             if (project.Id == 0)
             {
                 var respuesta = await _httpClient.PostAsJsonAsync<Project>($"api/project/", project);
+            } 
+                else
+            {
+                var respuesta = await _httpClient.PutAsJsonAsync<Project>($"api/project/{project.Id}", project);
             }
         }
 
 
-        public Task DeleteProject(int id)
+        public async Task DeleteProject(int id)
         {
-            throw new System.NotImplementedException();
+            await _httpClient.DeleteAsync($"api/project/{id}");
         }
+
     }
 }

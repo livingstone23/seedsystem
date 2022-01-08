@@ -83,12 +83,18 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> Update(Initiative initiative)
         {
-            var sql = @"   ";
+            var sql = @" 
+                        Update Initiative
+                            Set Name = @Name,
+                                Description = @Description
+                            Where Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
-
+                    initiative.Name,
+                    initiative.Description,
+                    initiative.Id
                 });
 
             return result > 0;
@@ -97,11 +103,12 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> Delete(int id)
         {
-            var sql = @"   ";
+            var sql = @" Delete from Initiative Where Id = @Id  ";
 
             var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
 
             return result > 0;
+
         }
 
     }

@@ -57,13 +57,19 @@ namespace blazormovie.Client.Services.ModBudget
         public async Task SavePOSPay(POSPay pOSPay)
         {
             if (pOSPay.Id == 0)
+            {
                 await _httpClient.PostAsJsonAsync<POSPay>($"api/pospay/", pOSPay);
+            }
+            else
+            {
+                await _httpClient.PutAsJsonAsync<POSPay>($"api/pospay/{pOSPay.Id}", pOSPay);
+            }   
 
         }
 
-        public Task DeletePOSPay(int id)
+        public async Task DeletePOSPay(int id)
         {
-            throw new System.NotImplementedException();
+            await _httpClient.DeleteAsync($"api/pospay/{id}");
         }
 
         

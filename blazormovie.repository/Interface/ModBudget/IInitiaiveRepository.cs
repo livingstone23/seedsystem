@@ -18,6 +18,7 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<bool> Insert(Initiative initiative);
 
         Task<bool> Delete(int id);
+
         Task<bool> Update(Initiative initiative);
 
     }

@@ -15,11 +15,6 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<IEnumerable<Project>> GetByInitiative(int initiativeid);
         Task<bool> SaveProject(Project project);
         
-
-
-
-
-        //Pendiente de implementar
         Task<bool> Delete(int id);
         Task<bool> Update(Project project);
 

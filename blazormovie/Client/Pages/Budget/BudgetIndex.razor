@@ -18,9 +18,37 @@
 @using iText.Kernel.Pdf;
 @inject IJSRuntime jsRuntime;
 
-<a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
-<a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
-<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">BUDGET</MudText>
+
+
+
+
+<MudDrawer @bind-Open="@open" Width="@width" Height="@height" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">New Documents</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewInitiative)" Icon="@Icons.Filled.Store">Iniciative</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewProject)" Icon="@Icons.Filled.LocalLibrary">Project</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewPay)"  Icon="@Icons.Filled.Payment">Pays</MudNavLink>
+
+    </MudNavMenu>
+
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Print Budget</MudText>
+    </MudDrawerHeader>
+
+    <MudNavMenu>
+        <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+        <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+    </MudNavMenu>
+</MudDrawer>
+
+
+
+
+
+
+
 <MudGrid>
     <MudItem xs="12" sm="6" md="4">
         <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
@@ -54,24 +82,14 @@
         <MudTable ServerData="@(new Func<TableState, Task<TableData<BudgetDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
 
         <ToolBarContent>
-            <MudText Typo="Typo.h6">PAYS</MudText>
+            <MudText Typo="Typo.h6">BUDGET</MudText>
             <MudSpacer />
 
             <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 
 
-            
-
-            <div Class="d-flex justify-space-between align-center">
-
-                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewInitiative)" Color="Color.Success">Initiative</MudButton>
-
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewProject)" Color="Color.Info">Project</MudButton>
-
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FiberNew" OnClick="@(NewPay)" Color="Color.Primary">PO</MudButton>
-   
-            </div>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NewLabel" Color="Color.Primary" OnClick="@(() => OpenDrawer(Anchor.End))">New Documents</MudButton>
 
 
            
@@ -113,6 +131,27 @@
 
 
 @code {
+
+    bool open;
+    Anchor anchor;
+    string width, height;
+
+    void OpenDrawer(Anchor anchor)
+    {
+        open = true;
+        this.anchor = anchor;
+
+        switch (anchor)
+        {
+            
+            case Anchor.End:
+                width = "400px";
+                height = "100%";
+                break;
+            
+        }
+    }
+
 
     //public List<Budget> Budgets;
     //public string Message { get; set; }

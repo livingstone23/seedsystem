@@ -11,82 +11,203 @@
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
 @inject IJSRuntime jsRuntime;
-<p>@Message</p>
+@using blazormovie.Client.Pages.Initiative
+@using blazormovie.Client.Pages.Project
+@using blazormovie.Client.Pages.POSPay
+@inject IInitiativeService InitiativeService
+@inject IPOSPayService POSPayService
 
 
-@if (Projects != null && Projects.Any())
-{
+
+
+
     <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
     <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
 
-     <MudTable Items="@Projects" Hover="true" Breakpoint="Breakpoint.Sm">
+<MudDrawer @bind-Open="@open" Width="@width" Height="@height" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">New Documents</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewInitiative)" Icon="@Icons.Filled.Store">Iniciative</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewProject)" Icon="@Icons.Filled.LocalLibrary">Project</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewPay)"  Icon="@Icons.Filled.Payment">Pays</MudNavLink>
+
+    </MudNavMenu>
+
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Print Budget</MudText>
+    </MudDrawerHeader>
+
+    <MudNavMenu>
+        <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+        <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+    </MudNavMenu>
+</MudDrawer>
+
+<MudGrid>
+
+    <MudItem xs="12" sm="12" md="12">
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<Project>>>(LoadTodos))"   Hover="true"  @ref="table">
+
         <ToolBarContent>
-                
             <MudText Typo="Typo.h6">Projects</MudText>
             <MudSpacer />
-            
-            <MudFab OnClick="@(NewProject)"
-                    Color="Color.Primary"
-                    Icon="@Icons.Material.Filled.Add"
-                    Size="Size.Small"
-                    IconSize="Size.Small">
-            </MudFab>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Amount Defined</MudTh>
-            <MudTh>Number of POs</MudTh>
-            <MudTh>
-                
-            </MudTh>
-            <MudTh></MudTh>
-            
-        </HeaderContent>
-        <RowTemplate Context="ProjectContext">
-            <MudTd DataLabel="Name">@ProjectContext.Name</MudTd>
-            <MudTd DataLabel="Description">@ProjectContext.Description</MudTd>
-            <MudTd DataLabel="AmountDefined">@ProjectContext.AmountDefined.ToString("C")</MudTd>
-            <MudTd DataLabel="Number of Pays">@ProjectContext.POSPays.Count().ToString()</MudTd>
 
-            <MudTd DataLabel="">
-                <MudFab OnClick="@(() => Edit(ProjectContext.Id))"
-                        Color="Color.Primary"
-                        Icon="@Icons.Material.Filled.Edit"
-                        Size="Size.Small"
-                        IconSize="Size.Small">
-                </MudFab>
-            </MudTd>
-            <MudTd DataLabel="">
-                <MudFab OnClick="@(() => Delete(ProjectContext.Id))"
-                        Color="Color.Secondary"
-                        Icon="@Icons.Material.Filled.Delete"
-                        Size="Size.Small"
-                        IconSize="Size.Small">
-                </MudFab>
-            </MudTd>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NewLabel" Color="Color.Primary" OnClick="@(() => OpenDrawer(Anchor.End))">New Documents</MudButton>
+
+        </ToolBarContent>
+
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="id_field" T="POSPayDTO">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="name_field" T="POSPayDTO">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="des_field" T="POSPayDTO">Description</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="amo_field" T="POSPayDTO">Amount Defined</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="num_field" T="POSPayDTO">Number of POs</MudTableSortLabel></MudTh>
+
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Desc">@context.Name</MudTd>
+            <MudTd DataLabel="Nrmt">@context.Description</MudTd>
+            <MudTd DataLabel="Pay">@context.AmountDefined</MudTd>
+            <MudTd DataLabel="Day">@context.TotalPays</MudTd>
+          
         </RowTemplate>
-     </MudTable>
-}
+
+
+        <PagerContent>
+            <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+        </PagerContent>
+
+        </MudTable>
+    </MudItem>
+
+
+
+
+</MudGrid>	
+
+
+
+
+
+
+
+
+
+
+
+
+     
+
 
 
 @code {
+
+    bool open;
+    Anchor anchor;
+    string width, height;
+
+    void OpenDrawer(Anchor anchor)
+    {
+        open = true;
+        this.anchor = anchor;
+
+        switch (anchor)
+        {
+            
+            case Anchor.End:
+                width = "400px";
+                height = "100%";
+                break;
+            
+        }
+    }
+
 
     public List<Project> Projects;
     public string Message { get; set; }
     public string excel = "";
     public string pdf = "";
-    protected async override Task OnInitializedAsync()
-    {
-        try
-        {
-            Projects = (List<Project>)await ProjectService.GetProjects();
-        }
-        catch (Exception e)
-        {
 
-            Message = "Error... " + e.Message;
-        }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    try
+    //    {
+    //        Projects = (List<Project>)await ProjectService.GetProjects();
+    //    }
+    //    catch (Exception e)
+    //    {
+
+    //        Message = "Error... " + e.Message;
+    //    }
+    //}
+
+    private int[] pageSizeOptions = new int[] { 5, 10, 15 };
+
+    private MudTable<Project> table;
+
+    private IEnumerable<Project> DataPrint = new List<Project>();
+
+    private string searchString = null;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        table.SetRowsPerPage(5);
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task<TableData<Project>> LoadTodos(TableState state)
+    {
+
+
+        var response = await ProjectService.GetByPagination((state.Page + 1), state.PageSize);
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.AmountDefined}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        //totalItems = data.Count();
+        switch (state.SortLabel)
+        {
+            case "id_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Id);
+                break;
+            case "name_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Name);
+                break;
+            case "des_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Description);
+                break;
+            case "amo_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.AmountDefined);
+                break;
+         }
+
+
+        DataPrint = response.Data;
+
+        return new TableData<Project>() { Items = response.Data, TotalItems = response.TotalRecords };
+    }
+
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
     }
 
     protected async Task Edit(int id)
@@ -100,19 +221,8 @@
         //Orders.RemoveAll(p => p.Id == id);
     }
 
-    protected async Task NewProject()
-    {
-        var dialog = DialogService.Show<ProjectModal>("New Project");
-        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
 
-        if(!result.Cancelled)
-        {
-            var Project = (Project)result.Data;
-            if (Project.Name != null)
-                await ProjectService.SaveProject(Project);
-        }
-        Projects = (List<Project>)await ProjectService.GetProjects();
-    }
+
     public void exportarPdf()
     {
         using (MemoryStream ms = new MemoryStream())
@@ -209,4 +319,48 @@
          
         }
     }
+
+     protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+                await ProjectService.SaveProject(Project);
+        }
+
+    }
+
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+                await  InitiativeService.SaveInitiative(Initiative);
+        }
+
+    }
+
+    protected async Task NewPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+                await  POSPayService.SavePOSPay(pOSPay);
+        }
+
+    }
+
+
 }

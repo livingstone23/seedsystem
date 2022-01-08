@@ -1,6 +1,6 @@
 {
-  "name": "blazormovie",
-  "short_name": "blazormovie",
+  "name": "SeedSystemPro",
+  "short_name": "SeedSystem",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
