@@ -21,8 +21,6 @@
 
 
 
-    <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
-    <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
 
 <MudDrawer @bind-Open="@open" Width="@width" Height="@height" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
     <MudDrawerHeader>
@@ -135,18 +133,7 @@
     public string excel = "";
     public string pdf = "";
 
-    //protected async override Task OnInitializedAsync()
-    //{
-    //    try
-    //    {
-    //        Projects = (List<Project>)await ProjectService.GetProjects();
-    //    }
-    //    catch (Exception e)
-    //    {
 
-    //        Message = "Error... " + e.Message;
-    //    }
-    //}
 
     private int[] pageSizeOptions = new int[] { 5, 10, 15 };
 
