@@ -27,7 +27,6 @@
                                     ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
                                     ValueExpression="@(() => POSPay.IdInitiative)"
                                     >
-                                    <option value=0>Select a Initiative</option>
                                     @foreach (var item in initiatives)
                                     {
                                         <option value="@item.Id">@item.Name</option>

@@ -104,12 +104,12 @@
 
         switch (anchor)
         {
-            
+
             case Anchor.End:
                 width = "400px";
                 height = "100%";
                 break;
-            
+
         }
     }
 
@@ -191,7 +191,7 @@
 
     public void exportarExcel()
     {
-         using(MemoryStream ms = new MemoryStream())
+        using(MemoryStream ms = new MemoryStream())
         {
             using (ExcelPackage ep = new ExcelPackage())
             {
@@ -230,7 +230,7 @@
                 string base64 = Convert.ToBase64String(buffer);
                 excel = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + base64;
             }
-         
+
         }
     }
     public void exportarPdf()
@@ -242,7 +242,7 @@
             {
                 //Rellenar Pdf
                 Document doc = new Document(pdfDoc);
-                
+
                 Paragraph p1 = new Paragraph("Report");
                 p1.SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER);
                 p1.SetFontSize(20);
@@ -304,7 +304,7 @@
         }
     }
 
-     protected async Task NewProject()
+    protected async Task NewProject()
     {
         var dialog = DialogService.Show<ProjectModal>("New Project");
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
@@ -341,7 +341,11 @@
         {
             var pOSPay = (POSPay)result.Data;
             if (pOSPay.IdInitiative != null)
+            {
                 await  POSPayService.SavePOSPay(pOSPay);
+                await OnAfterRenderAsync(true);
+            }
+            
         }
 
     }

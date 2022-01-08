@@ -16,6 +16,7 @@
 @using blazormovie.Client.Pages.POSPay
 @inject IInitiativeService InitiativeService
 @inject IPOSPayService POSPayService
+@inject ISnackbar Snackbar
 
 
 
@@ -65,7 +66,8 @@
             <MudTh><MudTableSortLabel SortLabel="des_field" T="POSPayDTO">Description</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="amo_field" T="POSPayDTO">Amount Defined</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="num_field" T="POSPayDTO">Number of POs</MudTableSortLabel></MudTh>
-
+            <MudTh></MudTh>
+            <MudTh></MudTh>
         </HeaderContent>
 
         <RowTemplate>
@@ -74,7 +76,22 @@
             <MudTd DataLabel="Nrmt">@context.Description</MudTd>
             <MudTd DataLabel="Pay">@context.AmountDefined</MudTd>
             <MudTd DataLabel="Day">@context.TotalPays</MudTd>
-          
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Edit(context.Id))"
+                        Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.Edit"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Delete(context.Id))"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Delete"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
         </RowTemplate>
 
 
@@ -84,24 +101,7 @@
 
         </MudTable>
     </MudItem>
-
-
-
-
 </MudGrid>	
-
-
-
-
-
-
-
-
-
-
-
-
-     
 
 
 
@@ -118,12 +118,12 @@
 
         switch (anchor)
         {
-            
+
             case Anchor.End:
                 width = "400px";
                 height = "100%";
                 break;
-            
+
         }
     }
 
@@ -182,7 +182,7 @@
             case "amo_field":
                 response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.AmountDefined);
                 break;
-         }
+        }
 
 
         DataPrint = response.Data;
@@ -204,8 +204,15 @@
 
     protected async Task Delete(int id)
     {
-        //await ProjectService.DeleteOrder(id);
-        //Orders.RemoveAll(p => p.Id == id);
+        Project projectfound = new Project();
+        projectfound = DataPrint.Where(a => a.Id == id).FirstOrDefault();
+        if (projectfound.TotalPays > 0)
+        {
+            Snackbar.Add("You can only delete a project without pays", MudBlazor.Severity.Error, a => a.VisibleStateDuration = 350);
+            return;
+        }
+        await ProjectService.DeleteProject(id);
+        await OnAfterRenderAsync(true);
     }
 
 
@@ -238,7 +245,7 @@
                  celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
                 celda.Add(new Paragraph("Number of Pays")).SetFont(font);
                 tabla.AddHeaderCell(celda);
-                foreach(var item in Projects)
+                foreach(var item in DataPrint)
                 {
                     celda = new Cell();
                     celda.Add(new Paragraph(item.Name.ToString()));
@@ -264,7 +271,6 @@
                 pdf = "data:application/pdf;base64,"+base64;
                 jsRuntime.InvokeVoidAsync("descargarPdf", pdf);
             }
-
         }
     }
 
@@ -288,7 +294,7 @@
                 int fila = 2;
                 int colum = 1;
                 //List<Initiative> ltInis = Initiatives.ToList();
-                foreach(var item in Projects)
+                foreach(var item in DataPrint)
                 {
 
                     ew.Cells[fila, 1].Value = item.Name.ToString();
@@ -346,7 +352,6 @@
             if (pOSPay.IdInitiative != null)
                 await  POSPayService.SavePOSPay(pOSPay);
         }
-
     }
 
 

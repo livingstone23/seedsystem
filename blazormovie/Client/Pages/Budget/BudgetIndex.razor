@@ -89,9 +89,15 @@
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
 
 
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NewLabel" Color="Color.Primary" OnClick="@(() => OpenDrawer(Anchor.End))">New Documents</MudButton>
+            
 
+            <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                <MudMenuItem OnClick="@(NewInitiative)" >New Iniciative</MudMenuItem>
+                <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
+                <MudMenuItem OnClick="@(NewPay)">New Pay</MudMenuItem>
 
+                
+            </MudMenu>
            
 
         </ToolBarContent>
@@ -145,11 +151,13 @@
         {
             
             case Anchor.End:
-                width = "400px";
+                width = "300px";
                 height = "100%";
                 break;
             
         }
+
+        OnAfterRenderAsync(true);
     }
 
 
@@ -171,7 +179,7 @@
 
 
 
-    private int[] pageSizeOptions = new int[] { 25, 50, 75 };
+    private int[] pageSizeOptions = new int[] { 10, 15, 20 };
 
     private MudTable<BudgetDTO> table;
     private IEnumerable<BudgetDTO> DataPrint = new List<BudgetDTO>();
@@ -182,7 +190,7 @@
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        table.SetRowsPerPage(25);
+        table.SetRowsPerPage(10);
         return base.OnAfterRenderAsync(firstRender);
     }
 
@@ -283,7 +291,11 @@
         {
             var pOSPay = (POSPay)result.Data;
             if (pOSPay.IdInitiative != null)
+            {
                 await  POSPayService.SavePOSPay(pOSPay);
+                await OnAfterRenderAsync(true);
+            }
+            OnAfterRenderAsync(true);
         }
 
     }
