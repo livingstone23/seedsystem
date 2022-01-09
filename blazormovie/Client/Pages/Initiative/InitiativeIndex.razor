@@ -1,10 +1,14 @@
 ﻿@page "/initiative"
 @inject IInitiativeService InitiativeService
+@inject IProjectService ProjectService
+@inject IPOSPayService POSPayService
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
 @using OfficeOpenXml;
 @using OfficeOpenXml.Style;
 @using System.IO
+@using blazormovie.Client.Pages.POSPay
+@using blazormovie.Client.Pages.Project
 @using iText.IO.Font.Constants
 @using iText.Kernel.Font
 @using iText.Kernel.Pdf
@@ -28,6 +32,8 @@
             
                 <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
                     <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewPay)">New PO</MudMenuItem>
                 </MudMenu>
 
                 <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
@@ -184,10 +190,51 @@
             {
                 await  InitiativeService.SaveInitiative(Initiative);
                 table.ReloadServerData();
+                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
         }
 
     }
+
+    protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+            {
+                await ProjectService.SaveProject(Project);
+                table.ReloadServerData();
+                Snackbar.Add("The Project has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+
+    protected async Task NewPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+            {
+                await  POSPayService.SavePOSPay(pOSPay);
+                table.ReloadServerData();
+                Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+            
+        }
+    }
+
+
+
+
 
 
     public void exportarPdf()

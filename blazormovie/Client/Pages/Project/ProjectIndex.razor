@@ -40,7 +40,7 @@
             <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
                 <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
                 <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
-                <MudMenuItem OnClick="@(NewPay)">New Pay</MudMenuItem>
+                <MudMenuItem OnClick="@(NewPay)">New PO</MudMenuItem>
             </MudMenu>
 
             <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
@@ -161,7 +161,6 @@
 
 
         DataPrint = response.Data;
-
         return new TableData<Project>() { Items = response.Data, TotalItems = response.TotalRecords };
     }
 
@@ -183,12 +182,12 @@
         projectfound = DataPrint.Where(a => a.Id == id).FirstOrDefault();
         if (projectfound.TotalPays > 0)
         {
-            Snackbar.Add("You can only delete a project without pays", MudBlazor.Severity.Error, a => a.VisibleStateDuration = 350);
+            Snackbar.Add("You can only delete a project without PO", MudBlazor.Severity.Error, a => a.VisibleStateDuration = 400);
             return;
         }
         await ProjectService.DeleteProject(id);
         table.ReloadServerData();
-        Snackbar.Add("The project has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+        Snackbar.Add("The project has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
     }
 
 
@@ -289,6 +288,24 @@
         }
     }
 
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+            {
+                await  InitiativeService.SaveInitiative(Initiative);
+                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+            
+        }
+
+    }
+
     protected async Task NewProject()
     {
         var dialog = DialogService.Show<ProjectModal>("New Project");
@@ -300,29 +317,14 @@
             if (Project.Name != null)
             {
                 await ProjectService.SaveProject(Project);
-
                 table.ReloadServerData();
-
+                Snackbar.Add("The Project has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
-
         }
 
     }
 
-    protected async Task NewInitiative()
-    {
-        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
-        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
-
-        if(!result.Cancelled)
-        {
-            var Initiative = (Initiative)result.Data;
-            if (Initiative.Name != null)
-                await  InitiativeService.SaveInitiative(Initiative);
-        }
-
-    }
-
+    
     protected async Task NewPay()
     {
         var dialog = DialogService.Show<POSPayModal>("New POSPay");
@@ -335,6 +337,7 @@
             {
                 await  POSPayService.SavePOSPay(pOSPay);
                 table.ReloadServerData();
+                Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
             
         }

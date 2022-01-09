@@ -17,6 +17,7 @@
 @using iText.Pdfa;
 @using iText.Kernel.Pdf;
 @inject IJSRuntime jsRuntime;
+@inject ISnackbar Snackbar
 
 
 <MudGrid>
@@ -61,7 +62,7 @@
             <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
                 <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
                 <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
-                <MudMenuItem OnClick="@(NewPay)">New Pay</MudMenuItem>
+                <MudMenuItem OnClick="@(NewPay)">New PO</MudMenuItem>
             </MudMenu>
 
             <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
@@ -108,7 +109,6 @@
 
 
 @code {
-
 
 
     private int[] pageSizeOptions = new int[] { 25, 35, 50 };
@@ -185,6 +185,23 @@
     }
 
 
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+            {
+                await  InitiativeService.SaveInitiative(Initiative);
+                table.ReloadServerData();
+                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
 
     protected async Task NewProject()
     {
@@ -195,24 +212,14 @@
         {
             var Project = (Project)result.Data;
             if (Project.Name != null)
+            {
                 await ProjectService.SaveProject(Project);
+                table.ReloadServerData();
+                Snackbar.Add("The Project has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
         }
-
     }
-
-    protected async Task NewInitiative()
-    {
-        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
-        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
-
-        if(!result.Cancelled)
-        {
-            var Initiative = (Initiative)result.Data;
-            if (Initiative.Name != null)
-                await  InitiativeService.SaveInitiative(Initiative);
-        }
-
-    }
+        
 
     protected async Task NewPay()
     {
@@ -226,11 +233,12 @@
             {
                 await  POSPayService.SavePOSPay(pOSPay);
                 table.ReloadServerData();
+                Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
-            
         }
-
     }
+
+
     public void exportarPdf()
     {
         using (MemoryStream ms = new MemoryStream())
