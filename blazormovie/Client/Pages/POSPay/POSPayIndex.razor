@@ -15,75 +15,79 @@
 @inject IDialogService DialogService
 @inject IProjectService ProjectService
 @inject IInitiativeService InitiativeService
-
-
-<MudDrawer @bind-Open="@open" Width="@width" Height="@height" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary">
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h6">New Documents</MudText>
-    </MudDrawerHeader>
-    <MudNavMenu>
-        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewInitiative)" Icon="@Icons.Filled.Store">Iniciative</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewProject)" Icon="@Icons.Filled.LocalLibrary">Project</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.All" OnClick="@(NewPay)"  Icon="@Icons.Filled.Payment">Pays</MudNavLink>
-
-    </MudNavMenu>
-
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Print Budget</MudText>
-    </MudDrawerHeader>
-
-    <MudNavMenu>
-        <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
-        <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
-    </MudNavMenu>
-</MudDrawer>
+@inject ISnackbar Snackbar
 
 
 <MudGrid>
 
     <MudItem xs="12" sm="12" md="12">
-    <MudTable ServerData="@(new Func<TableState, Task<TableData<POSPayDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<POSPayDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
 
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">PAYS</MudText>
-        <MudSpacer />
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">PAYS</MudText>
+            <MudSpacer />
 
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.NewLabel" Color="Color.Primary" OnClick="@(() => OpenDrawer(Anchor.End))">New Documents</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
+                <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
+                <MudMenuItem OnClick="@(NewPay)">New Pay</MudMenuItem>
+            </MudMenu>
 
-    </ToolBarContent>
+            <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
+                <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+                <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+            </MudMenu>
 
-    <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="id_field" T="POSPayDTO">Id</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="desc_field" T="POSPayDTO">DescriptionPOS</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="nrmt_field" T="POSPayDTO">NroTransfer</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="pay_field" T="POSPayDTO">Amount Pay</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="day_field" T="POSPayDTO">DayPay</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="init_field" T="POSPayDTO">Initiative</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="proj_field" T="POSPayDTO">Project</MudTableSortLabel></MudTh>
-    </HeaderContent>
+        </ToolBarContent>
+
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="id_field" T="POSPayDTO">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="desc_field" T="POSPayDTO">DescriptionPOS</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="nrmt_field" T="POSPayDTO">NroTransfer</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="pay_field" T="POSPayDTO">Amount Pay</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="day_field" T="POSPayDTO">DayPay</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="init_field" T="POSPayDTO">Initiative</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="proj_field" T="POSPayDTO">Project</MudTableSortLabel></MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
 
 
-    <RowTemplate>
-        <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="Desc">@context.DescriptionPOS</MudTd>
-        <MudTd DataLabel="Nrmt">@context.NumberTransfer</MudTd>
-        <MudTd DataLabel="Pay">@context.PayAmount</MudTd>
-        <MudTd DataLabel="Day">@context.PayDay</MudTd>
-        <MudTd DataLabel="Init">@context.InitiativeName</MudTd>
-        <MudTd DataLabel="Proj">@context.ProjectName</MudTd>
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Desc">@context.DescriptionPOS</MudTd>
+            <MudTd DataLabel="Nrmt">@context.NumberTransfer</MudTd>
+            <MudTd DataLabel="Pay" Style="text-align:center">@context.PayAmount.ToString("C")</MudTd>
+            <MudTd DataLabel="Day">@context.PayDay.ToShortDateString()</MudTd>
+            <MudTd DataLabel="Init">@context.InitiativeName</MudTd>
+            <MudTd DataLabel="Proj">@context.ProjectName</MudTd>
+
+            <MudTd>
+                <MudFab OnClick="@(() => Edit(context.Id))"
+                        Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.Edit"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+            <MudTd>
+                <MudFab OnClick="@(() => Delete(context.Id))"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Delete"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
         
-    </RowTemplate>
-    <PagerContent>
-        <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
-    </PagerContent>
-</MudTable>
-</MudItem>
-
-
-
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+        </PagerContent>
+        </MudTable>
+    </MudItem>
 
 </MudGrid>	
 
@@ -93,25 +97,7 @@
 
 @code {
 
-    bool open;
-    Anchor anchor;
-    string width, height;
 
-    void OpenDrawer(Anchor anchor)
-    {
-        open = true;
-        this.anchor = anchor;
-
-        switch (anchor)
-        {
-
-            case Anchor.End:
-                width = "400px";
-                height = "100%";
-                break;
-
-        }
-    }
 
     private int[] pageSizeOptions = new int[] { 5, 10, 15 };
 
@@ -343,11 +329,23 @@
             if (pOSPay.IdInitiative != null)
             {
                 await  POSPayService.SavePOSPay(pOSPay);
-                await OnAfterRenderAsync(true);
+                table.ReloadServerData();
             }
-            
+
         }
 
+    }
+
+    protected async Task Delete(int id)
+    {
+        await POSPayService.DeletePOSPay(id);
+        table.ReloadServerData();
+        Snackbar.Add("The Pay has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+    }
+
+    protected async Task Edit(int id)
+    {
+        return;
     }
 
 

@@ -40,8 +40,12 @@ namespace blazormovie.repository.Repository.ModBudget
                         COUNT(*)
                         FROM Initiative
 
-                        Select Id, Name,  Description from Initiative
-                        ORDER BY Id
+                       Select a.Id, a.Name, a.Description, Count(b.IdInitiative) as totalProjects
+                        from Initiative a
+                        left join dbo.Project b on a.Id = b.IdInitiative
+                        group by a.id, a.Name, a.Description
+                        order by a.Id
+
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });

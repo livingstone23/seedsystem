@@ -64,8 +64,7 @@
                         <div class="col-md-6 mb-3">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" />
-                      
+                            <MudTextField @bind-Value="Project.AmountDefined" Label="Pay Amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"/>
                         </div>
                     </div>
                
@@ -100,8 +99,8 @@
                  <RowTemplate Context="POSPaysContext">
                      <MudTd DataLabel="Name">@POSPaysContext.DescriptionPOS </MudTd>
                      <MudTd DataLabel="Price">@POSPaysContext.NumberTransfer </MudTd>
-                     <MudTd DataLabel="Quantity">@POSPaysContext.PayAmount </MudTd>
-                     <MudTd DataLabel="Quantity">@POSPaysContext.PayDay </MudTd>
+                     <MudTd DataLabel="Quantity" Style="text-align:center">@POSPaysContext.PayAmount.ToString("C") </MudTd>
+                     <MudTd DataLabel="Day">@POSPaysContext.PayDay</MudTd>
                  </RowTemplate>
              </MudTable>
         }

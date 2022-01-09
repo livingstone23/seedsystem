@@ -11,56 +11,73 @@
 @using iText.Layout
 @using iText.Layout.Element
 @inject IJSRuntime jsRuntime;
-<p>@Message</p>
+@inject ISnackbar Snackbar
 
-@if (Initiatives != null && Initiatives.Any())
-{   <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
-     <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
-     <MudTable Items="@Initiatives" Hover="true" Breakpoint="Breakpoint.Sm">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Initiatives</MudText>
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+    
+         <MudTable ServerData="@(new Func<TableState, Task<TableData<Initiative>>>(LoadTodos))"   Hover="true"  @ref="table">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudSpacer />
+
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    
             
-            <MudSpacer />
-            
-            <MudFab OnClick="@(NewInitiative)"
-                    Color="Color.Primary"
-                    Icon="@Icons.Material.Filled.Add"
-                    Size="Size.Small"
-                    IconSize="Size.Small">
-            </MudFab>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Total Projects</MudTh>
+                <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                    <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
+                </MudMenu>
+
+                <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
+                    <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+                    <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+                </MudMenu>
+
+            </ToolBarContent>
+
+             <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="id_field" T="Initiative">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="name_field" T="Initiative">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="des_field" T="Initiative">Description</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="tot_field" T="Initiative">Total Projects</MudTableSortLabel></MudTh>
+                
+                <MudTh></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Desc">@context.Name</MudTd>
+                <MudTd DataLabel="Nrmt">@context.Description</MudTd>
+                <MudTd DataLabel="Tto">@context.TotalProjects</MudTd>
            
-            <MudTh></MudTh>
-            <MudTh></MudTh>
-        </HeaderContent>
-        <RowTemplate Context="InitiativeContext">
-            <MudTd DataLabel="Name">@InitiativeContext.Name</MudTd>
-            <MudTd DataLabel="Description">@InitiativeContext.Description</MudTd>
-            <MudTd DataLabel="Total">@InitiativeContext.Projects.Count().ToString()</MudTd>
-           
-            <MudTd DataLabel="">
-                <MudFab OnClick="@(() => Edit(InitiativeContext.Id))"
-                        Color="Color.Primary"
-                        Icon="@Icons.Material.Filled.Edit"
-                        Size="Size.Small"
-                        IconSize="Size.Small">
-                </MudFab>
-            </MudTd>
-            <MudTd DataLabel="">
-                <MudFab OnClick="@(() => Delete(InitiativeContext.Id))"
-                        Color="Color.Secondary"
-                        Icon="@Icons.Material.Filled.Delete"
-                        Size="Size.Small"
-                        IconSize="Size.Small">
-                </MudFab>
-            </MudTd>
-        </RowTemplate>
-     </MudTable>
-}
+                <MudTd>
+                    <MudFab OnClick="@(() => Edit(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+                <MudTd>
+                    <MudFab OnClick="@(() => Delete(context.Id))"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+            </PagerContent>
+
+         </MudTable>
+     </MudItem>
+</MudGrid>
 
 
 @code {
@@ -69,18 +86,70 @@
     public string Message { get; set; }
     public string excel = "";
     public string pdf = "";
-    protected async override Task OnInitializedAsync()
-    {
-        try
-        {
-            Initiatives = (List<Initiative>)await InitiativeService.GetInitiatives();
-        }
-        catch (Exception e)
-        {
 
-            Message = "Error... " + e.Message;
-        }
+    private int[] pageSizeOptions = new int[] { 5, 10, 15 };
+
+    private MudTable<Initiative> table;
+
+    private IEnumerable<Initiative> DataPrint = new List<Initiative>();
+
+    private string searchString = null;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        table.SetRowsPerPage(5);
+        return base.OnAfterRenderAsync(firstRender);
     }
+
+    public async Task<TableData<Initiative>> LoadTodos(TableState state)
+    {
+
+
+        var response = await InitiativeService.GetByPagination((state.Page + 1), state.PageSize);
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.TotalProjects}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        //totalItems = data.Count();
+        switch (state.SortLabel)
+        {
+            case "id_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Id);
+                break;
+            case "name_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Name);
+                break;
+            case "des_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Description);
+                break;
+            case "tot_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.TotalProjects);
+                break;
+        }
+
+
+        DataPrint = response.Data;
+
+        return new TableData<Initiative>() { Items = response.Data, TotalItems = response.TotalRecords };
+    }
+
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+
 
     protected async Task Edit(int id)
     {
@@ -89,8 +158,18 @@
 
     protected async Task Delete(int id)
     {
-        //await OrderService.DeleteOrder(id);
-        //Orders.RemoveAll(p => p.Id == id);
+        Initiative initiativefound = new Initiative();
+        initiativefound = DataPrint.Where(a => a.Id == id).FirstOrDefault();
+        if (initiativefound.TotalProjects > 0)
+        {
+            Snackbar.Add("You can only delete Initiative without projects", MudBlazor.Severity.Error, a => a.VisibleStateDuration = 350);
+            return;
+        }
+        await InitiativeService.DeleteInitiative(id);
+        table.ReloadServerData();
+        Snackbar.Add("The Initiative has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+
+
     }
 
     protected async Task NewInitiative()
@@ -102,10 +181,15 @@
         {
             var Initiative = (Initiative)result.Data;
             if (Initiative.Name != null)
+            {
                 await  InitiativeService.SaveInitiative(Initiative);
+                table.ReloadServerData();
+            }
         }
-        Initiatives = (List<Initiative>)await InitiativeService.GetInitiatives();
+
     }
+
+
     public void exportarPdf()
     {
         using (MemoryStream ms = new MemoryStream())
