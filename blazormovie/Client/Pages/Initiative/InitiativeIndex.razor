@@ -159,8 +159,10 @@
 
     protected async Task Edit(int id)
     {
-        //        NavigationManager.NavigateTo($"/initiativedetails/{id}");
-        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("iIniId",id);
+        var dialog = DialogService.Show<InitiativeModal>("Edit Initiative",oParam,null);
         
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
         

@@ -58,7 +58,8 @@
     bool success;
 
     string[] errors = { };
-
+    [Parameter] 
+    public int iProjectId { get; set; }
     OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
 
 
@@ -107,6 +108,11 @@
         {
             //Controlamos que al cargar la ventana modal, se seleccione un id de iniciativa si existe
             initiatives = await InitiativeService.GetInitiatives();
+            //Comprobamos si hemos recibido parametros y cargamos la vista para editar
+            if(iProjectId != 0)
+            {
+                Project = await ProjectService.GetById(iProjectId);
+            }
             if (Project.IdInitiative == 0)
             {
                 if (initiatives.FirstOrDefault() != null)
