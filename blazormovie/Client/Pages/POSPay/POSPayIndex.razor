@@ -322,7 +322,7 @@
                 await ProjectService.SaveProject(Project);
                 Snackbar.Add("The Project has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
-            
+
         }
 
     }
@@ -355,7 +355,21 @@
 
     protected async Task Edit(int id)
     {
-        return;
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+            {
+                pOSPay.Id = id;
+                await  POSPayService.SavePOSPay(pOSPay);
+                Snackbar.Add("PO has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+                table.ReloadServerData();
+            }
+        }
     }
 
 
