@@ -172,7 +172,7 @@
                 Initiative.Id = id;
                 await  InitiativeService.SaveInitiative(Initiative);
                 table.ReloadServerData();
-                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+                Snackbar.Add("Initiative has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
         }
     }

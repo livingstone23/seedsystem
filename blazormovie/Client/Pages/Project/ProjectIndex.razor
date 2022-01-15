@@ -173,7 +173,21 @@
 
     protected async Task Edit(int id)
     {
-        NavigationManager.NavigateTo($"/projectdetail/{id}");
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+            {
+                Project.Id = id;
+                await ProjectService.SaveProject(Project);
+                table.ReloadServerData();
+                Snackbar.Add("Project has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
     }
 
     protected async Task Delete(int id)

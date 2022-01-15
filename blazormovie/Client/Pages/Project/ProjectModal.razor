@@ -54,11 +54,11 @@
 
 
 @code {
-    
+
     bool success;
-    
+
     string[] errors = { };
-    
+
     OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
 
 
@@ -105,7 +105,16 @@
     {
         try
         {
+            //Controlamos que al cargar la ventana modal, se seleccione un id de iniciativa si existe
             initiatives = await InitiativeService.GetInitiatives();
+            if (Project.IdInitiative == 0)
+            {
+                if (initiatives.FirstOrDefault() != null)
+                {
+                    Project.IdInitiative = initiatives.FirstOrDefault().Id;
+                }
+            }
+
         }
         catch(Exception e)
         {
