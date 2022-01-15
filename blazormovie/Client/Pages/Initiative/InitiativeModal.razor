@@ -24,7 +24,7 @@
 
                  </div>
          </EditForm>
-
+         
 
     </DialogContent>
 
@@ -37,12 +37,13 @@
 @code {
 
     bool success;
-    
+
     string[] errors = { };
 
     public Initiative Initiative = new Initiative();
 
     public string Message  { get; set; }
+
 
     [CascadingParameter] 
     MudDialogInstance MudDialog {get;set;}

@@ -159,7 +159,22 @@
 
     protected async Task Edit(int id)
     {
-        NavigationManager.NavigateTo($"/initiativedetails/{id}");
+        //        NavigationManager.NavigateTo($"/initiativedetails/{id}");
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+            {
+                Initiative.Id = id;
+                await  InitiativeService.SaveInitiative(Initiative);
+                table.ReloadServerData();
+                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
     }
 
     protected async Task Delete(int id)
