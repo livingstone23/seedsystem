@@ -24,7 +24,7 @@
 
                  </div>
          </EditForm>
-
+         
 
     </DialogContent>
 
@@ -37,12 +37,14 @@
 @code {
 
     bool success;
-    
+
     string[] errors = { };
 
     public Initiative Initiative = new Initiative();
 
     public string Message  { get; set; }
+    [Parameter]
+    public int iIniId{ get; set; }
 
     [CascadingParameter] 
     MudDialogInstance MudDialog {get;set;}
@@ -51,8 +53,11 @@
     {
         try
         {
-                     
-            
+            if (iIniId != 0)
+            {
+                Initiative = await InitiativeService.GetById(iIniId);
+            }
+
 
         }
         catch(Exception e)

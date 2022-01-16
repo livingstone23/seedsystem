@@ -173,7 +173,24 @@
 
     protected async Task Edit(int id)
     {
-        NavigationManager.NavigateTo($"/projectdetail/{id}");
+        //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("iProjectId",id);
+        var dialog = DialogService.Show<ProjectModal>("Edit Project",oParam,null);
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+            {
+                Project.Id = id;
+                await ProjectService.SaveProject(Project);
+                table.ReloadServerData();
+                Snackbar.Add("Project has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
     }
 
     protected async Task Delete(int id)

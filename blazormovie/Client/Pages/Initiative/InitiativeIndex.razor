@@ -159,7 +159,24 @@
 
     protected async Task Edit(int id)
     {
-        NavigationManager.NavigateTo($"/initiativedetails/{id}");
+        //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("iIniId",id);
+        var dialog = DialogService.Show<InitiativeModal>("Edit Initiative",oParam,null);
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+            {
+                Initiative.Id = id;
+                await  InitiativeService.SaveInitiative(Initiative);
+                table.ReloadServerData();
+                Snackbar.Add("Initiative has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
     }
 
     protected async Task Delete(int id)
