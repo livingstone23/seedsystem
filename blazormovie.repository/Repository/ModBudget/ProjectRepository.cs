@@ -34,15 +34,27 @@ namespace blazormovie.repository.Repository.ModBudget
             int skip = (currentPageNumber - 1) * pageSize;
             int take = pageSize;
 
-            var sql = @"SELECT 
-                        COUNT(*)
-                        FROM Project
+            //var sql = @"SELECT 
+            //            COUNT(*)
+            //            FROM Project
 
-                        Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, Count(b.IdProject) as TotalPays
-                        from dbo.Project a
-                        left join dbo.POSPay b on a.id = b.IdProject
-                        group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject
-                        order by a.Id
+            //            Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, Count(b.IdProject) as TotalPays
+            //            from dbo.Project a
+            //            left join dbo.POSPay b on a.id = b.IdProject
+            //            group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject
+            //            order by a.Id
+            //            OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";            
+
+            var sql = @"SELECT 
+	                    COUNT(*)
+	                    FROM Project
+
+	                    Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative,ini.Name as InitiativeName, Count(b.IdProject) as TotalPays
+	                    from dbo.Project a
+	                    left join dbo.POSPay b on a.id = b.IdProject
+	                    left join dbo.Initiative ini on a.IdInitiative = ini.Id
+	                    group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject, ini.Name
+	                    order by a.Id
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });

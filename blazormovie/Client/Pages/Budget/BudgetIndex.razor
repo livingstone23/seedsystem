@@ -88,11 +88,11 @@
             <RowTemplate Context="BudgetContext">
                 <MudTd DataLabel="Initiative">@BudgetContext.InitiativeName</MudTd>
                 <MudTd DataLabel="Project">@BudgetContext.NameProject</MudTd>
-                <MudTd DataLabel="AmountInvoiced" Style="text-align:right">@BudgetContext.AmountInvoiced.ToString("C")</MudTd>
-                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.POSreceived.ToString("C")</MudTd>
-                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.Balance.ToString("C")</MudTd>
-                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.Adjustment.ToString("C")</MudTd>
-                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.FinalBalance.ToString("C")</MudTd>
+                <MudTd DataLabel="AmountInvoiced" Style="text-align:right">@BudgetContext.AmountInvoiced.ToString("N2") €</MudTd>
+                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.POSreceived.ToString("N2") €</MudTd>
+                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.Balance.ToString("N2") €</MudTd>
+                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.Adjustment.ToString("N2") €</MudTd>
+                <MudTd DataLabel="POsReceived" Style="text-align:right">@BudgetContext.FinalBalance.ToString("N2") €</MudTd>
                 <MudTd DataLabel="POsReceived">@BudgetContext.Notes.ToString()</MudTd>
 
             </RowTemplate>
