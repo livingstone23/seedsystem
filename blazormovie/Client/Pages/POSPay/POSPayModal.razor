@@ -47,7 +47,7 @@
 
                         <MudDatePicker Label="Day of PO" @bind-Date="POSPay.PayDay"  DateFormat="dd/MM/yyyy" />
                         
-                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.PayAmount)"/>
+                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.PayAmount)"/>
 
 
                          <MudCheckBox T="bool" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
