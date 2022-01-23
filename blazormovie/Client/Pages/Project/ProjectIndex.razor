@@ -64,7 +64,7 @@
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Desc">@context.Name</MudTd>
             <MudTd DataLabel="Nrmt">@context.Description</MudTd>
-            <MudTd DataLabel="Pay"  Style="text-align:center">@context.AmountDefined.ToString("C")</MudTd>
+            <MudTd DataLabel="Pay"  Style="text-align:center">@context.AmountDefined.ToString("N2") €</MudTd>
             <MudTd DataLabel="Tto">@context.TotalPays</MudTd>
             <MudTd>
                 <MudFab OnClick="@(() => Edit(context.Id))"

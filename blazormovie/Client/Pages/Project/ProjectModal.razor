@@ -34,7 +34,7 @@
 					            }
 				            </InputSelect>
 								
-				            <MudNumericField Label="Amount Defined" @bind-Value="@Project.AmountDefined" For="(() => Project.AmountDefined)" Validation=@(orderDetailsValidator.ValidateValue) />				
+				            <MudNumericField Label="Amount Defined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" @bind-Value="@Project.AmountDefined" For="(() => Project.AmountDefined)" Validation=@(orderDetailsValidator.ValidateValue)/>				
 
                     </MudCardContent>
                     <MudCardActions>

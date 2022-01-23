@@ -29,7 +29,8 @@ namespace blazormovie.Shared.SeedEntities
 
         [NotMapped]
         public int TotalPays { get; set; }
-
+        [NotMapped]
+        public string InitiativeName { get; set; }
         public List<POSPay> POSPays { get; set; }
 
     }
