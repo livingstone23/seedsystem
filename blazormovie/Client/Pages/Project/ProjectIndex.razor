@@ -56,6 +56,7 @@
             <MudTh><MudTableSortLabel SortLabel="des_field" T="Project">Description</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="amo_field" T="Project">Amount Defined</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="tot_field" T="Project">Number of POs</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="iniName_field" T="Project">Initiative</MudTableSortLabel></MudTh>
             <MudTh></MudTh>
             <MudTh></MudTh>
         </HeaderContent>
@@ -64,8 +65,9 @@
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Desc">@context.Name</MudTd>
             <MudTd DataLabel="Nrmt">@context.Description</MudTd>
-            <MudTd DataLabel="Pay"  Style="text-align:center">@context.AmountDefined.ToString("C")</MudTd>
+            <MudTd DataLabel="Pay"  Style="text-align:center">@context.AmountDefined.ToString("N2") €</MudTd>
             <MudTd DataLabel="Tto">@context.TotalPays</MudTd>
+            <MudTd DataLabel="Ini">@context.InitiativeName</MudTd>
             <MudTd>
                 <MudFab OnClick="@(() => Edit(context.Id))"
                         Color="Color.Primary"
@@ -156,6 +158,9 @@
                 break;
             case "tot_field":
                 response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.TotalPays);
+                break; 
+            case "iniName_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.InitiativeName);
                 break;
         }
 

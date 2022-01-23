@@ -115,19 +115,28 @@
 
             POSPay = new POSPay() { RateChange = 1, CurrencyPay = "EURO", PayDay = DateTime.Now , IdPOSPaysAdjust = null};
             initiatives = await InitiativeService.GetInitiatives();
+            Projects = await ProjectService.GetProjects();
             POSPayAdjust = await POSPayService.GetPOSPays();
             if(iPoId != 0)
             {
                 POSPay = await POSPayService.GetById(iPoId);
-
+                Projects = await ProjectService.GetByInitiative(POSPay.IdInitiative);
             }
 
-            if (initiatives != null && initiatives.Any())
+            //if (initiatives != null && initiatives.Any())
+            //{
+            //    POSPay.IdInitiative = initiatives.FirstOrDefault().Id;
+
+            //    await LoadProjects(POSPay.IdInitiative);
+            //}
+            if (POSPay.IdInitiative == 0)
             {
-                POSPay.IdInitiative = initiatives.FirstOrDefault().Id;
-           
-                await LoadProjects(POSPay.IdInitiative);
+                if(initiatives.FirstOrDefault()!= null)
+                {
+                    POSPay.IdInitiative = initiatives.FirstOrDefault().Id;
+                }
             }
+      
 
         }
         catch(Exception e)
