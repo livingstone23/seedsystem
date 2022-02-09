@@ -60,7 +60,7 @@
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="Desc">@context.DescriptionPOS</MudTd>
             <MudTd DataLabel="Nrmt">@context.NumberTransfer</MudTd>
-            <MudTd DataLabel="Pay" Style="text-align:center">@context.PayAmount.ToString("C")</MudTd>
+            <MudTd DataLabel="Pay" Style="text-align:center">@context.PayAmount.ToString("N2") €</MudTd>
             <MudTd DataLabel="Day">@context.PayDay.ToShortDateString()</MudTd>
             <MudTd DataLabel="Init">@context.InitiativeName</MudTd>
             <MudTd DataLabel="Proj">@context.ProjectName</MudTd>
