@@ -22,6 +22,6 @@ namespace blazormovie.Shared.SeedEntities
 
         public decimal FinalBalance { get; set; }
 
-        public string Notes { get; set; }
+        public string Notes { get; set; } 
     }
 }

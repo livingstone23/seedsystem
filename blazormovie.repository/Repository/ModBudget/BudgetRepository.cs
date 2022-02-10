@@ -74,7 +74,7 @@ namespace blazormovie.repository.Repository.ModBudget
                         on rem2.IdInitiative = b.IdInitiative and rem2.IdProject = b.IdProject
 
 
-                        Select rem2.InitiativeName, rem2.NameProject, rem2.AmountInvoiced, rem2.POsReceived, rem2.Balance, rem2.Adjustment, rem2.FinalBalance, b.Notes 
+                        Select rem2.InitiativeName, rem2.NameProject, rem2.AmountInvoiced, rem2.POsReceived, rem2.Balance, rem2.Adjustment, rem2.FinalBalance,  isnull(b.Notes,' ') as Notes
                         from 
                         (
                         Select	a.Id as IdInitiative,

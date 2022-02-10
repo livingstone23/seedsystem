@@ -15,11 +15,11 @@ namespace blazormovie.Shared.SeedEntities
 
         [Column("Name")]
         [Required(ErrorMessage = @" The {0} is a required field.  ")]
-        [MaxLength(30, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
+        [MaxLength(100, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
         public string Name { get; set; }
 
         [Column("Description")]
-        [MaxLength(256, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
+        [MaxLength(500, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
         public string Description { get; set; }
 
         [NotMapped]
