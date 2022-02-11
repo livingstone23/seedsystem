@@ -44,7 +44,7 @@ namespace blazormovie.repository.Repository.ModBudget
                         from Initiative a
                         left join dbo.Project b on a.Id = b.IdInitiative
                         group by a.id, a.Name, a.Description
-                        order by a.Id
+                        order by a.Id Desc
 
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 

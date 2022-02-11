@@ -111,7 +111,7 @@ namespace blazormovie.repository.Repository.ModBudget
                         group by IdInitiative, IdProject
                         ) b
                         on rem2.IdInitiative = b.IdInitiative and rem2.IdProject = b.IdProject
-                        ORDER BY rem2.IdInitiative, rem2.IdProject
+                        ORDER BY rem2.IdInitiative, rem2.IdProject Desc
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });

@@ -42,7 +42,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
                         Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust 
                         from POSPay
-                        ORDER BY Id
+                        ORDER BY Id Desc
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
@@ -72,7 +72,7 @@ namespace blazormovie.repository.Repository.ModBudget
                         from POSPay a
                         left join Project b   on a.IdProject  = b.Id
                         left join Initiative c on a.IdInitiative  = c.Id
-                        ORDER BY a.Id
+                        ORDER BY a.Id Desc
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });

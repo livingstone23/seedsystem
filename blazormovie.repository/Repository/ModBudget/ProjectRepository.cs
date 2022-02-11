@@ -54,7 +54,7 @@ namespace blazormovie.repository.Repository.ModBudget
 	                    left join dbo.POSPay b on a.id = b.IdProject
 	                    left join dbo.Initiative ini on a.IdInitiative = ini.Id
 	                    group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject, ini.Name
-	                    order by a.Id
+	                    order by a.Id Desc
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
