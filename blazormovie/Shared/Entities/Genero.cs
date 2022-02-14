@@ -15,6 +15,8 @@ namespace blazormovie.Shared.Entities
         public string Nombre { get; set; }
 
         public List<GeneroPelicula> GeneroPeliculas { get; set; }
+        
+        public string Descripcion { get; set; }
 
     }
 }
