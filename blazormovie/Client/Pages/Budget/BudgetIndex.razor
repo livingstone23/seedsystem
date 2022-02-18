@@ -21,7 +21,7 @@
 
 
 <MudGrid>
-    <MudItem xs="12" sm="6" md="4">
+   @* <MudItem xs="12" sm="6" md="4">
         <MudPaper  Class="d-flex flex-row pt-6 pb-4" Style="height:100px;">
             <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:54px; height:54px;"></MudIcon>
             <div>
@@ -47,7 +47,7 @@
                 <MudText Typo="Typo.h5">12%</MudText>
             </div>
         </MudPaper>
-    </MudItem>
+    </MudItem>*@
 
     <MudItem xs="12" sm="12" md="12">
         <MudTable ServerData="@(new Func<TableState, Task<TableData<BudgetDTO>>>(LoadTodos))"   Hover="true"  @ref="table">
@@ -111,7 +111,9 @@
 @code {
 
 
-    private int[] pageSizeOptions = new int[] { 25, 35, 50 };
+    //private int[] pageSizeOptions = new int[] { 25, 35, 50 };
+    private int[] pageSizeOptions = new int[] { 15 };
+
 
     private MudTable<BudgetDTO> table;
     private IEnumerable<BudgetDTO> DataPrint = new List<BudgetDTO>();
@@ -122,7 +124,7 @@
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        table.SetRowsPerPage(25);
+        table.SetRowsPerPage(15);
         return base.OnAfterRenderAsync(firstRender);
     }
 

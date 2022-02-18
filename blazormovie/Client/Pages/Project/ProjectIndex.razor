@@ -109,7 +109,8 @@
 
 
 
-    private int[] pageSizeOptions = new int[] { 5, 10, 15 };
+    //private int[] pageSizeOptions = new int[] { 5, 10, 15 };
+    private int[] pageSizeOptions = new int[] { 15 };
 
     private MudTable<Project> table;
 
@@ -119,7 +120,7 @@
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        table.SetRowsPerPage(5);
+        table.SetRowsPerPage(15);
         return base.OnAfterRenderAsync(firstRender);
     }
 
