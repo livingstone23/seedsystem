@@ -1,7 +1,6 @@
 ﻿using blazormovie.repository.Interface.ModBudget;
 using blazormovie.Shared.SeedEntities;
 using Dapper;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -61,7 +60,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<Initiative> GetById(int id)
         {
-            var sql = @"Select Id, Name, Description
+            var sql = @"Select Id, Name,  isNull(Description,'') as Description 
                         From Initiative
                         Where  Id = @Id ";
 

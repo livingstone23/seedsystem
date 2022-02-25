@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace blazormovie.Shared.SeedEntities
 {
-    public class Initiative
+    public  class Client
     {
         [Key]
         public int Id { get; set; }
@@ -17,10 +16,6 @@ namespace blazormovie.Shared.SeedEntities
         [Column("Description")]
         [MaxLength(500, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
         public string Description { get; set; }
-
-        [NotMapped]
-        public int TotalProjects { get; set; }
-        public List<Project> Projects { get; set; }
 
     }
 }

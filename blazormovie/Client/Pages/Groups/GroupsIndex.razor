@@ -1,0 +1,134 @@
+﻿@page "/group"
+@inject IGroupsService GroupService
+@inject NavigationManager NavigationManager
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+    
+         <MudTable ServerData="@(new Func<TableState, Task<TableData<Group>>>(LoadTodos))"   Hover="true"  @ref="table">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudSpacer />
+
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    
+            
+                <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                   
+                </MudMenu>
+
+                <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
+                   
+                </MudMenu>
+
+            </ToolBarContent>
+
+             <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="id_field" T="Initiative">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="name_field" T="Initiative">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="des_field" T="Initiative">Description</MudTableSortLabel></MudTh>
+
+                
+                <MudTh></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Desc">@context.Name</MudTd>
+                <MudTd DataLabel="Nrmt">@context.Description</MudTd>
+             
+           
+                <MudTd>
+                   
+                </MudTd>
+                <MudTd>
+                   
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+            </PagerContent>
+
+         </MudTable>
+     </MudItem>
+</MudGrid>
+
+
+
+
+
+
+
+
+
+
+@code {
+
+    public List<Group> Groups;
+    public string Message { get; set; }
+    public string excel = "";
+    public string pdf = "";
+
+    private int[] pageSizeOptions = new int[] { 15 };
+
+    private MudTable<Group> table;
+
+    private IEnumerable<Group> DataPrint = new List<Group>();
+
+    private string searchString = null;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        table.SetRowsPerPage(15);
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task<TableData<Group>> LoadTodos(TableState state)
+    {
+
+
+        var response = await GroupService.GetByPagination((state.Page + 1), state.PageSize);
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            
+            return false;
+        }).ToArray();
+    //totalItems = data.Count();
+        switch (state.SortLabel)
+        {
+            case "id_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Id);
+                break;
+            case "name_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Name);
+                break;
+            case "des_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Description);
+                break;
+
+        }
+
+
+        DataPrint = response.Data;
+
+        return new TableData<Group>() { Items = response.Data, TotalItems = response.TotalRecords };
+    }
+
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+}

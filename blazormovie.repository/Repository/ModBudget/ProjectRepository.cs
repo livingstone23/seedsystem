@@ -49,7 +49,7 @@ namespace blazormovie.repository.Repository.ModBudget
 	                    COUNT(*)
 	                    FROM Project
 
-	                    Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative,ini.Name as InitiativeName, Count(b.IdProject) as TotalPays
+	                    Select a.id, a.Name, isnull(a.Description, '') as Description , a.AmountDefined, a.IdInitiative,ini.Name as InitiativeName, Count(b.IdProject) as TotalPays
 	                    from dbo.Project a
 	                    left join dbo.POSPay b on a.id = b.IdProject
 	                    left join dbo.Initiative ini on a.IdInitiative = ini.Id
@@ -70,7 +70,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
             public async Task<Project> GetById(int id)
         {
-            var sql = @" Select Id, Name, Description, AmountDefined, IdInitiative 
+            var sql = @" Select Id, Name, isnull(Description,'') as Description, AmountDefined, IdInitiative 
                          From Project
                          Where  Id = @Id     ";
 
@@ -80,7 +80,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async  Task<IEnumerable<Project>> GetByInitiative(int initiativeid)
         {
-            var sql = @"Select Id, Name, Description, AmountDefined, IdInitiative 
+            var sql = @"Select Id, Name, isnull(Description,'') as Description, AmountDefined, IdInitiative 
                         From Project
                         Where  IdInitiative = @Id ";
 
