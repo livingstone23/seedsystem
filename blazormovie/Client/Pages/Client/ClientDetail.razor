@@ -1,0 +1,165 @@
+﻿@page "/clientDetail/{id:int}"
+@inject IClientService ClientService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+
+@if (Client != null)
+{
+
+    <EditForm Model="@Client">
+
+        <div class="card">
+            <h5 class="card-header">Groups by Client</h5>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <input type="button" class="btn btn-secondary" value="Add Group" @onclick="AddGroup"/>
+                            <input type="submit" class="btn btn-secondary" value="Save Groups" @onclick="SaveGroups"/>
+                             
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Client</label>
+                            <InputText class="form-control" @bind-Value="@Client.Name" readonly="readonly" />
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="">Description</label>
+                            <InputText class="form-control" @bind-Value="@Client.Description" readonly="readonly" />
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @if (Client.Groups != null && Client.Groups.Any())
+        {
+
+            <MudTable Items="@Client.Groups" Hover = "true" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudText typeof="Typo.h6">Groups</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Description</MudTh>
+                 
+                </HeaderContent>
+                <RowTemplate Context="GroupContext">
+                    <MudTd DataLabel="Name">@GroupContext.Name </MudTd>
+                    <MudTd DataLabel="Price">@GroupContext.Description </MudTd>
+                  
+                    <MudTd DataLabel="">
+                        <MudFab OnClick="@(() => RemoveProduct(GroupContext.Id))"
+                                Color="Color.Secondary"
+                                Icon="@Icons.Material.Filled.Delete"
+                                IconSize="Size.Small">
+
+                        </MudFab>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+
+
+    </EditForm>
+
+
+
+}
+
+@code {
+
+    public Client Client;
+    public string Message { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+
+            if (id > 0)
+            {
+                Client = await ClientService.GetById(id);
+                //Client.Groups = new List<Group>();
+            }
+
+        }
+        catch (Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+
+    }
+
+    protected async Task SaveGroups()
+    {
+        await ClientService.Save(Client);
+        NavigateToHome();
+    }
+
+    protected async Task AddGroup()
+    {
+        var dialog = DialogService.Show<ClientsWithGroup>("Group by Client");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var group = (Group)result.Data;
+
+            if (Client != null && group != null)
+            {
+                Client.Groups.Add(group);
+            }
+        }
+    }
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/client");
+    }
+
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
+
+    protected async Task RemoveProduct(int groupId)
+    {
+        Client.Groups.RemoveAll(p => p.Id == groupId);
+    }
+
+}

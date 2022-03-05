@@ -1,13 +1,17 @@
 ﻿@page "/client"
 @inject IClientService ClientService
+@inject IGroupsService groupsService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
 
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
     
         <MudTable ServerData="@(new Func<TableState, Task<TableData<Client>>>(LoadTodos))"   Hover="true"  @ref="table">
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudText Typo="Typo.h6">Clients</MudText>
                 <MudSpacer />
 
                 <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
@@ -15,7 +19,7 @@
     
             
                 <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
-                   
+                    <MudMenuItem OnClick="@(NewClient)" >New Client</MudMenuItem>
                 </MudMenu>
 
                 <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
@@ -41,10 +45,31 @@
              
            
                 <MudTd>
-                   
+                    <MudFab OnClick="@(() => Edit(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
                 </MudTd>
+                
+
                 <MudTd>
-                   
+                    <MudFab OnClick="@(() => GroupsByClient(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.AddToQueue"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+
+                <MudTd>
+                    <MudFab OnClick="@(() => Delete(context.Id))"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
                 </MudTd>
             </RowTemplate>
 
@@ -83,6 +108,7 @@
 
         var response = await ClientService.GetByPagination((state.Page + 1), state.PageSize);
 
+
         response.Data = response.Data.Where(element =>
         {
             if (string.IsNullOrWhiteSpace(searchString))
@@ -120,6 +146,74 @@
     {
         searchString = text;
         table.ReloadServerData();
+    }
+
+    protected async Task Edit(int id)
+    {
+    //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("clientId",id);
+        var dialog = DialogService.Show<ClientModal>("Edit Client",oParam,null);
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Client = (Client)result.Data;
+            if (Client.Name != null)
+            {
+                Client.Id = id;
+                await  ClientService.Save(Client);
+                table.ReloadServerData();
+                Snackbar.Add("Client has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+    protected async Task Delete(int id)
+    {
+        Client clientfound = new Client();
+        clientfound = DataPrint.Where(a => a.Id == id).FirstOrDefault();
+
+
+        Client ClientToDelete =  await ClientService.GetById(clientfound.Id);
+
+        if (ClientToDelete.Groups.Count > 0)
+        {
+            Snackbar.Add($"The Client can't been deleted, Cause it has  {ClientToDelete.Groups.Count} Groups asigned. ", MudBlazor.Severity.Warning, a => a.VisibleStateDuration = 550);
+        }
+        else
+        {
+            await ClientService.Delete(id);
+            table.ReloadServerData();
+            Snackbar.Add("The Client has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+        }
+
+        
+
+    }
+
+    protected async Task NewClient()
+    {
+        var dialog = DialogService.Show<ClientModal>("New Client");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Client = (Client)result.Data;
+            if (Client.Name != null)
+            {
+                await  ClientService.Save(Client);
+                table.ReloadServerData();
+                Snackbar.Add("The Client has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+
+    protected async Task GroupsByClient(int id)
+    {
+        NavigationManager.NavigateTo($"/clientdetail/{id}");
     }
 
 

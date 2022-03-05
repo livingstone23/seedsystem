@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Data;
 using System.Text;
+using blazormovie.Client.Services.Interface.ModBudget;
 
 namespace blazormovie.Server
 {
@@ -73,17 +74,30 @@ namespace blazormovie.Server
             services.AddScoped<IBudgetRepository, BudgetRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IGroupsRepository, GroupsRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IInitiaiveRepository, InitiativeRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IPOSPayRepository, POSPayRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            //1.1 Habilitar Swagger
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            //1.2 Habilitar Swagger
+            app.UseSwaggerUI();
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -95,6 +109,9 @@ namespace blazormovie.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //1.3 Habilitar Swagger
+            app.UseSwagger();
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();

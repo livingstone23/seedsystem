@@ -10,12 +10,12 @@ using Dapper;
 
 namespace blazormovie.repository.Repository.ModBudget
 {
-    public class GroupRepository: IGroupsRepository
+    public class GroupsRepository: IGroupsRepository
     {
 
         private readonly IDbConnection _dbConnection;
 
-        public GroupRepository(IDbConnection dbConnection)
+        public GroupsRepository(IDbConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
@@ -63,7 +63,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<Group> GetById(int id)
         {
-            var sql = @"Select Id, Name, Description
+            var sql = @"Select Id, Name, isNull(Description,'') as Description
                         From Groups
                         Where  Id = @Id ";
 

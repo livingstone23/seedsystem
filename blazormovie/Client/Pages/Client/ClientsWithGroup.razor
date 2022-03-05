@@ -1,0 +1,89 @@
+﻿@inject IGroupsService GroupsService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+<TitleContent>
+    Product Details
+</TitleContent>
+
+<DialogContent>
+    <EditForm Model="@Group">
+        
+        <div class="row">  
+                            
+            <div class="col-md-8">
+                <label for="">Groups</label>
+        
+                <InputSelect class="form-control" 
+                             Value="@Group.Id"
+                             ValueChanged="@((int id)=> GroupHasChanged(id))"
+                             ValueExpression="@(() => Group.Id)"
+                >
+                    @foreach (var item in Groups)
+                    {
+                        <option value ="@item.Id">@item.Name</option>    
+                    }
+                </InputSelect>
+        
+            </div>
+
+           
+        </div>
+
+    </EditForm>
+</DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddProduct">Add</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    Group Group = new Group();
+    public string Message { get; set; }
+    public IEnumerable<Group> Groups = new List<Group>();
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Groups = await GroupsService.Get();
+            
+        }
+        catch (Exception ex)
+        {
+            Message = "Error" + ex.Message;
+        }
+    }
+
+
+    protected async Task GroupHasChanged(int groupId)
+    {
+       
+
+        if (groupId > 0)
+            Group =    await GroupsService.GetById(groupId);
+    } 
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+
+    private void AddProduct()
+    {
+        Snackbar.Add("Group added1", Severity.Success, a => a.VisibleStateDuration = 200);
+        MudDialog.Close(DialogResult.Ok(Group));
+    }
+
+
+
+}

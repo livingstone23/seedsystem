@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -45,6 +46,10 @@ namespace blazormovie.Server.Controllers
         {
 
             var client = await _clientRepository.GetById(id);
+            var groups = await _clientRepository.GetGroupsByClient(client.Id);
+            
+            if (client != null)
+                client.Groups = groups.ToList();
 
             return client;
 
@@ -91,6 +96,18 @@ namespace blazormovie.Server.Controllers
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await _clientRepository.Update(client);
+
+                await _clientRepository.DeleteClientGroup(client.Id);
+
+                if (client.Groups != null && client.Groups.Any())
+                {
+                    foreach (var group in client.Groups)
+                    {
+                        await _clientRepository.InsertClientGroup(client.Id, group);
+                    }
+
+
+                }
 
                 scope.Complete();
             }

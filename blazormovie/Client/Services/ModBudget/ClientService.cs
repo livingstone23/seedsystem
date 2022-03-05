@@ -20,17 +20,17 @@ namespace blazormovie.Client.Services.ModBudget
 
         public async Task<IEnumerable<blazormovie.Shared.SeedEntities.Client>> Get()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<blazormovie.Shared.SeedEntities.Client>>($"api/Client");
+            return await _httpClient.GetFromJsonAsync<IEnumerable<blazormovie.Shared.SeedEntities.Client>>($"api/Clients");
         }
 
         public async Task<ClientPagination> GetByPagination(int page, int pagesize)
         {
-            return await _httpClient.GetFromJsonAsync<ClientPagination>($"api/Client/getbypagination/{(page)}/{pagesize}");
+            return await _httpClient.GetFromJsonAsync<ClientPagination>($"api/Clients/getbypagination/{(page)}/{pagesize}");
         }
 
         public async Task<blazormovie.Shared.SeedEntities.Client> GetById(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Client/GetById/{id}");
+            var result = await _httpClient.GetFromJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Clients/GetById/{id}");
             return result;
         }
 
@@ -38,17 +38,17 @@ namespace blazormovie.Client.Services.ModBudget
         {
             if (client.Id == 0)
             {
-                await _httpClient.PostAsJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Client/", client);
+                await _httpClient.PostAsJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Clients/", client);
             }
             else
             {
-                await _httpClient.PutAsJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Client/{client.Id}", client);
+                await _httpClient.PutAsJsonAsync<blazormovie.Shared.SeedEntities.Client>($"api/Clients/{client.Id}", client);
             }
         }
 
         public async Task Delete(int id)
         {
-            await _httpClient.DeleteAsync($"api/Client/{id}");
+            await _httpClient.DeleteAsync($"api/Clients/{id}");
         }
     }
 }

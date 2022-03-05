@@ -26,6 +26,7 @@ namespace blazormovie.repository.Repository.ModBudget
             return await _dbConnection.QueryAsync<Client>(sql, new { });
         }
 
+
         public async Task<PagingResponseModel<List<Client>>> GetClientsByPagination(int currentPageNumber, int pageSize)
         {
             int maxPagSize = 50;
@@ -53,14 +54,16 @@ namespace blazormovie.repository.Repository.ModBudget
             return result;
         }
 
+
         public async Task<Client> GetById(int id)
         {
-            var sql = @"Select Id, Name, isNull(Description,'')
+            var sql = @"Select Id, Name, isNull(Description,'') as Description
                         From Client
                         Where  Id = @Id ";
 
             return await _dbConnection.QueryFirstOrDefaultAsync<Client>(sql, new { Id = id });
         }
+
 
         public async Task<bool> Insert(Client client)
         {
@@ -77,6 +80,7 @@ namespace blazormovie.repository.Repository.ModBudget
             return result > 0;
         }
 
+
         public async Task<bool> Delete(int id)
         {
             var sql = @" Delete from Client Where Id = @Id  ";
@@ -85,6 +89,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
             return result > 0;
         }
+
 
         public async Task<bool> Update(Client client)
         {
@@ -103,6 +108,43 @@ namespace blazormovie.repository.Repository.ModBudget
                 });
 
             return result > 0;
+        }
+
+
+        public async Task<bool> InsertClientGroup(int clientId, Group group)
+        {
+            var sql = @"INSERT INTO ClientGroups( ClientId,  GroupsId)
+                                          VALUES(@clientId, @groupsId)";
+
+
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new
+                {
+                    clientId = clientId,
+                    groupsId = group.Id
+                });
+
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteClientGroup(int clientId)
+        {
+            var sql = @"DELETE FROM ClientGroups 
+                        WHERE clientId = @Id ";
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new { Id = clientId });
+
+            return result > 0;
+        }
+
+        public async Task<IEnumerable<Group>> GetGroupsByClient(int clientId)
+        {
+            var sql = @" Select a.Id, a.Name, a.Description
+                        from Groups a
+                        inner join ClientGroups b  on a.Id = b.GroupsId
+                        Where ClientId = @Id ";
+
+            return await _dbConnection.QueryAsync<Group>(sql, new { Id = clientId });
         }
     }
 }

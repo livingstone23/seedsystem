@@ -25,12 +25,12 @@ namespace blazormovie.Client.Services.ModBudget
 
         public async Task<GroupPagination> GetByPagination(int page, int pagesize)
         {
-            return await _httpClient.GetFromJsonAsync<GroupPagination>($"api/groups/getbypagination/{(page)}/{pagesize}");
+            return await _httpClient.GetFromJsonAsync<GroupPagination>($"api/groups/getbypagination/{page}/{pagesize}");
         }
 
         public async Task<Group> GetById(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<Group>($"api/group/GetById/{id}");
+            var result = await _httpClient.GetFromJsonAsync<Group>($"api/groups/GetById/{id}");
             return result;
         }
 
@@ -38,17 +38,17 @@ namespace blazormovie.Client.Services.ModBudget
         {
             if (group.Id == 0)
             {
-                await _httpClient.PostAsJsonAsync<Group>($"api/Groups/", group);
+                await _httpClient.PostAsJsonAsync<Group>($"api/groups/", group);
             }
             else
             {
-                await _httpClient.PutAsJsonAsync<Group>($"api/Groups/{group.Id}", group);
+                await _httpClient.PutAsJsonAsync<Group>($"api/groups/{group.Id}", group);
             }
         }
 
         public async Task Delete(int id)
         {
-            await _httpClient.DeleteAsync($"api/Groups/{id}");
+            await _httpClient.DeleteAsync($"api/groups/{id}");
         }
     }
 }

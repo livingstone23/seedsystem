@@ -1,13 +1,15 @@
-﻿@page "/group"
-@inject IGroupsService GroupService
+﻿@page "/groups"
+@inject IGroupsService GroupsService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
     
          <MudTable ServerData="@(new Func<TableState, Task<TableData<Group>>>(LoadTodos))"   Hover="true"  @ref="table">
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudText Typo="Typo.h6">Groups</MudText>
                 <MudSpacer />
 
                 <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
@@ -15,7 +17,7 @@
     
             
                 <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
-                   
+                    <MudMenuItem OnClick="@(NewGroup)" >New Group</MudMenuItem>
                 </MudMenu>
 
                 <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
@@ -41,10 +43,20 @@
              
            
                 <MudTd>
-                   
+                    <MudFab OnClick="@(() => Edit(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
                 </MudTd>
                 <MudTd>
-                   
+                    <MudFab OnClick="@(() => Delete(context.Id))"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
                 </MudTd>
             </RowTemplate>
 
@@ -89,8 +101,7 @@
     public async Task<TableData<Group>> LoadTodos(TableState state)
     {
 
-
-        var response = await GroupService.GetByPagination((state.Page + 1), state.PageSize);
+        var response = await GroupsService.GetByPagination((state.Page + 1), state.PageSize);
 
         response.Data = response.Data.Where(element =>
         {
@@ -129,6 +140,57 @@
     {
         searchString = text;
         table.ReloadServerData();
+    }
+
+    protected async Task Edit(int id)
+    {
+    //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("groupId",id);
+        var dialog = DialogService.Show<GroupsModal>("Edit Group",oParam,null);
+        
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+        
+        if(!result.Cancelled)
+        {
+            var Group = (Group)result.Data;
+            if (Group.Name != null)
+            {
+                Group.Id = id;
+                await  GroupsService.Save(Group);
+                table.ReloadServerData();
+                Snackbar.Add("Group has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+    protected async Task Delete(int id)
+    {
+        Group groupfound = new Group();
+        groupfound = DataPrint.Where(a => a.Id == id).FirstOrDefault();
+        
+        await GroupsService.Delete(id);
+        table.ReloadServerData();
+        Snackbar.Add("The Group has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+
+    }
+
+    protected async Task NewGroup()
+    {
+        var dialog = DialogService.Show<GroupsModal>("New Group");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Group = (Group)result.Data;
+            if (Group.Name != null)
+            {
+                await  GroupsService.Save(Group);
+                table.ReloadServerData();
+                Snackbar.Add("The Group has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
     }
 
 }

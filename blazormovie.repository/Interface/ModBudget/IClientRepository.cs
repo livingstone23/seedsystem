@@ -9,6 +9,7 @@ namespace blazormovie.repository.Interface.ModBudget
 {
     public  interface IClientRepository
     {
+
         Task<IEnumerable<Client>> GetAll();
 
         Task<PagingResponseModel<List<Client>>> GetClientsByPagination(int currentPageNumber, int pageSize);
@@ -20,6 +21,11 @@ namespace blazormovie.repository.Interface.ModBudget
 
         Task<bool> Update(Client client);
 
+        Task<bool> InsertClientGroup(int clientId, Group group);
+
+        Task<bool> DeleteClientGroup(int clientId);
+
+        Task<IEnumerable<Group>> GetGroupsByClient(int clientId);
 
     }
 }

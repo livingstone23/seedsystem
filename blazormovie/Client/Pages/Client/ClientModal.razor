@@ -1,0 +1,90 @@
+﻿@inject IClientService ClientService
+@inject ISnackbar Snackbar
+
+<MudDialog> 
+
+    <DialogContent>
+        <EditForm Model="@Client" OnValidSubmit="@OnValidSubmit" >
+            <DataAnnotationsValidator />
+             
+            <div style="max-width: 100%;"> 
+                <MudCard>
+
+                    <MudCardContent>
+                        <MudTextField T="string" @bind-Value="@Client.Name" Label="Name" For="@(() => Client.Name)"/>
+                        <MudTextField T="string" @bind-Value="@Client.Description" Label="Description" For="@(() => Client.Description)"/>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    </MudCardActions>
+
+                </MudCard>
+
+            </div>
+        </EditForm>
+         
+
+    </DialogContent>
+
+</MudDialog>
+
+
+
+
+
+@code {
+
+    bool success;
+
+    string[] errors = { };
+
+    public Client Client = new Client();
+
+    public string Message  { get; set; }
+
+    [Parameter]
+    public int clientId{ get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (clientId != 0)
+            {
+                Client = await ClientService.GetById(clientId);
+            }
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Client added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(Client));
+        }
+    }
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+
+}

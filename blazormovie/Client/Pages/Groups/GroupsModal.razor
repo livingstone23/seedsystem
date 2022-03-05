@@ -1,0 +1,86 @@
+﻿@inject IGroupsService GroupsService
+@inject ISnackbar Snackbar
+
+<MudDialog> 
+
+    <DialogContent>
+        <EditForm Model="@Groups" OnValidSubmit="@OnValidSubmit" >
+            <DataAnnotationsValidator />
+             
+            <div style="max-width: 100%;"> 
+                <MudCard>
+
+                    <MudCardContent>
+                        <MudTextField T="string" @bind-Value="@Groups.Name" Label="Name" For="@(() => Groups.Name)"/>
+                        <MudTextField T="string" @bind-Value="@Groups.Description" Label="Description" For="@(() => Groups.Description)"/>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    </MudCardActions>
+
+                </MudCard>
+
+            </div>
+        </EditForm>
+         
+
+    </DialogContent>
+
+</MudDialog>
+
+@code {
+
+    bool success;
+
+    string[] errors = { };
+
+    public Group Groups = new Group();
+
+    public string Message  { get; set; }
+
+    [Parameter]
+    public int groupId{ get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (groupId != 0)
+            {
+                Groups = await GroupsService.GetById(groupId);
+            }
+
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Group added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(Groups));
+        }
+    }
+    
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+
+}
