@@ -73,7 +73,23 @@ namespace blazormovie.Server.Controllers
 
             return NoContent();
         }
-
+        [HttpPost("InsertInitiative/{initiativeId}/{groupId}")]
+        public async Task<IActionResult> InsertInitiative(int initiativeId, int groupId)
+        {
+            //Comprobamos si la iniciativa está asociada a otro grupo
+            var data = _groupsRepository.GetInitiativesGroups(initiativeId);
+            
+            if (!data.Result.Any())
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                { 
+                   await _groupsRepository.InsertInitiative(initiativeId, groupId);
+                scope.Complete();
+                }
+            }
+            return NoContent();
+           
+        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id)

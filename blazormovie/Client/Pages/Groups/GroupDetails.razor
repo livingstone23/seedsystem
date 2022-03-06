@@ -5,7 +5,7 @@
 @inject ISnackbar Snackbar
 <EditForm Model ="@group">
     <div class="card">
-        <h5 class="card-header">Groups by Client</h5>
+        <h5 class="card-header">Work Teams</h5>
         <div class="card-body">
             <div class="container">
                 <div class="row">
@@ -14,8 +14,8 @@
                     </div>
 
                     <div class="col-md-6">
-                        <input type="button" class="btn btn-secondary" value="Add Group" />
-                        <input type="submit" class="btn btn-secondary" value="Save Groups" />
+                        <input type="button" class="btn btn-secondary" value="Add Initiative" @onclick="AddInitiative" />
+                        <input type="submit" class="btn btn-secondary" value="Save Initiatives" />
                              
                     </div>
 
@@ -121,11 +121,33 @@
     }
     protected async Task RemoveInitiativeGroup(int initiativeId)
     {
-        #if DEBUG
-        Snackbar.Add($"prueba", MudBlazor.Severity.Warning, a => a.VisibleStateDuration = 550);
-        #endif
+
         group.Initiatives.RemoveAll(p => p.Id == initiativeId);
-        
+
         await GroupService.DeleteInitiativeGroup(initiativeId);
+    }
+
+
+    protected async Task AddInitiative()
+    {
+        await GroupService.InsertInitiativeGroup(1,2);
+        var dialog = DialogService.Show<GroupWithInitiative>("Initiative by Group");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if (!result.Cancelled)
+        {
+            var ini = (Initiative)result.Data;
+
+        }
+        if(!result.Cancelled)
+        {
+            var ini = (Initiative)result.Data;
+
+            if (group != null && ini != null)
+            {
+                group.Initiatives.Add(ini);
+            }
+
+        }
     }
 }

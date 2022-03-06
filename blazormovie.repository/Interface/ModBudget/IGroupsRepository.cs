@@ -25,6 +25,8 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<bool> Update(Group group);
        Task<IEnumerable<Initiative>> GetInitiativeByGroup(int id);
        Task<bool> DeleteInitiativeGroup(int InitiativeId);
+       Task<IEnumerable<InitiativeGroup>>GetInitiativesGroups(int initiativeId);
+        Task<bool> InsertInitiative(int initiativeId,int groupId);
 
     }
 }

@@ -1,60 +1,51 @@
-﻿@inject IGroupsService GroupsService
-@inject ISnackbar Snackbar
+﻿@inject ISnackbar Snackbar
+@inject IInitiativeService InitiativeService
 
 <MudDialog>
-<TitleContent>
-    Product Details
-</TitleContent>
-
+    <TitleContent>
+        Initiatives
+    </TitleContent>
 <DialogContent>
-    <EditForm Model="@Group">
-        
+    <EditForm Model="@initiative">
         <div class="row">  
                             
             <div class="col-md-8">
                 <label for="">Work Teams</label>
         
                 <InputSelect class="form-control" 
-                             Value="@Group.Id"
-                             ValueChanged="@((int id)=> GroupHasChanged(id))"
-                             ValueExpression="@(() => Group.Id)"
+                                Value="@initiative.Id"
+                                ValueChanged="@((int id)=> GroupHasChanged(id))"
+                                ValueExpression="@(() => initiative.Id)"
                 >
-                    @foreach (var item in Groups)
+                    @foreach (var item in Initiatives)
                     {
                         <option value ="@item.Id">@item.Name</option>    
                     }
                 </InputSelect>
         
             </div>
-
-           
         </div>
-
     </EditForm>
 </DialogContent>
-
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="AddProduct">Add</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddInitiative">Add</MudButton>
     </DialogActions>
-
 </MudDialog>
 
+
 @code {
-
-    Group Group = new Group();
+    Initiative initiative = new Initiative();
     public string Message { get; set; }
-    public IEnumerable<Group> Groups = new List<Group>();
-
+    public IEnumerable<Initiative> Initiatives = new List<Initiative>();
     [CascadingParameter] 
     MudDialogInstance MudDialog {get;set;}
-
     protected async override Task OnInitializedAsync()
     {
         try
         {
-            Groups = await GroupsService.Get();
-            
+            Initiatives = await InitiativeService.GetInitiatives();
+
         }
         catch (Exception ex)
         {
@@ -62,29 +53,20 @@
         }
     }
 
-
-    protected async Task GroupHasChanged(int groupId)
-    {
-       
-
-        if (groupId > 0)
-            Group =    await GroupsService.GetById(groupId);
-    } 
-
-
-    private void Cancel()
+      private void Cancel()
     {
         MudDialog.Cancel();
     }
+    protected async Task GroupHasChanged(int initiativeId)
+    {
 
-
-    private void AddProduct()
+        if (initiativeId > 0)
+            initiative =    await InitiativeService.GetById(initiativeId);
+    } 
+    private void AddInitiative()
     {
         Snackbar.Add("Group added1", Severity.Success, a => a.VisibleStateDuration = 200);
-        MudDialog.Close(DialogResult.Ok(Group));
-
+        MudDialog.Close(DialogResult.Ok(initiative));
     }
-
-
 
 }

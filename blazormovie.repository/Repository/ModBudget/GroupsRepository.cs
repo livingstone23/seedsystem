@@ -51,7 +51,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
             int count = reader.Read<int>().FirstOrDefault();
             List<Group> allTodos = reader.Read<Group>().ToList();
-
+            
             //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
             var result = new PagingResponseModel<List<Group>>(allTodos, count, currentPageNumber, pageSize);
             return result;
@@ -123,13 +123,35 @@ namespace blazormovie.repository.Repository.ModBudget
                         Where GroupsId = @Id ";
             return await _dbConnection.QueryAsync<Initiative>(sql, new { Id = GroupId });
         }
-
+      
+      
         public async Task<bool> DeleteInitiativeGroup(int InitiativeId)
         {
             var sql = @"DELETE FROM InitiativeGroups 
                         WHERE InitiativeId = @Id ";
             var result = await _dbConnection.ExecuteAsync(sql,
                 new { Id = InitiativeId });
+
+            return result > 0;
+        }
+
+        public async Task<IEnumerable<InitiativeGroup>> GetInitiativesGroups(int initiativeId)
+        {
+            var sql = @"Select * from InitiativeGroups
+                        where InitiativeId = @Id";
+            return await _dbConnection.QueryAsync<InitiativeGroup>(sql, new { Id = initiativeId });
+        }
+        public async Task<bool> InsertInitiative(int initiativeId,int groupId)
+        {
+            var sql = @" INSERT INTO   InitiativeGroups( InitiativeId,  GroupsId) 
+                                       Values(@IniId, @GroupId)";
+
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new
+                {
+                    IniId = initiativeId,
+                    GroupId = groupId
+                });
 
             return result > 0;
         }

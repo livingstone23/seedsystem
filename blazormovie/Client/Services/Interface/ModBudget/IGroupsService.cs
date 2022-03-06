@@ -15,6 +15,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
         Task Save(Group group);
 
         Task Delete(int id);
-        Task DeleteInitiativeGroup(int initiativeId); 
+        Task DeleteInitiativeGroup(int initiativeId);
+        Task InsertInitiativeGroup(int initiativeId,int groupId);
     }
 }
