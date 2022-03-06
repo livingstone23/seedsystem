@@ -43,7 +43,9 @@ namespace blazormovie.repository.Repository.ModBudget
                        Select a.Id, a.Name, isNull(a.Description,'') as Description
                         from Groups a
                         order by a.Id Desc
-                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY"
+
+                        ;
 
             var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take });
 
@@ -120,6 +122,16 @@ namespace blazormovie.repository.Repository.ModBudget
                         inner join InitiativeGroups b  on a.Id = b.InitiativeId
                         Where GroupsId = @Id ";
             return await _dbConnection.QueryAsync<Initiative>(sql, new { Id = GroupId });
+        }
+
+        public async Task<bool> DeleteInitiativeGroup(int InitiativeId)
+        {
+            var sql = @"DELETE FROM InitiativeGroups 
+                        WHERE InitiativeId = @Id ";
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new { Id = InitiativeId });
+
+            return result > 0;
         }
     }
 }

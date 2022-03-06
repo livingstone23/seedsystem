@@ -81,6 +81,11 @@ namespace blazormovie.Server.Controllers
             await _groupsRepository.Delete(id);
         }
 
+        [HttpDelete("DeleteInitiativeGroupById/{id}")]
+        public async Task  DeleteIniByGroup(int id)
+        {
+            await _groupsRepository.DeleteInitiativeGroup(id);
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Group group)

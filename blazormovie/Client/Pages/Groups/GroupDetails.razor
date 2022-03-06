@@ -1,0 +1,131 @@
+﻿@page "/groupDetail/{id:int}"
+@inject IGroupsService GroupService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+<EditForm Model ="@group">
+    <div class="card">
+        <h5 class="card-header">Groups by Client</h5>
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="button" class="btn btn-secondary" value="Add Group" />
+                        <input type="submit" class="btn btn-secondary" value="Save Groups" />
+                             
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="">Group</label>
+                        <InputText class="form-control" @bind-Value="@group.Name" readonly="readonly" />
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="">Description</label>
+                        <InputText class="form-control" @bind-Value="@group.Description" readonly="readonly" />
+                    </div>
+                </div>
+
+                <div class ="row">
+                      <label for=""></label>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (group.Initiatives!=null && group.Initiatives.Any())
+    {
+        <MudTable Items="@group.Initiatives" Hover = "true" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudText typeof="Typo.h6">Initiatives</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Description</MudTh>
+                 
+                </HeaderContent>
+                <RowTemplate Context="GroupContext">
+                    <MudTd DataLabel="Name">@GroupContext.Name </MudTd>
+                    <MudTd DataLabel="Description">@GroupContext.Description </MudTd>
+                    <MudTd DataLabel="">
+                        <MudFab OnClick="@(() => RemoveInitiativeGroup(GroupContext.Id))"
+                                Color="Color.Secondary"
+                                Icon="@Icons.Material.Filled.Delete"
+                                IconSize="Size.Small">
+
+                        </MudFab>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+    }
+</EditForm>
+
+@code {
+    public Group group;
+    public string Message { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+
+            if (id > 0)
+            {
+                group = await GroupService.GetById(id);
+
+            }
+
+        }
+        catch (Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+
+    }
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/groups");
+    }
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
+    protected async Task RemoveInitiativeGroup(int initiativeId)
+    {
+        #if DEBUG
+        Snackbar.Add($"prueba", MudBlazor.Severity.Warning, a => a.VisibleStateDuration = 550);
+        #endif
+        group.Initiatives.RemoveAll(p => p.Id == initiativeId);
+        
+        await GroupService.DeleteInitiativeGroup(initiativeId);
+    }
+}

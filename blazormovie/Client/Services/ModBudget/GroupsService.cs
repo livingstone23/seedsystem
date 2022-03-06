@@ -50,5 +50,16 @@ namespace blazormovie.Client.Services.ModBudget
         {
             await _httpClient.DeleteAsync($"api/groups/{id}");
         }
+
+        public async Task DeleteInitiativeGroup(int initiativeId)
+        {
+            await _httpClient.DeleteAsync($"api/groups/DeleteInitiativeGroupById/{initiativeId}");
+        }
+        /*
+           public async Task DeleteInitiative(int id)
+        {
+            await _httpClient.DeleteAsync($"api/Initiative/{id}");
+        }
+         */
     }
 }
