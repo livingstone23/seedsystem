@@ -18,11 +18,12 @@ namespace blazormovie.Server.Controllers
 
 
         private readonly IGroupsRepository _groupsRepository;
+        private readonly IInitiaiveRepository _initiaiveRepository;
 
-
-        public GroupsController(IGroupsRepository groupRepository)
+        public GroupsController(IGroupsRepository groupRepository,IInitiaiveRepository initiaiveRepository)
         {
             _groupsRepository = groupRepository;
+            _initiaiveRepository = initiaiveRepository;
         }
 
 
@@ -76,17 +77,25 @@ namespace blazormovie.Server.Controllers
         [HttpPost("InsertInitiative/{initiativeId}/{groupId}")]
         public async Task<IActionResult> InsertInitiative(int initiativeId, int groupId)
         {
-            //Comprobamos si la iniciativa está asociada a otro grupo
-            var data = _groupsRepository.GetInitiativesGroups(initiativeId);
-            
-            if (!data.Result.Any())
+           
+            //comprobamos que exista la iniciativa
+            var ini = _initiaiveRepository.GetById(initiativeId);
+            if(ini.Result != null)
             {
-                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                { 
-                   await _groupsRepository.InsertInitiative(initiativeId, groupId);
-                scope.Complete();
+                //Comprobamos si la iniciativa está asociada a otro grupo
+                var data = _groupsRepository.GetInitiativesGroups(initiativeId);
+
+                if (!data.Result.Any())
+                {
+
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        await _groupsRepository.InsertInitiative(initiativeId, groupId);
+                        scope.Complete();
+                    }
                 }
             }
+           
             return NoContent();
            
         }
