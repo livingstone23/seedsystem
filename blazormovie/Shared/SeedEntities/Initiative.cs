@@ -21,6 +21,6 @@ namespace blazormovie.Shared.SeedEntities
         [NotMapped]
         public int TotalProjects { get; set; }
         public List<Project> Projects { get; set; }
-
+        
     }
 }

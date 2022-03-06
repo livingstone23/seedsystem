@@ -112,5 +112,14 @@ namespace blazormovie.repository.Repository.ModBudget
 
             return result > 0;
         }
+
+        public async Task<IEnumerable<Initiative>> GetInitiativeByGroup(int GroupId)
+        {
+            var sql = @" Select a.Id, a.Name, a.Description
+                        from Initiative a
+                        inner join InitiativeGroups b  on a.Id = b.InitiativeId
+                        Where GroupsId = @Id ";
+            return await _dbConnection.QueryAsync<Initiative>(sql, new { Id = GroupId });
+        }
     }
 }

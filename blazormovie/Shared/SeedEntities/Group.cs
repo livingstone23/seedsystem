@@ -22,6 +22,7 @@ namespace blazormovie.Shared.SeedEntities
         [Column("Description")]
         [MaxLength(500, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
         public string Description { get; set; }
+        public List<Initiative> Initiatives { get; set; }
 
     }
 }
