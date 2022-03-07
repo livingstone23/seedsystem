@@ -222,6 +222,7 @@
     }
     public void exportarPdf()
     {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using (MemoryStream ms = new MemoryStream())
         {
             PdfWriter writer = new PdfWriter(ms);

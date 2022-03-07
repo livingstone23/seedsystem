@@ -166,9 +166,9 @@
         DialogParameters oParam = new DialogParameters();
         oParam.Add("iIniId",id);
         var dialog = DialogService.Show<InitiativeModal>("Edit Initiative",oParam,null);
-        
+
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
-        
+
         if(!result.Cancelled)
         {
             var Initiative = (Initiative)result.Data;
@@ -248,7 +248,7 @@
                 table.ReloadServerData();
                 Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
-            
+
         }
     }
 
@@ -259,7 +259,9 @@
 
     public void exportarPdf()
     {
-        using (MemoryStream ms = new MemoryStream())
+        try
+        {
+            using (MemoryStream ms = new MemoryStream())
         {
             PdfWriter writer = new PdfWriter(ms);
             using(var pdfDoc = new PdfDocument(writer))
@@ -282,7 +284,7 @@
                 celda.Add(new Paragraph("Total")).SetFont(font);
                 tabla.AddHeaderCell(celda);
                 //rellenamos la tabla
-                foreach(var item in Initiatives)
+                foreach(var item in DataPrint)
                 {
                     celda = new Cell();
                     celda.Add(new Paragraph(item.Name.ToString()));
@@ -291,7 +293,7 @@
                     celda.Add(new Paragraph(item.Description.ToString()));
                     tabla.AddCell(celda);
                      celda = new Cell();
-                    celda.Add(new Paragraph(item.Projects.Count().ToString()));
+                    celda.Add(new Paragraph(item.TotalProjects.ToString()));
                     tabla.AddCell(celda);
                     celda = new Cell();
                 }
@@ -305,9 +307,15 @@
             }
 
         }
+        }catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Success, a => a.VisibleStateDuration = 5000);
+        }
+        
     }
     public void exportarExcel()
     {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using(MemoryStream ms = new MemoryStream())
         {
             using (ExcelPackage ep = new ExcelPackage())
@@ -324,7 +332,7 @@
                 int fila = 2;
                 int colum = 1;
                 //List<Initiative> ltInis = Initiatives.ToList();
-                foreach(var item in Initiatives)
+                foreach(var item in DataPrint)
                 {
 
                     ew.Cells[fila, 1].Value = item.Name.ToString();

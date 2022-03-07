@@ -319,6 +319,7 @@
     }
     public void exportarExcel()
     {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using(MemoryStream ms = new MemoryStream())
         {
             using (ExcelPackage ep = new ExcelPackage())

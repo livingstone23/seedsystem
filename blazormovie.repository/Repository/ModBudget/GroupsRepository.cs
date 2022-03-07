@@ -141,17 +141,17 @@ namespace blazormovie.repository.Repository.ModBudget
                         where InitiativeId = @Id";
             return await _dbConnection.QueryAsync<InitiativeGroup>(sql, new { Id = initiativeId });
         }
-        public async Task<bool> InsertInitiative(int initiativeId,int groupId)
+        public async Task<bool> InsertInitiative(int groupId, Initiative initiative)
         {
-            var sql = @" INSERT INTO   InitiativeGroups( InitiativeId,  GroupsId) 
-                                       Values(@IniId, @GroupId)";
+            var sql = @" INSERT INTO   InitiativeGroups( GroupsId,  InitiativeId) 
+                                       Values(@groupId, @initiativeId)";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
-                    IniId = initiativeId,
-                    GroupId = groupId
-                });
+                    groupId = groupId,
+                    initiativeId = initiative.Id
+                }) ;
 
             return result > 0;
         }

@@ -15,7 +15,7 @@
 
                     <div class="col-md-6">
                         <input type="button" class="btn btn-secondary" value="Add Initiative" @onclick="AddInitiative" />
-                        <input type="submit" class="btn btn-secondary" value="Save Initiatives" />
+                        <input type="submit" class="btn btn-secondary" value="Save Initiatives" @onclick="SaveInitiatives"/>
                              
                     </div>
 
@@ -126,11 +126,18 @@
 
         await GroupService.DeleteInitiativeGroup(initiativeId);
     }
-
+    protected async Task SaveInitiatives()
+    {
+        await GroupService.Save(group);
+        NavigateToHome();
+    }
 
     protected async Task AddInitiative()
     {
-        await GroupService.InsertInitiativeGroup(1,2);
+        //comprobamos si existe la iniciativa
+
+
+        //await GroupService.InsertInitiativeGroup(1,2);
         var dialog = DialogService.Show<GroupWithInitiative>("Initiative by Group");
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
 

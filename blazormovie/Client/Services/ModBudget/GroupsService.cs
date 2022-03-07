@@ -34,15 +34,17 @@ namespace blazormovie.Client.Services.ModBudget
             return result;
         }
 
+
         public async Task Save(Group group)
         {
+           
             if (group.Id == 0)
             {
                 await _httpClient.PostAsJsonAsync<Group>($"api/groups/", group);
             }
             else
             {
-                await _httpClient.PutAsJsonAsync<Group>($"api/groups/{group.Id}", group);
+                 await _httpClient.PutAsJsonAsync<Group>($"api/groups/{group.Id}", group);
             }
         }
 
@@ -61,5 +63,9 @@ namespace blazormovie.Client.Services.ModBudget
             await _httpClient.PostAsJsonAsync<InitiativeGroup>($"api/groups/InsertInitiative/{initiativeId}/{groupId}", null);
         }
 
+        public async Task GetInitiativeGroupById(int id)
+        {
+            await _httpClient.GetAsync($"api/GetInitiativeGroupsById/{id}");
+        }
     }
 }

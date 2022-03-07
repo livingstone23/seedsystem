@@ -183,9 +183,9 @@
         DialogParameters oParam = new DialogParameters();
         oParam.Add("iProjectId",id);
         var dialog = DialogService.Show<ProjectModal>("Edit Project",oParam,null);
-        
+
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
-        
+
         if(!result.Cancelled)
         {
             var Project = (Project)result.Data;
@@ -256,8 +256,9 @@
                     celda.Add(new Paragraph(item.AmountDefined.ToString("N2")+" €"));
                     tabla.AddCell(celda);
                     celda = new Cell();
-                    celda.Add(new Paragraph(item.POSPays.Count().ToString()));
+                    celda.Add(new Paragraph(item.TotalPays.ToString()));
                     tabla.AddCell(celda);
+               
                 }
                 doc.Add(tabla);
                 //liberamos memoria
@@ -274,6 +275,7 @@
 
     public void exportarExcel()
     {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using(MemoryStream ms = new MemoryStream())
         {
             using (ExcelPackage ep = new ExcelPackage())

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using blazormovie.Shared.SeedEntities;
 
@@ -17,5 +18,6 @@ namespace blazormovie.Client.Services.Interface.ModBudget
         Task Delete(int id);
         Task DeleteInitiativeGroup(int initiativeId);
         Task InsertInitiativeGroup(int initiativeId,int groupId);
+        Task GetInitiativeGroupById(int id);
     }
 }

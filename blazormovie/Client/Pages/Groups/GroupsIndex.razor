@@ -4,6 +4,15 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
+@using OfficeOpenXml;
+@using OfficeOpenXml.Style;
+@using System.IO
+@using iText.IO.Font.Constants
+@using iText.Kernel.Font
+@using iText.Kernel.Pdf
+@using iText.Layout
+@using iText.Layout.Element
+@inject IJSRuntime jsRuntime;
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
     
@@ -21,7 +30,9 @@
                 </MudMenu>
 
                 <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
-                   
+                   <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+                    <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+
                 </MudMenu>
 
             </ToolBarContent>
@@ -203,5 +214,93 @@
     protected async Task InitiativeByGroup(int id)
     {
         NavigationManager.NavigateTo($"/GroupDetail/{id}");
+    }
+    public void exportarPdf()
+    {
+         using (MemoryStream ms = new MemoryStream())
+        {
+            PdfWriter writer = new PdfWriter(ms);
+            using(var pdfDoc = new PdfDocument(writer))
+            {
+                //Rellenar Pdf
+                Document doc = new Document(pdfDoc);
+
+                Paragraph p1 = new Paragraph("Report");
+                p1.SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER);
+                p1.SetFontSize(20);
+                doc.Add(p1);
+                //creamos las cabeceras
+                PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                Table tabla = new Table(2).UseAllAvailableWidth();
+                Cell celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Name")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Description")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                
+                foreach(var item in DataPrint)
+                {
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Name.ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Description.ToString()));
+                    tabla.AddCell(celda);
+                    
+                }
+                doc.Add(tabla);
+                //liberamos memoria
+                doc.Close();
+                writer.Close();
+                //para descargar
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                pdf = "data:application/pdf;base64,"+base64;
+                jsRuntime.InvokeVoidAsync("descargarPdf", pdf);
+            }
+
+        }
+    }
+    public void exportarExcel()
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        using(MemoryStream ms = new MemoryStream())
+        {
+            try
+            {
+                using (ExcelPackage ep = new ExcelPackage())
+                {
+                    ep.Workbook.Worksheets.Add("hoja");
+                    //solo para una hoja
+                    ExcelWorksheet ew = ep.Workbook.Worksheets[0];
+                    ew.Column(1).Width = 50;
+                    ew.Cells[1, 1].RichText.Add("Description").Bold = true;
+                    ew.Column(2).Width = 50;
+                    ew.Cells[1, 2].RichText.Add("Name").Bold = true;
+               
+                    int fila = 2;
+                    int colum = 1;
+                    //List<Initiative> ltInis = Initiatives.ToList();
+                    foreach(var item in DataPrint)
+                    {
+
+                        ew.Cells[fila, 1].Value = item.Name.ToString();
+                        ew.Cells[fila, 2].Value = item.Description.ToString();
+                    
+                        fila++;
+                    }
+
+                    ep.SaveAs(ms);
+                    byte[] buffer = ms.ToArray();
+                    string base64 = Convert.ToBase64String(buffer);
+                    excel = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + base64;
+                }
+            }catch(Exception ex)
+            {
+                Snackbar.Add(ex.Message, MudBlazor.Severity.Success, a => a.VisibleStateDuration = 1000);
+            }
+            
+        }
     }
 }
