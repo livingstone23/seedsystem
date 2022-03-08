@@ -45,6 +45,7 @@
         try
         {
             Initiatives = await InitiativeService.GetInitiatives();
+            initiative = Initiatives.FirstOrDefault();
 
         }
         catch (Exception ex)

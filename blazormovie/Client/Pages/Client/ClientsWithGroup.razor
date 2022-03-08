@@ -54,7 +54,8 @@
         try
         {
             Groups = await GroupsService.Get();
-            
+            Group = Groups.FirstOrDefault();
+
         }
         catch (Exception ex)
         {
