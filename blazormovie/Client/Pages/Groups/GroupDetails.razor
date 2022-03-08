@@ -3,7 +3,10 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
-<EditForm Model ="@group">
+
+@if (group != null)
+{
+    <EditForm Model ="@group">
     <div class="card">
         <h5 class="card-header">Work Teams</h5>
         <div class="card-body">
@@ -85,6 +88,8 @@
             </MudTable>
     }
 </EditForm>
+}
+
 
 @code {
     public Group group;
