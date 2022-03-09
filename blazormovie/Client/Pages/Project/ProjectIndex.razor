@@ -145,6 +145,8 @@
                 return true;
             if ($"{element.AmountDefined}".Contains(searchString))
                 return true;
+            if ($"{element.InitiativeName}".Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
             return false;
         }).ToArray();
         //totalItems = data.Count();

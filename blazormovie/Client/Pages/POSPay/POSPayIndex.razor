@@ -139,6 +139,8 @@
                 return true;
             if ($"{element.ProjectName} {element.InitiativeName} {element.PayAmount}".Contains(searchString))
                 return true;
+            if (element.ProjectName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
             return false;
         }).ToArray();
         //totalItems = data.Count();
