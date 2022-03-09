@@ -8,6 +8,7 @@
 @using OfficeOpenXml;
 @using OfficeOpenXml.Style;
 @using System.IO
+@using blazormovie.Client.Pages.Groups
 @using blazormovie.Client.Pages.Initiative
 @using blazormovie.Client.Pages.POSPay
 @using blazormovie.Client.Pages.Project
@@ -22,6 +23,7 @@
 @inject IProjectService ProjectService
 @inject IPOSPayService POSPayService
 
+
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
     
@@ -35,6 +37,7 @@
     
             
                 <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                    <MudMenuItem OnClick="@(NewGroup)" >New Work Team</MudMenuItem>
                     <MudMenuItem OnClick="@(NewClient)" >New Client</MudMenuItem>
                     <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
                     <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
@@ -226,6 +229,23 @@
                 await  ClientService.Save(Client);
                 table.ReloadServerData();
                 Snackbar.Add("The Client has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+     protected async Task NewGroup()
+    {
+        var dialog = DialogService.Show<GroupsModal>("New Group");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Group = (Group)result.Data;
+            if (Group.Name != null)
+            {
+                await  groupsService.Save(Group);
+                table.ReloadServerData();
+                Snackbar.Add("The Group has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
         }
 

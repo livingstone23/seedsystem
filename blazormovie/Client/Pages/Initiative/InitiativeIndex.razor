@@ -4,11 +4,14 @@
 @inject IPOSPayService POSPayService
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
-
+@inject IGroupsService groupsService
+@inject IClientService ClientService
 
 @using OfficeOpenXml;
 @using OfficeOpenXml.Style;
 @using System.IO
+@using blazormovie.Client.Pages.Client
+@using blazormovie.Client.Pages.Groups
 @using blazormovie.Client.Pages.POSPay
 @using blazormovie.Client.Pages.Project
 @using iText.IO.Font.Constants
@@ -33,6 +36,8 @@
     
             
                 <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                    <MudMenuItem OnClick="@(NewGroup)" >New Work Team</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewClient)" >New Client</MudMenuItem>
                     <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
                     <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
                     <MudMenuItem OnClick="@(NewPay)">New PO</MudMenuItem>
@@ -251,7 +256,40 @@
 
         }
     }
+     protected async Task NewClient()
+    {
+        var dialog = DialogService.Show<ClientModal>("New Client");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
 
+        if(!result.Cancelled)
+        {
+            var Client = (Client)result.Data;
+            if (Client.Name != null)
+            {
+                await  ClientService.Save(Client);
+                table.ReloadServerData();
+                Snackbar.Add("The Client has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+     protected async Task NewGroup()
+    {
+        var dialog = DialogService.Show<GroupsModal>("New Group");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Group = (Group)result.Data;
+            if (Group.Name != null)
+            {
+                await  groupsService.Save(Group);
+                table.ReloadServerData();
+                Snackbar.Add("The Group has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
 
 
 
