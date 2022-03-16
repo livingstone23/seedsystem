@@ -11,6 +11,8 @@ namespace blazormovie.Client.Services.Interface.ModBudget
 
         Task<GroupPagination> GetByPagination(int page, int pagesize);
 
+        Task<GroupPagination> GetByPaginationAndClientId(int page, int pagesize, int ClientId);
+
         Task<Group> GetById(int id);
 
         Task Save(Group group);

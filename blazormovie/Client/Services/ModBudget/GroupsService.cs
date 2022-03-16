@@ -28,6 +28,11 @@ namespace blazormovie.Client.Services.ModBudget
             return await _httpClient.GetFromJsonAsync<GroupPagination>($"api/groups/getbypagination/{page}/{pagesize}");
         }
 
+        public async Task<GroupPagination> GetByPaginationAndClientId(int page, int pagesize, int clientId)
+        {
+            return await _httpClient.GetFromJsonAsync<GroupPagination>($"api/groups/getbypaginationAndClientId/{page}/{pagesize}/{clientId}");
+        }
+
         public async Task<Group> GetById(int id)
         {
             var result = await _httpClient.GetFromJsonAsync<Group>($"api/groups/GetById/{id}");

@@ -42,6 +42,12 @@ namespace blazormovie.Server.Controllers
             return await _groupsRepository.GetGroupsByPagination(currentPageNumber, pageSize);
         }
 
+        [HttpGet("GetByPaginationAndClientId/{currentPageNumber}/{pageSize}/{clientId}")]
+        public async Task<PagingResponseModel<List<Group>>> GetByPaginationAndClientId(int currentPageNumber, int pageSize, int clientId)
+        {
+            return await _groupsRepository.GetGroupsByPaginationAndClientId(currentPageNumber, pageSize, clientId);
+        }
+
 
         [HttpGet("GetById/{id}")]
         public async Task<Group> GetById(int id)
