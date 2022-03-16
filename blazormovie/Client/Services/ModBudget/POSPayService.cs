@@ -33,6 +33,10 @@ namespace blazormovie.Client.Services.ModBudget
             return await _httpClient.GetFromJsonAsync<POSPayDTOPagination>($"api/pospay/getbypaginationdto/{(page)}/{pagesize}");
         }
 
+        public async Task<POSPayDTOPagination> GetByPaginationDtoAndProjectId(int page, int pagesize, int projectId)
+        {
+            return await _httpClient.GetFromJsonAsync<POSPayDTOPagination>($"api/pospay/getbypaginationdtoAndProjectId/{(page)}/{pagesize}/{projectId}");
+        }
 
         public async Task<POSPay> GetById(int id)
         {

@@ -10,6 +10,8 @@ namespace blazormovie.Client.Services.Interface.ModBudget
         
         Task<ProjectPagination> GetByPagination(int currentPage, int pagesize);
 
+        Task<ProjectPagination> GetByPaginationAndInitiativeId(int currentPage, int pagesize, int initiativeId);
+
         Task<Project> GetById(int id);
 
         Task<IEnumerable<Project>> GetByInitiative(int initiativeId);

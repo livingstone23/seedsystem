@@ -42,6 +42,12 @@ namespace SeedSystem.Server.Controllers
             return await _pOSPayRepository.GetPOSPayDtosByPagination(currentPageNumber, pageSize);
         }
 
+        [HttpGet("GetByPaginationDtoAndProjectId/{currentPageNumber}/{pageSize}/{projectId}")]
+        public async Task<PagingResponseModel<List<POSPayDTO>>> GetByPaginationDtoAndProjectId(int currentPageNumber, int pageSize, int projectId)
+        {
+            return await _pOSPayRepository.GetPOSPayDtosByPaginationAndProjectId(currentPageNumber, pageSize, projectId);
+        }
+
 
         [HttpGet("GetById/{id}")]
         public async Task<POSPay> GetById(int id)

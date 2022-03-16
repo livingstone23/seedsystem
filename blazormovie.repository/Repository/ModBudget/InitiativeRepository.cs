@@ -57,6 +57,42 @@ namespace blazormovie.repository.Repository.ModBudget
             return result;
         }
 
+        public async Task<PagingResponseModel<List<Initiative>>> GetInitiativesByPaginationAndGroupId(int currentPageNumber, int pageSize, int groupId)
+        {
+            int maxPagSize = 50;
+            pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+            int skip = (currentPageNumber - 1) * pageSize;
+            int take = pageSize;
+
+            var sql = @"SELECT 
+                        COUNT(*)
+                        FROM Initiative a
+                        inner join [dbo].[InitiativeGroups] b on a.Id = b.InitiativeId
+                        Where b.GroupsId = @groupId
+
+                        Select a.Id, a.Name, a.Description, Count(b.IdInitiative) as totalProjects
+                        from Initiative a
+                        left join dbo.Project b on a.Id = b.IdInitiative
+                        inner join [dbo].[InitiativeGroups] c on a.Id = c.InitiativeId
+                        Where c.GroupsId = @groupId
+                        group by a.id, a.Name, a.Description
+                        order by a.Id Desc
+
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
+
+            var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take, groupId = groupId });
+
+            int count = reader.Read<int>().FirstOrDefault();
+            List<Initiative> allTodos = reader.Read<Initiative>().ToList();
+
+            //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
+            var result = new PagingResponseModel<List<Initiative>>(allTodos, count, currentPageNumber, pageSize);
+            return result;
+        }
+
+
+
 
         public async Task<Initiative> GetById(int id)
         {
