@@ -30,6 +30,11 @@ namespace blazormovie.Client.Services.ModBudget
             return await _httpClient.GetFromJsonAsync<ProjectPagination>($"api/project/getbypagination/{(page)}/{pagesize}");
         }
 
+        public async Task<ProjectPagination> GetByPaginationAndInitiativeId(int page, int pagesize, int initiativeId)
+        {
+            return await _httpClient.GetFromJsonAsync<ProjectPagination>($"api/project/getbypaginationAndInitiativeId/{(page)}/{pagesize}/{initiativeId}");
+        }
+
 
         public async Task<Project> GetById(int id)
         {

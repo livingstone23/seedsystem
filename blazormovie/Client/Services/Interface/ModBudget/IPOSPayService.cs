@@ -11,7 +11,9 @@ namespace blazormovie.Client.Services.Interface.ModBudget
         Task<POSPayPagination> GetByPagination(int currentPage, int pagesize);
         
         Task<POSPayDTOPagination> GetByPaginationDto(int currentPage, int pagesize);
-        
+
+        Task<POSPayDTOPagination> GetByPaginationDtoAndProjectId(int currentPage, int pagesize, int projectId);
+
         Task<POSPay> GetById(int id);
         
         Task<IEnumerable<POSPay>> GetByInitiative(int initiativeId);

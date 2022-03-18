@@ -49,6 +49,15 @@ namespace SeedSystem.Server.Controllers
             return result; 
         }
 
+        [HttpGet("GetByPaginationAndInitiativeId/{currentPageNumber}/{pageSize}/{initiativeId}")]
+        public async Task<PagingResponseModel<List<Project>>> GetByPaginationAndInitiativeId(int currentPageNumber, int pageSize, int initiativeId)
+        {
+            var result = await _projectRepository.GetProjectByPaginationAndInitiativeId(currentPageNumber, pageSize, initiativeId);
+
+
+            return result;
+        }
+
 
         [HttpGet("GetById/{id}")]
         public async Task<Project> GetById(int id)

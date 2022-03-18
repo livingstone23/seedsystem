@@ -1,4 +1,5 @@
 ﻿@page "/projects"
+@page "/projects/{initiativeId:int}"
 @using System.IO
 @using OfficeOpenXml
 @using blazormovie.Client.Pages.Client
@@ -68,7 +69,9 @@
 
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
-            <MudTd DataLabel="Desc">@context.Name</MudTd>
+
+            <MudTd DataLabel="Desc">  <a href="/pospays/@context.Id">@context.Name</a></MudTd>
+
             <MudTd DataLabel="Nrmt">@context.Description</MudTd>
             <MudTd DataLabel="Pay"  Style="text-align:center">@context.AmountDefined.ToString("N2") €</MudTd>
             <MudTd DataLabel="Tto">@context.TotalPays</MudTd>
@@ -104,7 +107,8 @@
 
 @code {
 
-
+    [Parameter] 
+    public int initiativeId { get; set; }
 
 
     public List<Project> Projects;
@@ -132,8 +136,17 @@
     public async Task<TableData<Project>> LoadTodos(TableState state)
     {
 
+        ProjectPagination response = new ProjectPagination();
 
-        var response = await ProjectService.GetByPagination((state.Page + 1), state.PageSize);
+        if (initiativeId > 0)
+        {
+            response = await ProjectService.GetByPaginationAndInitiativeId((state.Page + 1), state.PageSize, initiativeId);
+        }
+        else
+        {
+            response = await ProjectService.GetByPagination((state.Page + 1), state.PageSize);
+        }
+         
 
         response.Data = response.Data.Where(element =>
         {

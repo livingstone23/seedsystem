@@ -10,6 +10,8 @@ namespace blazormovie.Client.Services.Interface.ModBudget
 
         Task<InitiativePagination> GetByPagination(int currentPage, int pagesize);
 
+        Task<InitiativePagination> GetByPaginationAndGroupId(int currentPage, int pagesize, int groupId);
+
         Task<Initiative> GetById(int id);
 
         Task SaveInitiative(Initiative initiative);

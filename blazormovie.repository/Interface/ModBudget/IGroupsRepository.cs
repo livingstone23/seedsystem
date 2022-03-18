@@ -14,6 +14,8 @@ namespace blazormovie.repository.Interface.ModBudget
 
         Task<PagingResponseModel<List<Group>>> GetGroupsByPagination(int currentPageNumber, int pageSize);
 
+        Task<PagingResponseModel<List<Group>>> GetGroupsByPaginationAndClientId(int currentPageNumber, int pageSize, int clientId);
+
         Task<List<Group>> GetByClientId(int id);
 
         Task<Group> GetById(int id);

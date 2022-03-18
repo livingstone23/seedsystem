@@ -1,4 +1,5 @@
 ﻿@page "/pospays"
+@page "/pospays/{projectId:int}"
 @using System.Net.Http.Json;
 @using System.IO
 @inject IPOSPayService POSPayService
@@ -102,7 +103,8 @@
 
 @code {
 
-
+    [Parameter] 
+    public int projectId { get; set; }
 
     //private int[] pageSizeOptions = new int[] { 5, 10, 15 };
     private int[] pageSizeOptions = new int[] { 15 };
@@ -126,8 +128,17 @@
     public async Task<TableData<POSPayDTO>> LoadTodos(TableState state)
     {
 
+        POSPayDTOPagination response = new POSPayDTOPagination();
 
-        var response = await POSPayService.GetByPaginationDto((state.Page + 1), state.PageSize);
+        @if (projectId > 0) 
+        {
+            response = await POSPayService.GetByPaginationDtoAndProjectId((state.Page + 1), state.PageSize, projectId);
+        }
+        else
+        {
+            response = await POSPayService.GetByPaginationDto((state.Page + 1), state.PageSize);
+        }
+
 
         response.Data = response.Data.Where(element =>
         {

@@ -13,6 +13,10 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<IEnumerable<Initiative>> GetAll();
 
         Task<PagingResponseModel<List<Initiative>>> GetInitiativesByPagination(int currentPageNumber, int pageSize);
+
+
+        Task<PagingResponseModel<List<Initiative>>> GetInitiativesByPaginationAndGroupId(int currentPageNumber, int pageSize, int groupId);
+
         Task<Initiative> GetById(int id);
 
         Task<bool> Insert(Initiative initiative);

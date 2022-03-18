@@ -58,6 +58,42 @@ namespace blazormovie.repository.Repository.ModBudget
 
         }
 
+
+        public async Task<PagingResponseModel<List<Group>>> GetGroupsByPaginationAndClientId(int currentPageNumber, int pageSize, int clientId)
+        {
+
+            int maxPagSize = 50;
+            pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+            int skip = (currentPageNumber - 1) * pageSize;
+            int take = pageSize;
+
+            var sql = @"SELECT 
+                        COUNT(*)
+                        FROM Groups a
+                        inner join [dbo].[ClientGroups] b on a.Id = b.GroupsId
+                        Where b.ClientId = @clientId
+
+                       Select a.Id, a.Name, isNull(a.Description,'') as Description
+                        from Groups a 
+                        inner join [dbo].[ClientGroups] b on a.Id = b.GroupsId
+                        Where b.ClientId = @clientId
+                        order by a.Id Desc
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY"
+
+                ;
+
+            var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take, clientId = clientId });
+
+            int count = reader.Read<int>().FirstOrDefault();
+            List<Group> allTodos = reader.Read<Group>().ToList();
+
+            //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
+            var result = new PagingResponseModel<List<Group>>(allTodos, count, currentPageNumber, pageSize);
+            return result;
+
+        }
+
         public async Task<List<Group>> GetByClientId(int id)
         {
             throw new NotImplementedException();

@@ -68,7 +68,51 @@ namespace blazormovie.repository.Repository.ModBudget
         }
 
 
-            public async Task<Project> GetById(int id)
+        public async Task<PagingResponseModel<List<Project>>> GetProjectByPaginationAndInitiativeId(int currentPageNumber, int pageSize, int initiativeId)
+        {
+            int maxPagSize = 50;
+            pageSize = (pageSize > 0 && pageSize <= maxPagSize) ? pageSize : maxPagSize;
+
+            int skip = (currentPageNumber - 1) * pageSize;
+            int take = pageSize;
+
+            //var sql = @"SELECT 
+            //            COUNT(*)
+            //            FROM Project
+
+            //            Select a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, Count(b.IdProject) as TotalPays
+            //            from dbo.Project a
+            //            left join dbo.POSPay b on a.id = b.IdProject
+            //            group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject
+            //            order by a.Id
+            //            OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";            
+
+            var sql = @"SELECT 
+	                    COUNT(*)
+	                    FROM Project
+                        Where IdInitiative = @initiativeId
+
+	                    Select a.id, a.Name, isnull(a.Description, '') as Description , a.AmountDefined, a.IdInitiative,ini.Name as InitiativeName, Count(b.IdProject) as TotalPays
+	                    from dbo.Project a
+	                    left join dbo.POSPay b on a.id = b.IdProject
+	                    left join dbo.Initiative ini on a.IdInitiative = ini.Id
+                        Where a.IdInitiative = @initiativeId
+	                    group by a.id, a.Name, a.Description, a.AmountDefined, a.IdInitiative, b.IdProject, ini.Name
+	                    order by a.Id Desc
+                        OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
+
+            var reader = _dbConnection.QueryMultiple(sql, new { Skip = skip, Take = take, initiativeId = initiativeId });
+
+            int count = reader.Read<int>().FirstOrDefault();
+            List<Project> allTodos = reader.Read<Project>().ToList();
+
+            //return await _dbConnection.QueryAsync<POSPay>(sql, new { });
+            var result = new PagingResponseModel<List<Project>>(allTodos, count, currentPageNumber, pageSize);
+            return result;
+        }
+
+
+        public async Task<Project> GetById(int id)
         {
             var sql = @" Select Id, Name, isnull(Description,'') as Description, AmountDefined, IdInitiative 
                          From Project
