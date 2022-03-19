@@ -47,6 +47,7 @@ namespace blazormovie.Client
             services.AddScoped<IInitiativeService, InitiativeService>();
             services.AddScoped<IPOSPayService, POSPayService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IProjectCostService, ProjectCostService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IGroupsService, GroupsService>();
             services.AddScoped<ICostService, CostService>();

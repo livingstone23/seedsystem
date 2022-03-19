@@ -61,8 +61,11 @@
     }
     private void AddCost()
     {
-        Snackbar.Add("Cost kjjjj", Severity.Success, a => a.VisibleStateDuration = 200);
-        MudDialog.Close(DialogResult.Ok(cost));
+        Snackbar.Add("Cost added", Severity.Success, a => a.VisibleStateDuration = 200);
+        projectCost.CostId = cost.Id;
+        projectCost.Name = cost.Name;
+        projectCost.Description = cost.Description;
+        MudDialog.Close(DialogResult.Ok(projectCost));
     }
     protected async Task GroupHasChanged(int costId)
     {

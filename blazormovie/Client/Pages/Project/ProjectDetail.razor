@@ -2,8 +2,10 @@
 @page "/projectdetail/{id:int}"
 @inject IInitiativeService InitiativeService
 @inject IProjectService ProjectService
+@inject IProjectCostService ProjectCostService
 @inject NavigationManager NavigationManager
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <p>@Message</p>
 
@@ -88,57 +90,63 @@
             </div>
         </div>
 
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            @if(Project.POSPays != null && Project.POSPays.Any())
+            {
+                <MudTabPanel Text="Pays">
+                    <MudTable Items="@Project.POSPays" Hover = "true" Breakpoint="Breakpoint.Sm">
+                         <ToolBarContent>
+                             <MudText typeof="Typo.h6">Pays</MudText>
+                         </ToolBarContent>
+                         <HeaderContent>
+                             <MudTh>DescriptionPOS</MudTh>
+                             <MudTh>Number Transfer</MudTh>
+                             <MudTh>Amount</MudTh>
+                             <MudTh>Day</MudTh>
+                         </HeaderContent>
+                         <RowTemplate Context="POSPaysContext">
+                             <MudTd DataLabel="Name">@POSPaysContext.DescriptionPOS </MudTd>
+                             <MudTd DataLabel="Price">@POSPaysContext.NumberTransfer </MudTd>
+                             <MudTd DataLabel="Quantity" Style="text-align:center">@POSPaysContext.PayAmount.ToString("C") </MudTd>
+                             <MudTd DataLabel="Day">@POSPaysContext.PayDay</MudTd>
+                         </RowTemplate>
+                     </MudTable>
+                </MudTabPanel>
+            }        
+            @if (Project.Costs != null && Project.Costs.Any())
+            {
+                <MudTabPanel Text="Costs">
+                    <MudTable Items="@Project.Costs" Hover = "true" Breakpoint="Breakpoint.Sm">
+                        <ToolBarContent>
+                            <MudText typeof="Typo.h6">Costs</MudText>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Description</MudTh>
+                            <MudTh>Amount</MudTh>
+                        </HeaderContent>
+                        <RowTemplate Context="CostContext">
+                            <MudTd DataLabel="Name">@CostContext.Name </MudTd>
+                            <MudTd DataLabel="Description">@CostContext.Description</MudTd>
+                            <MudTd DataLabel="Amount">@CostContext.Amount 
+                                <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:21px; height:21px;"></MudIcon>
+                            </MudTd>
+                            <MudTd DataLabel="Date">@CostContext.DateOfCost</MudTd>
+                            <MudTd DataLabel="">
+                                <MudFab OnClick="@(() => RemoveCost(CostContext.Id))"
+                                        Color="Color.Secondary"
+                                        Icon="@Icons.Material.Filled.Delete"
+                                        IconSize="Size.Small">
 
-        @if(Project.POSPays != null && Project.POSPays.Any())
-        {
-            <MudTable Items="@Project.POSPays" Hover = "true" Breakpoint="Breakpoint.Sm">
-                 <ToolBarContent>
-                     <MudText typeof="Typo.h6">Pays</MudText>
-                 </ToolBarContent>
-                 <HeaderContent>
-                     <MudTh>DescriptionPOS</MudTh>
-                     <MudTh>Number Transfer</MudTh>
-                     <MudTh>Amount</MudTh>
-                     <MudTh>Day</MudTh>
-                 </HeaderContent>
-                 <RowTemplate Context="POSPaysContext">
-                     <MudTd DataLabel="Name">@POSPaysContext.DescriptionPOS </MudTd>
-                     <MudTd DataLabel="Price">@POSPaysContext.NumberTransfer </MudTd>
-                     <MudTd DataLabel="Quantity" Style="text-align:center">@POSPaysContext.PayAmount.ToString("C") </MudTd>
-                     <MudTd DataLabel="Day">@POSPaysContext.PayDay</MudTd>
-                 </RowTemplate>
-             </MudTable>
-        }
-        @if (Project.Costs != null && Project.Costs.Any())
-        {
+                                </MudFab>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudTabPanel>
+            }        
+        </MudTabs>
 
-            <MudTable Items="@Project.Costs" Hover = "true" Breakpoint="Breakpoint.Sm">
-                <ToolBarContent>
-                    <MudText typeof="Typo.h6">Costs</MudText>
-                </ToolBarContent>
-                <HeaderContent>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Description</MudTh>
-                    <MudTh>Amount</MudTh>
-                </HeaderContent>
-                <RowTemplate Context="CostContext">
-                    <MudTd DataLabel="Name">@CostContext.Name </MudTd>
-                    <MudTd DataLabel="Description">@CostContext.Description</MudTd>
-                    <MudTd DataLabel="Amount">@CostContext.Amount 
-                        <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:21px; height:21px;"></MudIcon>
-                    </MudTd>
-                    <MudTd DataLabel="Date">@CostContext.DateOfCost</MudTd>
-                    <MudTd DataLabel="">
-                        <MudFab OnClick="@(() => RemoveProduct(CostContext.Id))"
-                                Color="Color.Secondary"
-                                Icon="@Icons.Material.Filled.Delete"
-                                IconSize="Size.Small">
 
-                        </MudFab>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        }
 
 @*        
         <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
@@ -174,6 +182,7 @@ else
             if(id >0)
             {
                 Project = await ProjectService.GetById(id);
+
             } 
             else
             {
@@ -187,9 +196,10 @@ else
             Message = "There was an error..." + e.Message;
         }
     }
-    protected async Task RemoveProduct(int costId)
+    protected async Task RemoveCost(int projectCostId)
     {
-        Project.Costs.RemoveAll(p => p.Id == costId);
+        await ProjectCostService.Delete(projectCostId);
+        Project.Costs.RemoveAll(p => p.Id == projectCostId);
     }
     protected async Task SaveProject()
     {
@@ -198,7 +208,6 @@ else
         {
             NavigateToHome();
         }
-
     }
 
     private void NavigateToHome()
@@ -216,20 +225,16 @@ else
         var result = await dialog.Result;
         if (!result.Cancelled)
         {
-            var cost = (Cost)result.Data;
-            ProjectCost oCost = new ProjectCost();
-            oCost.CostId = cost.Id;
+            var oCost = (ProjectCost)result.Data;
             oCost.DateOfCost = DateTime.Now;
             oCost.ProjectId = Project.Id;
-            oCost.Name = cost.Name;
-            oCost.Description = cost.Description;
             Project.Costs.Add(oCost);
-            oCost = null;
         }
     }   
     protected async Task SaveCost()
     {
-        
+        await ProjectCostService.Save(Project.Costs);
+        Snackbar.Add("All costs saved", Severity.Success, a => a.VisibleStateDuration = 200);
     }
     //protected async Task NewProject()
     //{

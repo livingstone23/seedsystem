@@ -196,7 +196,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> InsertProjectCost(int projectId, ProjectCost cost)
         {
-            var sql = @"INSERT INTO ProyectCost( ProjectId,  CostId, DateOfCost,Amount)
+            var sql = @"INSERT INTO [dbo].[ProjectCost]( ProjectId,  CostId, DateOfCost,amount)
                                           VALUES(@projectId, @costId, @DateOfCost, @Amount)";
 
 
@@ -204,9 +204,9 @@ namespace blazormovie.repository.Repository.ModBudget
                 new
                 {
                     projectId = projectId,
-                    costId = cost.Id,
-                    DateOfCost = DateTime.Now
-                    
+                    costId = cost.CostId,
+                    DateOfCost = DateTime.Now,
+                    Amount = cost.Amount
                 });
 
             return result > 0;
@@ -215,7 +215,7 @@ namespace blazormovie.repository.Repository.ModBudget
         public async Task<bool> DeleteProjectCost(int projectCostId)
         {
             var sql = @"DELETE FROM ProjectCost 
-                        WHERE Id = @projectCostId ";
+                        WHERE Id = @Id ";
             var result = await _dbConnection.ExecuteAsync(sql,
                 new { Id = projectCostId });
 
@@ -224,10 +224,10 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<IEnumerable<ProjectCost>> GetCostByProject(int projectId)
         {
-            var sql = @" Select a.Id, a.Name, a.Description,b.Amount, b.DateOfCost
+            var sql = @" Select b.Id, a.Name, a.Description,b.Amount, b.DateOfCost
                         from Cost a
-                        inner join ProjectCost b on a.Id = b.ProjectId
-                        Where ProjectId = @Id ";
+                        inner join ProjectCost b on a.Id = b.CostId
+                        Where b.ProjectId = @Id ";
             return await _dbConnection.QueryAsync<ProjectCost>(sql, new { Id = projectId });
         }
     }
