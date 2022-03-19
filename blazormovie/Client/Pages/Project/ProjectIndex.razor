@@ -85,6 +85,15 @@
                 </MudFab>
             </MudTd>
             <MudTd>
+                <MudFab OnClick="@(() => CostByProject(context.Id))"
+                        Color="Color.Primary"
+                        Icon="@Icons.Material.Filled.AddToQueue"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+
+            <MudTd>
                 <MudFab OnClick="@(() => Delete(context.Id))"
                         Color="Color.Secondary"
                         Icon="@Icons.Material.Filled.Delete"
@@ -401,7 +410,10 @@
         }
 
     }
-
+    protected async Task CostByProject(int id)
+    {
+        NavigationManager.NavigateTo($"/projectDetail/{id}");
+    }
     
     protected async Task NewPay()
     {
@@ -421,5 +433,5 @@
         }
     }
 
-
+  
 }

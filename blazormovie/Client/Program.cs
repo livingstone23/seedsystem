@@ -49,6 +49,7 @@ namespace blazormovie.Client
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IGroupsService, GroupsService>();
+            services.AddScoped<ICostService, CostService>();
 
             services.AddAuthorizationCore();
 

@@ -1,0 +1,74 @@
+﻿@inject ISnackbar Snackbar
+@inject ICostService CostService
+
+<MudDialog>
+    <TitleContent>
+        Costs
+    </TitleContent>
+<DialogContent>
+    <EditForm Model="@cost">
+        <div class="row">  
+                            
+            <div class="col-md-8">
+                <label for="">Costs</label>
+        
+                <InputSelect class="form-control" 
+                                Value="@cost.Id"
+                                ValueChanged="@((int id)=> GroupHasChanged(id))"
+                                ValueExpression="@(() => cost.Id)"
+                >
+                    @foreach (var item in costs)
+                    {
+                        <option value ="@item.Id">@item.Name</option>    
+                    }
+                </InputSelect>
+                <MudNumericField Label="Amount Defined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" @bind-Value="@projectCost.Amount" For="(() => projectCost.Amount)"/>				
+
+            </div>
+        </div>
+    </EditForm>
+</DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddCost">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    Cost cost = new Cost();
+    public string Message { get; set; }
+    public IEnumerable<Cost> costs = new List<Cost>();
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+    ProjectCost projectCost = new ProjectCost();
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        { 
+            costs = await CostService.Get();
+            cost = costs.FirstOrDefault();
+
+
+        }catch(Exception ex)
+        {
+            Message = "Errror: " + ex.Message;
+        }
+
+    }
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    private void AddCost()
+    {
+        Snackbar.Add("Cost kjjjj", Severity.Success, a => a.VisibleStateDuration = 200);
+        MudDialog.Close(DialogResult.Ok(cost));
+    }
+    protected async Task GroupHasChanged(int costId)
+    {
+
+        if (costId > 0)
+            cost = await CostService.GetById(costId);
+    } 
+
+}

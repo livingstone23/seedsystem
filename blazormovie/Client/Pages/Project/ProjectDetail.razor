@@ -18,15 +18,20 @@
             <div class="card-body">
                 <div class="container">
                     <div class="row">
+                        <div class="col-md-4">
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <input type="button" class="btn btn-secondary" value="Add Cost" @onclick="AddCost"/>
+                            <input type="submit" class="btn btn-secondary" value="Save Cost" @onclick="SaveCost"/>
+                             
+                        </div>
+
                         <div class="col-md-4 mb-3">
 
                         </div>
-                         <div class="col-md-4 mb-3">
-                            
-                        </div>
-                         <div class="col-md-4 mb-3">
-                             <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
-                        </div>
+
                     </div>
                
 
@@ -104,7 +109,36 @@
                  </RowTemplate>
              </MudTable>
         }
+        @if (Project.Costs != null && Project.Costs.Any())
+        {
 
+            <MudTable Items="@Project.Costs" Hover = "true" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudText typeof="Typo.h6">Costs</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>Amount</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="CostContext">
+                    <MudTd DataLabel="Name">@CostContext.Name </MudTd>
+                    <MudTd DataLabel="Description">@CostContext.Description</MudTd>
+                    <MudTd DataLabel="Amount">@CostContext.Amount 
+                        <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:21px; height:21px;"></MudIcon>
+                    </MudTd>
+                    <MudTd DataLabel="Date">@CostContext.DateOfCost</MudTd>
+                    <MudTd DataLabel="">
+                        <MudFab OnClick="@(() => RemoveProduct(CostContext.Id))"
+                                Color="Color.Secondary"
+                                Icon="@Icons.Material.Filled.Delete"
+                                IconSize="Size.Small">
+
+                        </MudFab>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
 
 @*        
         <InputSelect class="form-control col-sm-5" @bind-Value="@Project.IdInitiative">
@@ -153,7 +187,10 @@ else
             Message = "There was an error..." + e.Message;
         }
     }
-
+    protected async Task RemoveProduct(int costId)
+    {
+        Project.Costs.RemoveAll(p => p.Id == costId);
+    }
     protected async Task SaveProject()
     {
         await ProjectService.SaveProject(Project);
@@ -161,7 +198,7 @@ else
         {
             NavigateToHome();
         }
-        
+
     }
 
     private void NavigateToHome()
@@ -173,7 +210,27 @@ else
     {
         NavigateToHome();
     }
-
+    protected async Task AddCost()
+    {
+        var dialog = DialogService.Show<ProjectWithCost>("Cost by Project");
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var cost = (Cost)result.Data;
+            ProjectCost oCost = new ProjectCost();
+            oCost.CostId = cost.Id;
+            oCost.DateOfCost = DateTime.Now;
+            oCost.ProjectId = Project.Id;
+            oCost.Name = cost.Name;
+            oCost.Description = cost.Description;
+            Project.Costs.Add(oCost);
+            oCost = null;
+        }
+    }   
+    protected async Task SaveCost()
+    {
+        
+    }
     //protected async Task NewProject()
     //{
     //    var dialog = DialogService.Show<ProjectModal>("New Project");

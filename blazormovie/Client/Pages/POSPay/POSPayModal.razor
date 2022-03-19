@@ -47,6 +47,11 @@
 
                         <MudDatePicker Label="Day of PO" @bind-Date="POSPay.PayDay"  DateFormat="dd/MM/yyyy" />
                         
+                        <MudCheckBox @bind-Checked="@CambioDivisa" @onclick="@ExchangeToogle" Class="ml-n2" Label="Exchange"></MudCheckBox>
+                        <div hidden="@(!CambioDivisa)" >
+                            <MudTextField  @bind-Value="dCambio" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro"/>
+                        </div>
+                        
                         <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.PayAmount)"/>
 
 
@@ -58,6 +63,7 @@
                                         <option value="@item.Id">@item.DescriptionPOS</option>
                                     }
                          </InputSelect>
+                      
                          
                             
                        
@@ -86,11 +92,21 @@
 @code {
 
     private bool HideLabel   {get;set;} = false;
+    private bool CambioDivisa { get; set; } = false;
+    private double dCambio {  get;  set; }
     private void Toggle()
     {
         HideLabel =   !HideLabel;
     }      
+    private void ExchangeToogle()
+    {
+        CambioDivisa = !CambioDivisa;
 
+    }
+    private void Exchange()
+    {
+        
+    }
 
     bool success;
     public POSPay POSPay = new POSPay();
