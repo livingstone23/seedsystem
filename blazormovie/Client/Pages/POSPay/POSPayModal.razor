@@ -47,12 +47,14 @@
 
                         <MudDatePicker Label="Day of PO" @bind-Date="POSPay.PayDay"  DateFormat="dd/MM/yyyy" />
                         
-                        <MudCheckBox @bind-Checked="@CambioDivisa" @onclick="@ExchangeToogle" Class="ml-n2" Label="Exchange"></MudCheckBox>
+                        <MudCheckBox @bind-Checked="@CambioDivisa" @onclick="@ExchangeToogle" Class="ml-n2" Label="Pounds"></MudCheckBox>
                         <div hidden="@(!CambioDivisa)" >
-                            <MudTextField  @bind-Value="dCambio" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro"/>
+                            <MudTextField  @bind-Value="POSPay.Exchange" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.Exchange)"/>
                         </div>
-                        
-                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.PayAmount)"/>
+                          <div class="col-md-4 mb-3">
+
+                          </div>
+                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@selectdIdcon" For="@(() => POSPay.PayAmount)"/>
 
 
                          <MudCheckBox @bind-Checked="@HideLabel" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
@@ -94,6 +96,25 @@
     private bool HideLabel   {get;set;} = false;
     private bool CambioDivisa { get; set; } = false;
     private double dCambio {  get;  set; }
+    private string selectdIdcon
+    {
+        get
+        {
+            if (CambioDivisa)
+            {
+                return Icons.Filled.AccessTime;
+
+            }
+            else
+            {
+                return Icons.Filled.Euro;
+            }
+
+        }
+    }
+
+
+
     private void Toggle()
     {
         HideLabel =   !HideLabel;
@@ -105,7 +126,7 @@
     }
     private void Exchange()
     {
-        
+
     }
 
     bool success;
@@ -129,7 +150,7 @@
         try
         {
 
-            
+
             if(iPoId != 0)
             {
                 POSPay = await POSPayService.GetById(iPoId);
@@ -139,7 +160,7 @@
                 {
                     //HideLabel = true;
                     Toggle();
-                    
+
                 }
             }
             else
@@ -147,7 +168,7 @@
                 POSPay = new POSPay() { RateChange = 1, CurrencyPay = "EURO", PayDay = DateTime.Now , IdPOSPaysAdjust = null};
                 initiatives = await InitiativeService.GetInitiatives();
                 Projects = await ProjectService.GetProjects();
-                
+
             }
             POSPayAdjust = await POSPayService.GetPOSPays();
             //if (initiatives != null && initiatives.Any())
@@ -176,7 +197,7 @@
                 }
 
             }
-      
+
 
         }
         catch(Exception e)
@@ -191,7 +212,7 @@
         if (Projects != null && Projects.Any())
         {
             POSPay.IdProject = Projects.FirstOrDefault().Id;
-            
+
         } else
         {
             POSPay.IdProject = 0;
@@ -254,7 +275,11 @@
         {
             POSPay.IdPOSPaysAdjust = null;
         }
+        if (CambioDivisa == false)
+        {
+            POSPay.Exchange = 0;
 
+        }
         success = true;
         StateHasChanged();
         if (success)

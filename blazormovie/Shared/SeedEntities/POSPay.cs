@@ -49,6 +49,7 @@ namespace blazormovie.Shared.SeedEntities
         public int IdInitiative { get; set; }
 
         public int? IdPOSPaysAdjust { get; set; }
-
+        [NotMapped]
+        public decimal Exchange { get; set; }
     }
 }

@@ -394,6 +394,8 @@
                 await  POSPayService.SavePOSPay(pOSPay);
                 Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
                 table.ReloadServerData();
+               
+                
             }
 
         }

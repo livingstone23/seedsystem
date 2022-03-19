@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace blazormovie.Shared.Entities
+namespace blazormovie.Shared.SeedEntities
 {
     public class Exchanges
     {
         public int Id{ get; set; }
         public int IdPo { get; set; }
-        public double Pounds { get; set; }
+        public decimal Pounds { get; set; }
         [Column("Exchange")]
-        public double Exchange { get; set; }
+        public decimal Exchange { get; set; }
     }
 }

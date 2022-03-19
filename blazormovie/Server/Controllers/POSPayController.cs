@@ -4,6 +4,7 @@ using blazormovie.Shared.SeedEntities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,10 +17,11 @@ namespace SeedSystem.Server.Controllers
     {
 
         private readonly IPOSPayRepository _pOSPayRepository;
-
-        public POSPayController(IPOSPayRepository pOSPayRepository)
+        private readonly IExchangeRepository _exchangeRepository;
+        public POSPayController(IPOSPayRepository pOSPayRepository,IExchangeRepository exchangeRepository)
         {
             _pOSPayRepository = pOSPayRepository;
+            _exchangeRepository = exchangeRepository;
         }
 
 
@@ -81,11 +83,38 @@ namespace SeedSystem.Server.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+         
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                await _pOSPayRepository.SavePOSPay(pOSPay);
+                bool bCambio=false;
+                Exchanges exchange = new Exchanges();
+                if (pOSPay.Exchange != 0)
+                {
+                    bCambio = true;
+                    //obtenemos el último id y le sumamos uno
+                    var data = _pOSPayRepository.GetPOSPays().Result;
+                    List<POSPay> ltpos = (List<POSPay>)data;
 
+                    int idPos = (from e in ltpos orderby e.Id descending select e.Id).FirstOrDefault() +1;
+
+                    ltpos = null;
+                    ////guardamos el cambio de moneda
+                   
+                    exchange.Exchange = pOSPay.Exchange;
+                    exchange.Pounds = pOSPay.PayAmount;
+                    exchange.IdPo = idPos;
+
+                    ////hacemos la conversión
+                    pOSPay.PayAmount = pOSPay.PayAmount * pOSPay.Exchange;
+                    //guardamos exchange
+                    
+                }
+                await _pOSPayRepository.SavePOSPay(pOSPay);
+                if (bCambio)
+                {
+                    await _exchangeRepository.Insert(exchange);
+                }
                 scope.Complete();
             }
 

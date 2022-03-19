@@ -1,5 +1,6 @@
 ﻿using blazormovie.repository.Interface.ModBudget;
 using blazormovie.Shared.Entities;
+using blazormovie.Shared.SeedEntities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

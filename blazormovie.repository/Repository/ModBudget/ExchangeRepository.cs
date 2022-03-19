@@ -1,5 +1,6 @@
 ﻿using blazormovie.repository.Interface.ModBudget;
 using blazormovie.Shared.Entities;
+using blazormovie.Shared.SeedEntities;
 using Dapper;
 using System;
 using System.Collections.Generic;
