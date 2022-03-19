@@ -193,5 +193,42 @@ namespace blazormovie.repository.Repository.ModBudget
             return result > 0;
 
         }
+
+        public async Task<bool> InsertProjectCost(int projectId, ProjectCost cost)
+        {
+            var sql = @"INSERT INTO ProyectCost( ProjectId,  CostId, DateOfCost,Amount)
+                                          VALUES(@projectId, @costId, @DateOfCost, @Amount)";
+
+
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new
+                {
+                    projectId = projectId,
+                    costId = cost.Id,
+                    DateOfCost = DateTime.Now
+                    
+                });
+
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteProjectCost(int projectCostId)
+        {
+            var sql = @"DELETE FROM ProjectCost 
+                        WHERE Id = @projectCostId ";
+            var result = await _dbConnection.ExecuteAsync(sql,
+                new { Id = projectCostId });
+
+            return result > 0;
+        }
+
+        public async Task<IEnumerable<ProjectCost>> GetCostByProject(int projectId)
+        {
+            var sql = @" Select a.Id, a.Name, a.Description,b.Amount, b.DateOfCost
+                        from Cost a
+                        inner join ProjectCost b on a.Id = b.ProjectId
+                        Where ProjectId = @Id ";
+            return await _dbConnection.QueryAsync<ProjectCost>(sql, new { Id = projectId });
+        }
     }
 }

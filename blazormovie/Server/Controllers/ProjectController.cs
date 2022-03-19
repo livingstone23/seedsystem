@@ -46,7 +46,7 @@ namespace SeedSystem.Server.Controllers
             var result = await _projectRepository.GetProjectByPagination(currentPageNumber, pageSize);
 
 
-            return result; 
+            return result;
         }
 
         [HttpGet("GetByPaginationAndInitiativeId/{currentPageNumber}/{pageSize}/{initiativeId}")]
@@ -62,11 +62,16 @@ namespace SeedSystem.Server.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<Project> GetById(int id)
         {
-            var project =  await _projectRepository.GetById(id);
+            var project = await _projectRepository.GetById(id);
             var POSPays = await _pOSPayRepository.GetByProject(project.Id);
-            if(project != null && POSPays != null)
+            var cost = await _projectRepository.GetCostByProject(project.Id);
+            if (project != null && POSPays != null)
             {
                 project.POSPays = POSPays.ToList();
+            }
+            if (project != null && cost != null)
+            {
+                project.Costs = cost.ToList();
             }
             return project;
         }
@@ -128,9 +133,6 @@ namespace SeedSystem.Server.Controllers
 
             return NoContent();
         }
-
-
-
     }
 
 }

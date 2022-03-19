@@ -32,7 +32,7 @@ namespace blazormovie.Shared.SeedEntities
         [NotMapped]
         public string InitiativeName { get; set; }
         public List<POSPay> POSPays { get; set; }
-
+        public List<ProjectCost> Costs { get; set; }
     }
 
 }
