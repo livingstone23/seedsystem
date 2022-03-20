@@ -125,6 +125,20 @@ namespace SeedSystem.Server.Controllers
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
+            //comprobamos si tiene un cambio de divisa asociado y lo eliminamos
+            Exchanges exchange = new Exchanges();
+            var data = _exchangeRepository.GetByPoId(id);
+            
+            if (data != null)
+            {
+                exchange = (Exchanges)data.Result.FirstOrDefault();
+                //eliminamos cambio
+                if (exchange != null)
+                {
+                    await _exchangeRepository.Delete(exchange.Id);
+                    exchange = null;
+                }
+            }
             await _pOSPayRepository.Delete(id);
         }
 
@@ -141,6 +155,33 @@ namespace SeedSystem.Server.Controllers
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                
+                if (pOSPay.Exchange != 0)
+                {
+                    //obtenemos exchange
+                    Exchanges exchange = new Exchanges();
+                    var data = await _exchangeRepository.GetByPoId(pOSPay.Id);
+                    if (data.Any())
+                    {
+                        //hacemos update
+                        exchange = (Exchanges)data.FirstOrDefault();
+                        exchange.Exchange = pOSPay.Exchange;
+                        exchange.Pounds = pOSPay.PayAmount;
+                        await _exchangeRepository.Update(exchange);
+                        
+                    }
+                    else
+                    {
+                        //creamos uno nuevo
+                        exchange.Exchange = pOSPay.Exchange;
+                        exchange.Pounds = pOSPay.PayAmount;
+                        exchange.IdPo = id;
+                        await _exchangeRepository.Insert(exchange);
+                    }
+                    ////hacemos la conversión
+                    pOSPay.PayAmount = pOSPay.PayAmount * pOSPay.Exchange;
+                   
+                }
                 await _pOSPayRepository.Update(pOSPay);
 
                 scope.Complete();

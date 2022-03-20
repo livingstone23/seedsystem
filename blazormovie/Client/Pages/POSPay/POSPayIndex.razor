@@ -111,7 +111,7 @@
     private int[] pageSizeOptions = new int[] { 15 };
 
     private MudTable<POSPayDTO> table;
-
+    
     private IEnumerable<POSPayDTO> DataPrint = new List<POSPayDTO>();
 
     public string excel = "";
@@ -142,19 +142,19 @@
 
 
         response.Data = response.Data.Where(element =>
-        {
-            if (string.IsNullOrWhiteSpace(searchString))
-                return true;
-            if (element.DescriptionPOS.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            if (element.NumberTransfer.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            if ($"{element.ProjectName} {element.InitiativeName} {element.PayAmount}".Contains(searchString))
-                return true;
-            if (element.ProjectName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
-            return false;
-        }).ToArray();
+                    {
+                        if (string.IsNullOrWhiteSpace(searchString))
+                            return true;
+                        if (element.DescriptionPOS.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (element.NumberTransfer.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if ($"{element.ProjectName} {element.InitiativeName} {element.PayAmount}".Contains(searchString))
+                            return true;
+                        if (element.ProjectName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        return false;
+                    }).ToArray();
         //totalItems = data.Count();
         switch (state.SortLabel)
         {
@@ -340,13 +340,14 @@
             if (Client.Name != null)
             {
                 await  ClientService.Save(Client);
+
                 table.ReloadServerData();
                 Snackbar.Add("The Client has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
             }
         }
 
     }
-	protected async Task NewGroup()
+    protected async Task NewGroup()
     {
         var dialog = DialogService.Show<GroupsModal>("New Group");
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
@@ -395,12 +396,8 @@
                 await  POSPayService.SavePOSPay(pOSPay);
                 Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
                 table.ReloadServerData();
-               
-                
             }
-
         }
-
     }
 
     protected async Task Delete(int id)
@@ -414,19 +411,21 @@
     {
 
 
-        
+
         //creamos objeto dialogparameters para pasarle parametros a la vista modal
         DialogParameters oParam = new DialogParameters();
         oParam.Add("iPoId",id);
         var dialog = DialogService.Show<POSPayModal>("Edit Po",oParam,null);
-       
+
         var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
 
         if(!result.Cancelled)
         {
             var pOSPay = (POSPay)result.Data;
+       
             if (pOSPay.IdInitiative != null)
             {
+                
                 pOSPay.Id = id;
                 await  POSPayService.SavePOSPay(pOSPay);
                 Snackbar.Add("PO has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);

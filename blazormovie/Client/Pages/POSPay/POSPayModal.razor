@@ -3,7 +3,7 @@
 @inject IPOSPayService POSPayService
 @inject ISnackbar Snackbar
 @inject IMostrarMensajes mostrarMensajes
-
+@inject IExchangeService exchangeService
 
 <MudDialog> 
 
@@ -138,6 +138,7 @@
     public int proyectId { get; set; }
     public string Message  { get; set; }
     public int NullProject { get; set; } = 0;
+    public Exchanges exchange;
     [Parameter] 
     public int iPoId { get; set; }
     [CascadingParameter] 
@@ -156,11 +157,17 @@
                 POSPay = await POSPayService.GetById(iPoId);
                 initiatives = await InitiativeService.GetInitiatives();
                 Projects = await ProjectService.GetProjects();
+                exchange = await exchangeService.GetByPoId(iPoId);
                 if (POSPay.IdPOSPaysAdjust != null)
                 {
                     //HideLabel = true;
                     Toggle();
 
+                }
+                if (exchange != null)
+                {
+                    ExchangeToogle();
+                    POSPay.Exchange = exchange.Exchange;
                 }
             }
             else

@@ -18,6 +18,16 @@ namespace blazormovie.repository.Repository.ModBudget
         {
             _dbConnection = dbConnection;
         }
+
+        public async Task<bool> Delete(int id)
+        {
+            var sql = @"DELETE FROM CambioDivisa WHERE Id = @id";
+            
+            var result = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+
+            return result > 0;
+        }
+
         public async Task<IEnumerable<Exchanges>> GetAll()
         {
             var sql = @"SELECT * FROM CambioDivisa ORDER BY Id";
@@ -43,6 +53,19 @@ namespace blazormovie.repository.Repository.ModBudget
                     Pounds = exchange.Pounds,
                     Exchange = exchange.Exchange
                     });
+            return result > 0;
+        }
+
+        public async Task<bool> Update(Exchanges exchange)
+        {
+            var sql = @"UPDATE CambioDivisa SET Exchange = @cambio, Pounds = @cantidad WHERE id = @idEx";
+            var result = await _dbConnection.ExecuteAsync(sql,  
+                new {
+                        cambio = exchange.Exchange,
+                        cantidad = exchange.Pounds,
+                        idEx = exchange.Id
+                    });
+            
             return result > 0;
         }
     }

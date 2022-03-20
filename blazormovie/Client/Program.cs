@@ -51,6 +51,7 @@ namespace blazormovie.Client
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IGroupsService, GroupsService>();
             services.AddScoped<ICostService, CostService>();
+            services.AddScoped<IExchangeService, ExchangeService>();
 
             services.AddAuthorizationCore();
 
