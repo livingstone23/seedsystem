@@ -19,6 +19,8 @@ namespace blazormovie.repository.Interface.ModBudget
 
         Task<bool> Update(Cost cost);
 
+        Task<IEnumerable<Project>> GetProjectsByCost(int costId);
+
         //Task<bool> InsertProjectCost(int projectId, Group group);
 
         //Task<bool> DeleteClientGroup(int clientId);

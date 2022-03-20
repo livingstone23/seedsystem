@@ -1,0 +1,407 @@
+﻿@page "/cost"
+@using OfficeOpenXml;
+@using OfficeOpenXml.Style;
+@using System.IO
+@using blazormovie.Client.Pages.Client
+@using blazormovie.Client.Pages.Groups
+@using blazormovie.Client.Pages.Initiative
+@using blazormovie.Client.Pages.POSPay
+@using blazormovie.Client.Pages.Project
+@using iText.IO.Font.Constants
+@using iText.Kernel.Font
+@using iText.Kernel.Pdf
+@using iText.Layout
+@using iText.Layout.Element
+@inject IClientService ClientService
+@inject IGroupsService groupsService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject ICostService CostService
+@inject IDialogService DialogService
+@inject IInitiativeService InitiativeService
+@inject IProjectService ProjectService
+@inject IPOSPayService POSPayService
+@inject IJSRuntime jsRuntime;
+@inject NavigationManager NavigationManager
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+    
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<Cost>>>(LoadTodos))"   Hover="true"  @ref="table">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Costs</MudText>
+                <MudSpacer />
+
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    
+            
+                <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                    <MudMenuItem OnClick="@(NewCost)" >New Cost</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewGroup)" >New Work Team</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewClient)" >New Client</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewInitiative)" >New Initiative</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewProject)">New Project</MudMenuItem>
+                    <MudMenuItem OnClick="@(NewPay)">New PO</MudMenuItem>
+                </MudMenu>
+
+                <MudMenu Icon="@Icons.Material.Filled.Computer" Color="Color.Success">
+                   <a @onclick="exportarPdf" class= "btn btn-secondaryPdf" href="@pdf">PDF</a>
+                    <a @onclick="exportarExcel" class= "btn btn-secondary" href="@excel">Excel</a>
+                </MudMenu>
+
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="id_field" T="Initiative">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="name_field" T="Initiative">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="des_field" T="Initiative">Description</MudTableSortLabel></MudTh>
+
+                
+                <MudTh></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Desc">  <a href="/groups/@context.Id">@context.Name</a></MudTd>
+                <MudTd DataLabel="Nrmt">@context.Description</MudTd>
+             
+           
+                <MudTd>
+                    <MudFab OnClick="@(() => Edit(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+                
+
+                <MudTd>
+                    <MudFab OnClick="@(() => ProjectsByCost(context.Id))"
+                            Color="Color.Primary"
+                            Icon="@Icons.Material.Filled.AddToQueue"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+
+                <MudTd>
+                    <MudFab OnClick="@(() => Delete(context.Id))"
+                            Color="Color.Secondary"
+                            Icon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small"
+                            IconSize="Size.Small">
+                    </MudFab>
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="pageSizeOptions"></MudTablePager>
+            </PagerContent>
+
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code {
+    public List<Cost> Cost = new List<Cost>();
+    public string Message { get; set; }
+    public string excel = "";
+    public string pdf = "";
+
+    private int[] pageSizeOptions = new int[] { 15 };
+
+    private MudTable<Cost> table;
+    private IEnumerable<Cost> DataPrint = new List<Cost>();
+    private string searchString = null;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        table.SetRowsPerPage(15);
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task<TableData<Cost>> LoadTodos(TableState state)
+    {
+
+
+        var response = await CostService.GetByPagination((state.Page + 1), state.PageSize);
+
+
+        response.Data = response.Data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return false;
+        }).ToArray();
+
+        switch (state.SortLabel)
+        {
+            case "id_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Id);
+                break;
+            case "name_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Name);
+                break;
+            case "des_field":
+                response.Data = response.Data.OrderByDirection(state.SortDirection, o => o.Description);
+                break;
+
+        }
+
+
+        DataPrint = response.Data;
+
+        return new TableData<Cost>() { Items = response.Data, TotalItems = response.TotalRecords };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    protected async Task Edit(int id)
+    {
+        //creamos objeto dialogparameters para pasarle parametros a la vista modal
+        DialogParameters oParam = new DialogParameters();
+        oParam.Add("costId",id);
+        var dialog = DialogService.Show<CostModal>("Edit Cost",oParam,null);
+
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Cost = (Cost)result.Data;
+            if (Cost.Name != null)
+            {
+                Cost.Id = id;
+                await  CostService.Save(Cost);
+                await table.ReloadServerData();
+                Snackbar.Add("Cost has been modified.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+    protected async Task Delete(int id)
+    {
+        Cost costToDelete =  await CostService.GetById(id);
+        int projectsCount = costToDelete?.Projects.Count ?? 0;
+
+        if (projectsCount > 0)
+        {
+            Snackbar.Add($"The Cost can't been deleted, Cause it has {projectsCount} Projects asigned. ", MudBlazor.Severity.Warning, a => a.VisibleStateDuration = 550);
+        }
+        else
+        {
+            await CostService.Delete(id);
+            await table.ReloadServerData();
+            Snackbar.Add("The Cost has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+        }
+    }
+
+    protected void ProjectsByCost(int id)
+    {
+        NavigationManager.NavigateTo($"/costdetail/{id}");
+    }
+
+    protected async Task NewCost()
+    {
+        var dialog = DialogService.Show<CostModal>("New Cost");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Cost = (Cost)result.Data;
+            if (Cost.Name != null)
+            {
+                await  CostService.Save(Cost);
+                await table.ReloadServerData();
+                Snackbar.Add("The Cost has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+    protected async Task NewClient()
+    {
+        var dialog = DialogService.Show<ClientModal>("New Client");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Client = (Client)result.Data;
+            if (Client.Name != null)
+            {
+                await  ClientService.Save(Client);
+                await table.ReloadServerData();
+                Snackbar.Add("The Client has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+
+    protected async Task NewGroup()
+    {
+        var dialog = DialogService.Show<GroupsModal>("New Group");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Group = (Group)result.Data;
+            if (Group.Name != null)
+            {
+                await  groupsService.Save(Group);
+                await table.ReloadServerData();
+                Snackbar.Add("The Group has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+    protected async Task NewInitiative()
+    {
+        var dialog = DialogService.Show<InitiativeModal>("New Initiative");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Initiative = (Initiative)result.Data;
+            if (Initiative.Name != null)
+            {
+                await  InitiativeService.SaveInitiative(Initiative);
+                await table.ReloadServerData();
+                Snackbar.Add("The Initiative has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+
+    }
+
+    protected async Task NewProject()
+    {
+        var dialog = DialogService.Show<ProjectModal>("New Project");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var Project = (Project)result.Data;
+            if (Project.Name != null)
+            {
+                await ProjectService.SaveProject(Project);
+                await table.ReloadServerData();
+                Snackbar.Add("The Project has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+        }
+    }
+
+
+    protected async Task NewPay()
+    {
+        var dialog = DialogService.Show<POSPayModal>("New POSPay");
+        var result = await dialog.Result;   //Hilo de ejecucion espera el resultado
+
+        if(!result.Cancelled)
+        {
+            var pOSPay = (POSPay)result.Data;
+            if (pOSPay.IdInitiative != null)
+            {
+                await  POSPayService.SavePOSPay(pOSPay);
+                await table.ReloadServerData();
+                Snackbar.Add("The PO has been added.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 400);
+            }
+
+        }
+    }
+
+    public void exportarPdf()
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            PdfWriter writer = new PdfWriter(ms);
+            using(var pdfDoc = new PdfDocument(writer))
+            {
+                //Rellenar Pdf
+                Document doc = new Document(pdfDoc);
+
+                Paragraph p1 = new Paragraph("Report");
+                p1.SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER);
+                p1.SetFontSize(20);
+                doc.Add(p1);
+                //creamos las cabeceras
+                PdfFont font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                Table tabla = new Table(2).UseAllAvailableWidth();
+                Cell celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Name")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+                celda = new Cell().SetBackgroundColor(iText.Kernel.Colors.ColorConstants.LIGHT_GRAY);
+                celda.Add(new Paragraph("Description")).SetFont(font);
+                tabla.AddHeaderCell(celda);
+
+                foreach(var item in DataPrint)
+                {
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Name.ToString()));
+                    tabla.AddCell(celda);
+                    celda = new Cell();
+                    celda.Add(new Paragraph(item.Description.ToString()));
+                    tabla.AddCell(celda);
+
+                }
+                doc.Add(tabla);
+                //liberamos memoria
+                doc.Close();
+                writer.Close();
+                //para descargar
+                byte[] buffer = ms.ToArray();
+                string base64 = Convert.ToBase64String(buffer);
+                pdf = "data:application/pdf;base64,"+base64;
+                jsRuntime.InvokeVoidAsync("descargarPdf", pdf);
+            }
+
+        }
+    }
+    public void exportarExcel()
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        using(MemoryStream ms = new MemoryStream())
+        {
+            try
+            {
+                using (ExcelPackage ep = new ExcelPackage())
+                {
+                    ep.Workbook.Worksheets.Add("hoja");
+                    //solo para una hoja
+                    ExcelWorksheet ew = ep.Workbook.Worksheets[0];
+                    ew.Column(1).Width = 50;
+                    ew.Cells[1, 1].RichText.Add("Description").Bold = true;
+                    ew.Column(2).Width = 50;
+                    ew.Cells[1, 2].RichText.Add("Name").Bold = true;
+               
+                    int fila = 2;
+                    foreach(var item in DataPrint)
+                    {
+
+                        ew.Cells[fila, 1].Value = item.Name.ToString();
+                        ew.Cells[fila, 2].Value = item.Description.ToString();
+                    
+                        fila++;
+                    }
+
+                    ep.SaveAs(ms);
+                    byte[] buffer = ms.ToArray();
+                    string base64 = Convert.ToBase64String(buffer);
+                    excel = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + base64;
+                }
+            }catch(Exception ex)
+            {
+                Snackbar.Add(ex.Message, MudBlazor.Severity.Success, a => a.VisibleStateDuration = 1000);
+            }
+            
+        }
+    }
+}

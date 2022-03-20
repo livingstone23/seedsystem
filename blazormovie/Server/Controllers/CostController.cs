@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -36,6 +37,11 @@ namespace blazormovie.Server.Controllers
         public async Task<Cost> GetById(int id)
         {
             var cost = await _costRepository.GetById(id);
+            var projects = await _costRepository.GetProjectsByCost(id);
+            if(cost != null)
+            {
+                cost.Projects = projects.ToList();
+            }
            
             return cost;
         }
@@ -51,6 +57,33 @@ namespace blazormovie.Server.Controllers
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 await _costRepository.Insert(cost);
+
+                scope.Complete();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _costRepository.Delete(id);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Cost cost)
+        {
+
+            if (cost == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _costRepository.Update(cost);
 
                 scope.Complete();
             }
