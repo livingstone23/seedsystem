@@ -23,6 +23,7 @@
 @inject IGroupsService groupsService
 
 <MudGrid>
+    
 
     <MudItem xs="12" sm="12" md="12">
         <MudTable ServerData="@(new Func<TableState, Task<TableData<POSPayDTO>>>(LoadTodos))"   Hover="true"  @ref="table">

@@ -1,0 +1,121 @@
+﻿@page "/costdetail/{id:int}"
+@inject ICostService CostService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+
+@if (Cost != null)
+{
+
+    <EditForm Model="@Cost">
+
+        <div class="card">
+            <h5 class="card-header">Projects by Cost</h5>
+            <div class="card-body">
+                <div class="container">
+                    @*<div class="row">
+                        <div class="col-md-4">
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <input type="button" class="btn btn-secondary" value="Add Project" @onclick="AddProject"/>
+                            <input type="submit" class="btn btn-secondary" value="Save Projects" @onclick="SaveProjects"/>
+                             
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                    </div>*@
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Client</label>
+                            <InputText class="form-control" @bind-Value="@Cost.Name" readonly="readonly" />
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="">Description</label>
+                            <InputText class="form-control" @bind-Value="@Cost.Description" readonly="readonly" />
+                        </div>
+                    </div>
+
+                    <div class ="row">
+                        <label for=""></label>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <input type="submit" class="btn btn-secondary" value="Cancel" @onclick="Cancel"/>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @if (Cost.Projects != null && Cost.Projects.Any())
+        {
+
+            <MudTable Items="@Cost.Projects" Hover = "true" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudText typeof="Typo.h6">Projects</MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Description</MudTh>
+                 
+                </HeaderContent>
+                <RowTemplate Context="ProjectContext">
+                    <MudTd DataLabel="Name">@ProjectContext.Name </MudTd>
+                    <MudTd DataLabel="Price">@ProjectContext.Description </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </EditForm>
+}
+
+@code {
+    public Cost Cost;
+    public string Message { get; set; }
+
+    [Parameter] 
+    public int id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (id > 0)
+            {
+                Cost = await CostService.GetById(id);
+            }
+        }
+        catch (Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+    private void NavigateToHome()
+    {
+        NavigationManager.NavigateTo("/cost");
+    }
+
+    protected void Cancel()
+    {
+        NavigateToHome();
+    }
+}

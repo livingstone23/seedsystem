@@ -8,5 +8,8 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     {
         Task<IEnumerable<Cost>> Get();
         Task<Cost>GetById(int id);
+        Task<CostPagination> GetByPagination(int page, int pagesize);
+        Task Save(Cost cost);
+        Task Delete(int id);
     }
 }

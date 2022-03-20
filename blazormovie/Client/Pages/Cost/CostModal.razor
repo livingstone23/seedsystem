@@ -1,0 +1,87 @@
+﻿@inject ICostService CostService
+@inject ISnackbar Snackbar
+
+<MudDialog> 
+
+    <DialogContent>
+        <EditForm Model="@Cost" OnValidSubmit="@OnValidSubmit" >
+            <DataAnnotationsValidator />
+             
+            <div style="max-width: 100%;"> 
+                <MudCard>
+
+                    <MudCardContent>
+                        <MudTextField T="string" @bind-Value="@Cost.Name" Label="Name" For="@(() => Cost.Name)"/>
+                        <MudTextField T="string" @bind-Value="@Cost.Description" Label="Description" For="@(() => Cost.Description)"/>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit"    Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    </MudCardActions>
+
+                </MudCard>
+
+            </div>
+        </EditForm>
+         
+
+    </DialogContent>
+
+</MudDialog>
+
+
+
+
+
+@code {
+
+    bool success;
+
+    string[] errors = { };
+
+    public Cost Cost = new Cost();
+
+    public string Message  { get; set; }
+
+    [Parameter]
+    public int costId{ get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog {get;set;}
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            if (costId != 0)
+            {
+                Cost = await CostService.GetById(costId);
+            }
+
+        }
+        catch(Exception e)
+        {
+            Message = "There was an error..." + e.Message;
+        }
+    }
+
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        success = true;
+        StateHasChanged();
+        if (success)
+        {
+            Snackbar.Add("Cost added", MudBlazor.Severity.Info, a => a.VisibleStateDuration = 200);
+            MudDialog.Close(DialogResult.Ok(Cost));
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
