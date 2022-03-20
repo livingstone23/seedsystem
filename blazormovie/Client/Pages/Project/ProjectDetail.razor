@@ -71,7 +71,7 @@
                         <div class="col-md-6 mb-3">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <MudTextField @bind-Value="Project.AmountDefined" Label="Pay Amount" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"/>
+                            <MudTextField ReadOnly @bind-Value="Project.AmountDefined" Format="F2" Label="Pay Amount" Variant="Variant.Text"/>
                         </div>
                     </div>
                
@@ -126,7 +126,7 @@
                             <MudTh>Amount</MudTh>
                         </HeaderContent>
                         <RowTemplate Context="CostContext">
-                            <MudTd DataLabel="Name">@CostContext.Name </MudTd>
+                            <MudTd DataLabel="Cost Type">@CostContext.Name </MudTd>
                             <MudTd DataLabel="Description">@CostContext.Description</MudTd>
                             <MudTd DataLabel="Amount">@CostContext.Amount 
                                 <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:21px; height:21px;"></MudIcon>
