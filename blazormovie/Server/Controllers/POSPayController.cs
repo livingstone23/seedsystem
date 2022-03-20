@@ -93,17 +93,7 @@ namespace SeedSystem.Server.Controllers
                 {
                     bCambio = true;
                     //obtenemos el último id y le sumamos uno
-                    var data = _pOSPayRepository.GetPOSPays().Result;
-                    List<POSPay> ltpos = (List<POSPay>)data;
-
-                    int idPos = (from e in ltpos orderby e.Id descending select e.Id).FirstOrDefault() +1;
-
-                    ltpos = null;
-                    ////guardamos el cambio de moneda
-                   
-                    exchange.Exchange = pOSPay.Exchange;
-                    exchange.Pounds = pOSPay.PayAmount;
-                    exchange.IdPo = idPos;
+           
 
                     ////hacemos la conversión
                     pOSPay.PayAmount = pOSPay.PayAmount * pOSPay.Exchange;
@@ -111,8 +101,20 @@ namespace SeedSystem.Server.Controllers
                     
                 }
                 await _pOSPayRepository.SavePOSPay(pOSPay);
+                
                 if (bCambio)
                 {
+                    var data = _pOSPayRepository.GetPOSPays().Result;
+                    List<POSPay> ltpos = (List<POSPay>)data;
+
+                    int idPos = (from e in ltpos orderby e.Id descending select e.Id).FirstOrDefault();
+
+                    ltpos = null;
+                    ////guardamos el cambio de moneda
+
+                    exchange.Exchange = pOSPay.Exchange;
+                    exchange.Pounds = pOSPay.PayAmount;
+                    exchange.IdPo = idPos;
                     await _exchangeRepository.Insert(exchange);
                 }
                 scope.Complete();
@@ -180,8 +182,21 @@ namespace SeedSystem.Server.Controllers
                     }
                     ////hacemos la conversión
                     pOSPay.PayAmount = pOSPay.PayAmount * pOSPay.Exchange;
-                   
+
                 }
+                else
+                {
+                    //comprobamos si eliminar un cambio asociado
+                    Exchanges exchange = new Exchanges();
+                    var data = await _exchangeRepository.GetByPoId(pOSPay.Id);
+                    if (data.Any())
+                    {
+                        //eliminamos
+                        exchange = (Exchanges)data.FirstOrDefault();
+                        await _exchangeRepository.Delete(exchange.Id);
+                    }
+                }
+                
                 await _pOSPayRepository.Update(pOSPay);
 
                 scope.Complete();
