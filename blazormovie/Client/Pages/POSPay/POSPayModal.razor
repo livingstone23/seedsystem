@@ -51,10 +51,28 @@
                         <div hidden="@(!CambioDivisa)" >
                             <MudTextField  @bind-Value="POSPay.Exchange" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.Exchange)"/>
                         </div>
-                          <div class="col-md-4 mb-3">
+                       
+                        <div class="col-md-4 mb-3">
 
-                          </div>
-                        <MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@selectdIdcon" For="@(() => POSPay.PayAmount)"/>
+                        </div>
+      @*                   <div class="row">
+                                <div class = "cool md-">
+                                 <label style="color:teal" font-sixe="2000">
+                                     €.. 
+                                 </label>  
+                            </div>
+                            <div class = "cool md-3"/>
+                            <div class = "cool md-3">
+
+                            </div>
+
+                         </div>*@
+                    
+                            @*<MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@selectdIdcon" For="@(() => POSPay.PayAmount)"/>*@
+                           
+                            <MudTextField @bind-Value="POSPay.PayAmount" Label="@selectdIdcon" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" For="@(() => POSPay.PayAmount)"/>
+                         
+          
 
 
                          <MudCheckBox @bind-Checked="@HideLabel" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
@@ -102,12 +120,15 @@
         {
             if (CambioDivisa)
             {
-                return Icons.Filled.AccessTime;
+               return "Pounds(£) Pay Amount";
+                
 
             }
             else
             {
-                return Icons.Filled.Euro;
+                
+                return "Euros(€) Pay Amount";
+                
             }
 
         }
