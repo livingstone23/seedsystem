@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace blazormovie.repository.Repository.ModBudget
 {
+
     public class CostRepository : ICostRepository
     {
         private readonly IDbConnection _dbConnection;
@@ -112,6 +113,14 @@ namespace blazormovie.repository.Repository.ModBudget
                         Where b.CostId = @Id ";
 
             return await _dbConnection.QueryAsync<Project>(sql, new { Id = costId });
+        }
+
+        public async Task<IEnumerable<ProjectCost>> GetProjectCost()
+        {
+            // var sql = @"Select * from ProjectCost order by Id";
+            var sql = @"Select a.Id,a.CostId,a.ProjectId,a.DateOfCost,a.amount,b.Name,b.Description from ProjectCost a
+                        join cost b on a.CostId = b.Id order by a.Id";
+            return await _dbConnection.QueryAsync<ProjectCost>(sql, new { });
         }
     }
 }

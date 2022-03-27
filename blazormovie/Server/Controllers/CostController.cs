@@ -90,5 +90,11 @@ namespace blazormovie.Server.Controllers
 
             return NoContent();
         }
+        [HttpGet("GetProjectCost")]
+        public async Task<IEnumerable<ProjectCost>>GetProjectCost()
+        {
+            var projectCost = await _costRepository.GetProjectCost();
+            return projectCost;
+        }
     }
 }
