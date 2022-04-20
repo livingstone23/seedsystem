@@ -119,7 +119,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<POSPay> GetById(int id)
         {
-            var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust 
+            var sql = @"Select Id, PayDay, CurrencyPay, DescriptionPOS, NumberTransfer, PayAmount, RateChange, IdProject, IdInitiative, IdPOSPaysAdjust, profile_pic_data_url, profile_pdf_data_url 
                         from POSPay Where Id = @Id ";
 
             return await _dbConnection.QueryFirstOrDefaultAsync<POSPay>(sql, new { Id = id });
@@ -146,8 +146,8 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> SavePOSPay(POSPay posPay)
         {
-            var sql = @" INSERT INTO POSPay(  PayDay,  CurrencyPay,  DescriptionPOS,  NumberTransfer,  PayAmount,  RateChange,  IdInitiative,  IdProject,  IdPOSPaysAdjust)
-                                    values ( @PayDay, @CurrencyPay, @DescriptionPOS, @NumberTransfer, @PayAmount, @RateChange, @IdInitiative, @IdProject, @IdPOSPaysAdjust) ";
+            var sql = @" INSERT INTO POSPay(  PayDay,  CurrencyPay,  DescriptionPOS,  NumberTransfer,  PayAmount,  RateChange,  IdInitiative,  IdProject,  IdPOSPaysAdjust,  profile_pic_data_url,  profile_pdf_data_url)
+                                    values ( @PayDay, @CurrencyPay, @DescriptionPOS, @NumberTransfer, @PayAmount, @RateChange, @IdInitiative, @IdProject, @IdPOSPaysAdjust, @profile_pic_data_url, @profile_pdf_data_url ) ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
@@ -160,7 +160,9 @@ namespace blazormovie.repository.Repository.ModBudget
                     RateChange = posPay.RateChange,
                     IdInitiative = posPay.IdInitiative,
                     IdProject = posPay.IdProject,
-                    IdPOSPaysAdjust = posPay.IdPOSPaysAdjust
+                    IdPOSPaysAdjust = posPay.IdPOSPaysAdjust,
+                    profile_pic_data_url = posPay.profile_pic_data_url,
+                    profile_pdf_data_url = posPay.profile_pdf_data_url,
                 });
 
             return result > 0;
@@ -179,7 +181,9 @@ namespace blazormovie.repository.Repository.ModBudget
                                 RateChange = @RateChange,
                                 IdProject = @IdProject,
                                 IdInitiative = @IdInitiative,
-                                IdPOSPaysAdjust = @IdPOSPaysAdjust
+                                IdPOSPaysAdjust = @IdPOSPaysAdjust,
+                                profile_pic_data_url = @profile_pic_data_url,
+                                profile_pdf_data_url = @profile_pdf_data_url
                         Where   Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
@@ -194,6 +198,8 @@ namespace blazormovie.repository.Repository.ModBudget
                     posPay.IdProject,
                     posPay.IdInitiative,
                     posPay.IdPOSPaysAdjust,
+                    posPay.profile_pic_data_url,
+                    posPay.profile_pdf_data_url,
                     posPay.Id
                 });
 

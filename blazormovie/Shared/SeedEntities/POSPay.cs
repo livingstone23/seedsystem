@@ -51,5 +51,20 @@ namespace blazormovie.Shared.SeedEntities
         public int? IdPOSPaysAdjust { get; set; }
         [NotMapped]
         public decimal Exchange { get; set; }
+
+
+
+        [Column("profile_pic_data_url")]
+        public string profile_pic_data_url { get; set; }
+
+        [Column("profile_pdf_data_url")]
+        public string profile_pdf_data_url { get; set; }
+
+
+        [Column("profile_picture_url")]
+        [MaxLength(250, ErrorMessage = @" The {0} must have a maximum length of {1}. ")]
+        public string profile_picture_url { get; set; }
+
+
     }
 }

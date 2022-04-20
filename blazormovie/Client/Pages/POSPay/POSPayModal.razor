@@ -4,6 +4,7 @@
 @inject ISnackbar Snackbar
 @inject IMostrarMensajes mostrarMensajes
 @inject IExchangeService exchangeService
+@inject IJSRuntime jsRuntime 
 
 <MudDialog> 
 
@@ -13,89 +14,197 @@
             <DataAnnotationsValidator />
 
             <div style="max-width: 100%;">
-                 <MudCard>
-                    <MudCardContent>
+               
+                
+                
+                
+                <MudTabs Outlined="true" Position="@Position.Top" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+                    <MudTabPanel Text="Item One">
 
-                        <MudTextField T="string" @bind-Value="@POSPay.DescriptionPOS" Label="Description PO" For="@(() => POSPay.DescriptionPOS)"/>
+                   
+                
+
+                    
+
+                        @*                    <div class="col-4">
+                        <img src="@POSPay.profile_pic_data_url" style="width: 150px; height: 150px;"> <br/> <br/>
+
+                        <InputFile id="fileInput1" OnChange="OnInputFileChanged" hidden multiple accept=".png" />
                         
-                        <MudTextField T="string" @bind-Value="@POSPay.NumberTransfer" Label="NumberTransfer" For="@(() => POSPay.NumberTransfer)"/>
+                        <button class="btn btn-primary" @onclick="DownloadProfilePicture">Download Picture</button>
+
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Filled.CloudUpload"
+                                   for="fileInput1">
+                            Upload your image
+                        </MudButton>
+
+                    </div>
+                    
+                    
+
+                    <div class="col-4">
+                        @if(@POSPay.profile_pdf_data_url != null ) {
+                            <iframe src="data:application/pdf;base64,@POSPay.profile_pdf_data_url" type="application/pdf" style="width: 150px; height: 150px;"></iframe> 
+                        }
+                        else
+                        {
+                            <iframe type="application/pdf" style="width: 150px; height: 150px;"></iframe> 
+                        }
+                        
+
+                        <br/> <br/>
 
 
-                        <label for="">Initiative</label>
-                        <InputSelect class="form-control" 
-                                    Value="@POSPay.IdInitiative"
-                                    ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
-                                    ValueExpression="@(() => POSPay.IdInitiative)"
-                                    >
+                        <InputFile id="fileInput2" OnChange="OnInputFileChangedPdf" hidden multiple accept=".pdf, .docx"/>
+
+                        <button class="btn btn-primary" @onclick="DownloadProfilePdffile">Download Pdf</button>
+
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Filled.CloudUpload"
+                                   for="fileInput2">
+                            Upload your file
+                        </MudButton>
+
+                    </div>*@
+
+
+                            <MudCardContent>
+
+                                <MudTextField T="string" @bind-Value="@POSPay.DescriptionPOS" Label="Description PO" For="@(() => POSPay.DescriptionPOS)"/>
+
+                                <MudTextField T="string" @bind-Value="@POSPay.NumberTransfer" Label="NumberTransfer" For="@(() => POSPay.NumberTransfer)"/>
+
+
+                                <label for="">Initiative</label>
+                                <InputSelect class="form-control"
+                                             Value="@POSPay.IdInitiative"
+                                             ValueChanged="((int initiativeId) => InitiativeHasChanged(initiativeId))"
+                                             ValueExpression="@(() => POSPay.IdInitiative)">
                                     @foreach (var item in initiatives)
                                     {
                                         <option value="@item.Id">@item.Name</option>
                                     }
-                        </InputSelect>
+                                </InputSelect>
 
-                        <label for="">Project</label>
-                        <InputSelect class="form-control" 
-                                    Value="@POSPay.IdProject"
-                                    ValueChanged="@((int projectId) => ProjectHasChanged(projectId))"
-                                    ValueExpression="@(() => POSPay.IdProject)"
-                        >
+                                <label for="">Project</label>
+                                <InputSelect class="form-control"
+                                             Value="@POSPay.IdProject"
+                                             ValueChanged="@((int projectId) => ProjectHasChanged(projectId))"
+                                             ValueExpression="@(() => POSPay.IdProject)">
                                     @foreach (var item in Projects)
                                     {
                                         <option value="@item.Id">@item.Name</option>
                                     }
-                        </InputSelect>
+                                </InputSelect>
 
-                        <MudDatePicker Label="Day of PO" @bind-Date="POSPay.PayDay"  DateFormat="dd/MM/yyyy" />
-                        
-                        <MudCheckBox @bind-Checked="@CambioDivisa" @onclick="@ExchangeToogle" Class="ml-n2" Label="Pounds"></MudCheckBox>
-                        <div hidden="@(!CambioDivisa)" >
-                            <MudTextField  @bind-Value="POSPay.Exchange" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.Exchange)"/>
-                        </div>
-                       
-                        <div class="col-md-4 mb-3">
+                                <MudDatePicker Label="Day of PO" @bind-Date="POSPay.PayDay" DateFormat="dd/MM/yyyy"/>
 
-                        </div>
-      @*                   <div class="row">
-                                <div class = "cool md-">
-                                 <label style="color:teal" font-sixe="2000">
-                                     €.. 
-                                 </label>  
-                            </div>
-                            <div class = "cool md-3"/>
-                            <div class = "cool md-3">
+                                <MudCheckBox @bind-Checked="@CambioDivisa" @onclick="@ExchangeToogle" Class="ml-n2" Label="Pounds"></MudCheckBox>
+                                <div hidden="@(!CambioDivisa)">
+                                    <MudTextField @bind-Value="POSPay.Exchange" class="form-control" Label="Exchange" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Euro" For="@(() => POSPay.Exchange)"/>
+                                </div>
 
-                            </div>
+                                <div class="col-md-4 mb-3">
 
-                         </div>*@
-                    
-                            @*<MudTextField @bind-Value="POSPay.PayAmount" Label="Pay Amount" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@selectdIdcon" For="@(() => POSPay.PayAmount)"/>*@
-                           
-                            <MudTextField @bind-Value="POSPay.PayAmount" Label="@selectdIdcon" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" For="@(() => POSPay.PayAmount)"/>
-                         
-          
+                                </div>
 
 
-                         <MudCheckBox @bind-Checked="@HideLabel" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
-                         
-                         <InputSelect hidden="@(!HideLabel)" class="form-control" @bind-Value="@POSPay.IdPOSPaysAdjust">
+                                <MudTextField @bind-Value="POSPay.PayAmount" Label="@selectdIdcon" Format="F2" Variant="Variant.Text" Adornment="Adornment.Start" For="@(() => POSPay.PayAmount)"/>
+
+
+
+
+                                <MudCheckBox @bind-Checked="@HideLabel" @onclick="@Toggle" Required="true" RequiredError="You must agree" Class="ml-n2" Label="Come from Adjustment!"/>
+
+                                <InputSelect hidden="@(!HideLabel)" class="form-control" @bind-Value="@POSPay.IdPOSPaysAdjust">
                                     @foreach (var item in POSPayAdjust)
                                     {
                                         <option value="@item.Id">@item.DescriptionPOS</option>
                                     }
-                         </InputSelect>
-                      
-                         
+                                </InputSelect>
+
+                            </MudCardContent>
+
+
+
+                            <MudCardActions>
+
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                            </MudCardActions>
+
+
+
+                    
+                     </MudTabPanel>
+                    <MudTabPanel Text="Image file">
+
+                        @if(@POSPay.profile_pic_data_url != null ) {
+	
+                            <img src="@POSPay.profile_pic_data_url" style="width: 500px; height: 500px;"> <br/> <br/>
+
+                            <button class="btn btn-primary" @onclick="DownloadProfilePicture">Download Picture</button>
+
+                        }
+                        else
+                        {
+
+                            <img src="" style="width: 500px; height: 500px;"> <br/> <br/>
                             
-                       
+                        }
+                        
+                            <InputFile id="fileInput1" OnChange="OnInputFileChanged" hidden multiple accept=".png"/>
+
+                            <MudButton HtmlTag="label"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Filled.CloudUpload"
+                                       for="fileInput1">
+                                Upload your image
+                            </MudButton>
+
+                    </MudTabPanel>
+                    <MudTabPanel Text="PDF file">
+                        
+                        @if(@POSPay.profile_pdf_data_url != null ) {
+
+                            <iframe src="data:application/pdf;base64,@POSPay.profile_pdf_data_url" type="application/pdf" style="width: 500px; height: 500px;"></iframe>
+
+                            <button class="btn btn-primary" @onclick="DownloadProfilePdffile">Download Pdf</button>
+
+                        }
+                        else
+                        {
+
+                            <iframe type="application/pdf" style="width: 500px; height: 500px;"></iframe> 
+
+                        }
+                        
+                        <InputFile id="fileInput2" OnChange="OnInputFileChangedPdf" hidden multiple accept=".pdf, .docx"/>
+                        
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Filled.CloudUpload"
+                                   for="fileInput2">
+                            Upload your file
+                        </MudButton>
+                        
+
+                        <br/> <br/>
 
 
-                    </MudCardContent>
+                        
 
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Warning" OnClick="Cancel">Cancel</MudButton>
-                        <MudButton ButtonType="ButtonType.Submit"  Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
-                    </MudCardActions>
-                </MudCard>
+                    </MudTabPanel>
+                </MudTabs>
+
+                
             </div>
 
          </EditForm>
@@ -120,15 +229,15 @@
         {
             if (CambioDivisa)
             {
-               return "Pounds(£) Pay Amount";
-                
+                return "Pounds(£) Pay Amount";
+
 
             }
             else
             {
-                
+
                 return "Euros(€) Pay Amount";
-                
+
             }
 
         }
@@ -318,4 +427,75 @@
         }
     }
 
+
+    /// <summary>
+    /// Method put file to save in database 
+    /// </summary>
+    /// <param name="inputFileChangeEvent"></param>
+    /// <returns></returns>
+    private async Task OnInputFileChanged(InputFileChangeEventArgs inputFileChangeEvent)
+    {
+        //get the file
+        var file = inputFileChangeEvent.File;
+
+        //read that file in a byte array
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(1512000).ReadAsync(buffer);
+
+        //convert byte array to base 64 string
+        POSPay.profile_pic_data_url = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="inputFileChangeEvent"></param>
+    /// <returns></returns>
+    private async Task OnInputFileChangedPdf(InputFileChangeEventArgs inputFileChangeEvent)
+    {
+    //get the file
+        var file = inputFileChangeEvent.File;
+
+    //read that file in a byte array
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(1512000).ReadAsync(buffer);
+
+    //convert byte array to base 64 string
+        POSPay.profile_pdf_data_url = $"{Convert.ToBase64String(buffer)}";
+    }
+
+
+
+    /// <summary>
+    /// Method for download th picture
+    /// </summary>
+    /// <returns></returns>
+    private async Task DownloadProfilePicture()
+    {
+
+        string[] base64String = POSPay.profile_pic_data_url.Split(',');
+
+    //Using javascript withOut Isolation
+    //await jsRuntime.InvokeVoidAsync("downloadFile","image/png",base64String[1],"profile.png");
+
+    //Using javascript with Isolation
+        var module = await jsRuntime.InvokeAsync<IJSObjectReference>("import","./js/siteIsolation.js");
+        await module.InvokeVoidAsync("downloadFileIsolation","image/png",base64String[1],"profile.png");
+
+    }
+
+
+    private async Task DownloadProfilePdffile()
+    {
+        var fileToUnion = "data:pdf;base64," + POSPay.profile_pdf_data_url;
+        string[] base64String = fileToUnion.Split(',');
+
+    //Using javascript withOut Isolation
+    //await jsRuntime.InvokeVoidAsync("downloadFile","image/png",base64String[1],"profile.png");
+
+    //Using javascript with Isolation
+        var module = await jsRuntime.InvokeAsync<IJSObjectReference>("import","./js/siteIsolation.js");
+        await module.InvokeVoidAsync("downloadFileIsolation","pdf",base64String[1],"profile.pdf");
+
+    }
 }
