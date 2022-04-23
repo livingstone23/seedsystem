@@ -4,7 +4,7 @@
   "parameters": {
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "DefaultResourceGroup-WEU",
+      "defaultValue": "softsystemgroup",
       "metadata": {
         "_parameterType": "resourceGroup",
         "description": "Nombre del grupo de recursos del recurso. Se recomienda poner los recursos en el mismo grupo de recursos para mejorar el seguimiento."
@@ -49,17 +49,17 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "name": "blazormovieServerapi",
+              "name": "softseedServerApi",
               "type": "Microsoft.ApiManagement/service",
               "location": "[parameters('resourceLocation')]",
               "properties": {
-                "publisherEmail": "softseedsystem@gmail.com",
-                "publisherName": "softseedsystem@gmail.com",
+                "publisherEmail": "iortin@softseed.es",
+                "publisherName": "Izar Ortin Riquelme",
                 "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
                 "hostnameConfigurations": [
                   {
                     "type": "Proxy",
-                    "hostName": "blazormovieserverapi.azure-api.net",
+                    "hostName": "softseedserverapi.azure-api.net",
                     "encodedCertificate": null,
                     "keyVaultId": null,
                     "certificatePassword": null,
@@ -94,13 +94,13 @@
             },
             {
               "type": "Microsoft.ApiManagement/service/apis",
-              "name": "blazormovieServerapi/blazormovieServer",
+              "name": "softseedServerApi/blazormovieServer",
               "properties": {
                 "displayName": "blazormovie.Server",
                 "apiRevision": "1",
                 "description": null,
                 "subscriptionRequired": true,
-                "serviceUrl": "https://blazormovieserver.azurewebsites.net",
+                "serviceUrl": "https://softsystem.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"
@@ -117,7 +117,7 @@
               },
               "apiVersion": "2019-12-01",
               "dependsOn": [
-                "blazormovieServerapi"
+                "softseedServerApi"
               ]
             }
           ]

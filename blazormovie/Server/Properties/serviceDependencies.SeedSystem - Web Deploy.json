@@ -5,12 +5,6 @@
       "suggestion": "true",
       "type": "storage",
       "connectionId": "ConnectionStrings:AzureStorage"
-    },
-    "mssql1": {
-      "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/seedsystemdbserver/databases/seedsystem_db",
-      "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:DefaultConnection"
     }
   }
 }
