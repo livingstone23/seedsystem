@@ -1,12 +1,12 @@
 {
   "dependencies": {
     "apis1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/softseedServerApi/apis/blazormovieServer",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/softseedsystemServerapi/apis/blazormovieServer",
       "type": "apis.azure"
     },
-    "mssql1": {
+    "mssql2": {
       "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/seedsystemdb/databases/potchdb",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/blazormovieserverdbserver/databases/blazormovie.Server_db",
       "type": "mssql.azure",
       "connectionId": "ConnectionStrings:DefaultConnection1"
     }
