@@ -224,7 +224,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<IEnumerable<ProjectCost>> GetCostByProject(int projectId)
         {
-            var sql = @" Select b.Id, a.Name, a.Description,b.Amount, b.DateOfCost
+            var sql = @" Select b.Id, a.Name, a.Description,b.Amount, b.DateOfCost,b.ProjectId,b.CostId
                         from Cost a
                         inner join ProjectCost b on a.Id = b.CostId
                         Where b.ProjectId = @Id ";

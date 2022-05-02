@@ -20,12 +20,14 @@ namespace SeedSystem.Server.Controllers
 
         private readonly IProjectRepository _projectRepository;
         private readonly IPOSPayRepository _pOSPayRepository;
+        private readonly ICostRepository _costRepository;
 
 
         public ProjectController(IProjectRepository projectRepository, IPOSPayRepository pOSPayRepository)
         {
             _projectRepository = projectRepository;
             _pOSPayRepository = pOSPayRepository;
+             
         }
 
 
@@ -33,10 +35,19 @@ namespace SeedSystem.Server.Controllers
         public async Task<IEnumerable<Project>> Get()
         {
             var projects = await _projectRepository.GetProjects();
+           
             foreach (var item in projects)
             {
                 item.POSPays = (List<POSPay>)await _pOSPayRepository.GetByProject(item.Id);
+                var cost = await _projectRepository.GetCostByProject(item.Id);
+                if (item.Id == 31)
+                {
+                    Console.Write("");
+                }
+                item.Costs = cost.ToList();
             }
+            
+            
             return projects;
         }
 
