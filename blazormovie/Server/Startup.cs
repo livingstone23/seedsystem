@@ -98,7 +98,7 @@ namespace blazormovie.Server
 
             //1.2 Habilitar Swagger
             app.UseSwaggerUI();
-
+            
 
             if (env.IsDevelopment())
             {
@@ -123,7 +123,7 @@ namespace blazormovie.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

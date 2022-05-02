@@ -1,17 +1,16 @@
 ﻿@page "/cost"
-@using Microsoft.Identity.Client
 @using Microsoft.PowerBI.Api
 @using Microsoft.PowerBI.Api.Models
 @using Microsoft.Rest
 @using OfficeOpenXml;
 @using OfficeOpenXml.Style;
 @using System.IO
-@using blazormovie.Client.Data
 @using blazormovie.Client.Pages.Client
 @using blazormovie.Client.Pages.Groups
 @using blazormovie.Client.Pages.Initiative
 @using blazormovie.Client.Pages.POSPay
 @using blazormovie.Client.Pages.Project
+@using blazormovie.Shared.Viewmodel
 @using iText.IO.Font.Constants
 @using iText.Kernel.Font
 @using iText.Kernel.Pdf
@@ -28,11 +27,25 @@
 @inject IPOSPayService POSPayService
 @inject IJSRuntime jsRuntime;
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+@using blazormovie.Shared
+@inject IJSRuntime JS
+
+@implements IAsyncDisposable
+@inject HttpClient Http
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
-        <iframe title="Finanzas" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=8e950a58-42e1-4d29-ae25-de630c303ee3&autoAuth=true&ctid=b3ba5a06-38fd-4e62-9af1-7991701d0883&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLXdlc3QtZXVyb3BlLWUtcHJpbWFyeS1yZWRpcmVjdC5hbmFseXNpcy53aW5kb3dzLm5ldC8ifQ%3D%3D" frameborder="0" allowFullScreen="true"></iframe>
+        @if (reportViewModel is null)
+        {   
+            <label>Retrieving report information...</label>
+            <br/>
+        }
+        @if (!String.IsNullOrEmpty(errorMessage))
+        {
+             <label style="font-weight:700">Cannot embed Power BI Report:</label>
+             <span>@errorMessage</span>
+        }
 
+        <div @ref="@PowerBIElement" style="height:800px" />
         <MudTable ServerData="@(new Func<TableState, Task<TableData<Cost>>>(LoadTodos))"   Hover="true"  @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Costs</MudText>
@@ -117,79 +130,50 @@
     public string Message { get; set; }
     public string excel = "";
     public string pdf = "";
+    private string errorMessage = string.Empty;
+
     private ElementReference PowerBIElement;
-
-    string TenantID = "b3ba5a06-38fd-4e62-9af1-7991701d0883";
-
-    string ClientID = "4b387158-0147-421f-b0a0-15e02da8bf0a";
-    string ClientSecret = "830836a0-c2b4-4f3d-820f-9ba2f16ad52d";
-
-    string workspaceId = "6281d9c1-7a95-4e3b-aad8-96b8d930bbad";
-    string reportId = "8e950a58-42e1-4d29-ae25-de630c303ee3";
+    private IJSObjectReference? embedModule;
+    private EmbeddedReportViewModel? reportViewModel;
 
     private int[] pageSizeOptions = new int[] { 15 };
 
     private MudTable<Cost> table;
     private IEnumerable<Cost> DataPrint = new List<Cost>();
     private string searchString = null;
-    private const string AuthorityFormat = "https://login.microsoftonline.com/{0}/v2.0";
-    private const string MSGraphScope = "https://analysis.windows.net/powerbi/api/.default";
 
+    public async ValueTask DisposeAsync()
+    {
+        if (embedModule is not null)
+            await embedModule.DisposeAsync();
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        table.SetRowsPerPage(15);
-         if (firstRender)
-        {
-            var result = new PowerBIEmbedConfig();
-
-            // Authenticate using created credentials
-            AuthenticationResult authenticationResult = null;
-            authenticationResult = await DoAuthentication();
-
-            var tokenCredentials =
-                new TokenCredentials(authenticationResult.AccessToken, "Bearer");
-
-            using (var client = new PowerBIClient(
-                new Uri("https://api.powerbi.com/"), tokenCredentials))
+            if (firstRender)
             {
-                var report = await client.Reports.GetReportInGroupAsync(
-                    new Guid(workspaceId), new Guid(reportId));
-
-                var generateTokenRequestParameters = new GenerateTokenRequest(
-                    accessLevel: "view"
-                    );
-
-                var tokenResponse = await client.Reports.GenerateTokenAsync(
-                    new Guid(workspaceId),
-                    new Guid(reportId),
-                    generateTokenRequestParameters);
-
-                result.EmbedToken = tokenResponse;
-                result.EmbedUrl = report.EmbedUrl;
-                result.Id = report.Id.ToString();
-
-                await Interop.CreateReportPaginated(
-                    JSRuntime,
-                    PowerBIElement,
-                    tokenResponse.Token,
-                    report.EmbedUrl,
-                    report.Id.ToString());
-
+                var embedModuleTask = JS.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
+                var reportViewModelTask = Http.GetFromJsonAsync<EmbeddedReportViewModel>("api/PowerBI");
+                embedModule = await embedModuleTask;
+                reportViewModel = await reportViewModelTask;
+                StateHasChanged();
             }
-        }
-        //return  await base.OnAfterRenderAsync(firstRender);
+            else if (embedModule is not null && reportViewModel is not null)
+            {
+                errorMessage = string.Empty;
+                await embedModule.InvokeVoidAsync("embedReport",
+                    PowerBIElement,
+                    reportViewModel.Id,
+                    reportViewModel.EmbedUrl,
+                    reportViewModel.Token);
+            }
+            else 
+            {
+                errorMessage = "The report could not be accessed";
+            }
+        table.SetRowsPerPage(15);
+       // return await base.OnAfterRenderAsync(firstRender);
     }
-    private async Task<AuthenticationResult> DoAuthentication()
-    {
-        IConfidentialClientApplication daemonClient;
-        daemonClient = ConfidentialClientApplicationBuilder.Create(ClientID)
-            .WithAuthority(string.Format(AuthorityFormat, TenantID))
-            .WithClientSecret(ClientSecret)
-            .Build();
-        AuthenticationResult authResult =
-            await daemonClient.AcquireTokenForClient(new[] { MSGraphScope }).ExecuteAsync();
-        return authResult;
-    }
+   
     public async Task<TableData<Cost>> LoadTodos(TableState state)
     {
 
@@ -470,6 +454,7 @@
             }
             
         }
+      
     }
     
 }
