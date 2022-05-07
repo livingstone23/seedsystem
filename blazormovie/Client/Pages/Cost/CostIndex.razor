@@ -45,7 +45,7 @@
              <span>@errorMessage</span>
         }
 
-        @*<div @ref="@PowerBIElement" style="height:800px" />*@
+        <div @ref="@PowerBIElement" style="height:800px" />
         <MudTable ServerData="@(new Func<TableState, Task<TableData<Cost>>>(LoadTodos))"   Hover="true"  @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Costs</MudText>
@@ -173,6 +173,7 @@
         table.SetRowsPerPage(15);
        // return await base.OnAfterRenderAsync(firstRender);
     }
+
    
     public async Task<TableData<Cost>> LoadTodos(TableState state)
     {
