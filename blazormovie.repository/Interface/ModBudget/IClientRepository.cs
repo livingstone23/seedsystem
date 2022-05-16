@@ -26,6 +26,6 @@ namespace blazormovie.repository.Interface.ModBudget
         Task<bool> DeleteClientGroup(int clientId);
 
         Task<IEnumerable<Group>> GetGroupsByClient(int clientId);
-
+        Task<IEnumerable<ClientGroup>> GetClientGroup();
     }
 }

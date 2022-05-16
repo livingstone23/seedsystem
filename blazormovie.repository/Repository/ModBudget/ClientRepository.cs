@@ -146,5 +146,12 @@ namespace blazormovie.repository.Repository.ModBudget
 
             return await _dbConnection.QueryAsync<Group>(sql, new { Id = clientId });
         }
+
+        public async Task<IEnumerable<ClientGroup>> GetClientGroup()
+        {
+            var sql = "SELECT Id,ClientId,GroupsId FROM ClientGroups";
+           
+            return await _dbConnection.QueryAsync<ClientGroup>(sql, new { });
+        }
     }
 }

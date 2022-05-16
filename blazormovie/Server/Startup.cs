@@ -33,7 +33,7 @@ namespace blazormovie.Server
         public void ConfigureServices(IServiceCollection services)
         {
             //Habilitamos el contexto para el uso del sql server
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection3")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection1")));
 
 
             //Codigo de configuracion 
@@ -65,7 +65,7 @@ namespace blazormovie.Server
 
 
             //Leemos la cadena de conexion
-            string dbConnectionString = this.configuration.GetConnectionString("DefaultConnection3");
+            string dbConnectionString = this.configuration.GetConnectionString("DefaultConnection1");
             //Pasamos la cadena para habilitar la conexion
             services.AddSingleton<IDbConnection>((sp) => new SqlConnection(dbConnectionString));
 

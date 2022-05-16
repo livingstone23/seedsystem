@@ -150,5 +150,11 @@ namespace blazormovie.repository.Repository.ModBudget
 
         }
 
+        public async Task<IEnumerable<InitiativeGroup>> GetInitiativeGroups()
+        {
+            var sql = @"Select Id, InitiativeId,  GroupsId from InitiativeGroups order by Id";
+
+            return await _dbConnection.QueryAsync<InitiativeGroup>(sql, new { });
+        }
     }
 }

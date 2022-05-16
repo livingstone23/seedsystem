@@ -110,8 +110,14 @@ namespace SeedSystem.Server.Controllers
 
             return NoContent();
         }
+        [HttpGet("GetInitiativeGroups")]
+        public async Task<IEnumerable<InitiativeGroup>> GetInitiativeGroups()
+        {
+            var initiativeGroups = await _initiativeRepository.GetInitiativeGroups();
 
-        
+            return initiativeGroups;
+        }
+
     }
 
 }

@@ -54,7 +54,7 @@ namespace blazormovie.Server.Controllers
             return client;
 
         }
-
+        
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Shared.SeedEntities.Client client)
@@ -114,6 +114,12 @@ namespace blazormovie.Server.Controllers
 
             return NoContent();
         }
+        [HttpGet("GetClientGroup")]
+        public async Task<IEnumerable<Shared.SeedEntities.ClientGroup>> GetClientGroup()
+        {
+            var clientGroups = await _clientRepository.GetClientGroup();
 
+            return clientGroups;
+        }
     }
 }
