@@ -30,11 +30,11 @@
 @using blazormovie.Shared
 @inject IJSRuntime JS
 
-@implements IAsyncDisposable
+
 @inject HttpClient Http
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
-        @if (reportViewModel is null)
+@*        @if (reportViewModel is null)
         {   
             <label>Retrieving report information...</label>
             <br/>
@@ -45,7 +45,7 @@
              <span>@errorMessage</span>
         }
 
-        <div @ref="@PowerBIElement" style="height:800px" />
+        <div @ref="@PowerBIElement" style="height:800px" />*@
         <MudTable ServerData="@(new Func<TableState, Task<TableData<Cost>>>(LoadTodos))"   Hover="true"  @ref="table">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Costs</MudText>
@@ -132,9 +132,9 @@
     public string pdf = "";
     private string errorMessage = string.Empty;
 
-    private ElementReference PowerBIElement;
-    private IJSObjectReference? embedModule;
-    private EmbeddedReportViewModel? reportViewModel;
+    //private ElementReference PowerBIElement;
+    //private IJSObjectReference? embedModule;
+    //private EmbeddedReportViewModel? reportViewModel;
 
     private int[] pageSizeOptions = new int[] { 15 };
 
@@ -142,36 +142,36 @@
     private IEnumerable<Cost> DataPrint = new List<Cost>();
     private string searchString = null;
 
-    public async ValueTask DisposeAsync()
+    //public async ValueTask DisposeAsync()
+    //{
+    //    if (embedModule is not null)
+    //        await embedModule.DisposeAsync();
+    //}
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        if (embedModule is not null)
-            await embedModule.DisposeAsync();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-            if (firstRender)
-            {
-                var embedModuleTask = JS.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
-                var reportViewModelTask = Http.GetFromJsonAsync<EmbeddedReportViewModel>("api/PowerBI");
-                embedModule = await embedModuleTask;
-                reportViewModel = await reportViewModelTask;
-                StateHasChanged();
-            }
-            else if (embedModule is not null && reportViewModel is not null)
-            {
-                errorMessage = string.Empty;
-                await embedModule.InvokeVoidAsync("embedReport",
-                    PowerBIElement,
-                    reportViewModel.Id,
-                    reportViewModel.EmbedUrl,
-                    reportViewModel.Token);
-            }
-            else 
-            {
-                errorMessage = "The report could not be accessed";
-            }
+        //    if (firstRender)
+        //    {
+        //        var embedModuleTask = JS.InvokeAsync<IJSObjectReference>("import", "./scripts/powerbi-embed.js");
+        //        var reportViewModelTask = Http.GetFromJsonAsync<EmbeddedReportViewModel>("api/PowerBI");
+        //        embedModule = await embedModuleTask;
+        //        reportViewModel = await reportViewModelTask;
+        //        StateHasChanged();
+        //    }
+        //    else if (embedModule is not null && reportViewModel is not null)
+        //    {
+        //        errorMessage = string.Empty;
+        //        await embedModule.InvokeVoidAsync("embedReport",
+        //            PowerBIElement,
+        //            reportViewModel.Id,
+        //            reportViewModel.EmbedUrl,
+        //            reportViewModel.Token);
+        //    }
+        //    else 
+        //    {
+        //        errorMessage = "The report could not be accessed";
+        //    }
         table.SetRowsPerPage(15);
-       // return await base.OnAfterRenderAsync(firstRender);
+        return  base.OnAfterRenderAsync(firstRender);
     }
 
    
