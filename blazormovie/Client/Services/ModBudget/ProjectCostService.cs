@@ -21,9 +21,11 @@ namespace blazormovie.Client.Services.ModBudget
             await _httpClient.DeleteAsync($"api/project/cost/{id}");
         }
 
-        public async Task Save(List<ProjectCost> projectCosts)
+        public async Task Save(ProjectCost projectCosts)
         {
-            await _httpClient.PostAsJsonAsync<List<ProjectCost>>($"api/project/Costs", projectCosts);
+            await _httpClient.PostAsJsonAsync<ProjectCost>($"api/project/Costs", projectCosts);
         }
+
+  
     }
 }

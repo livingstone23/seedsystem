@@ -29,7 +29,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<Cost> GetById(int id)
         {
-            var sql = @"SELECT Id,Name,Description FROM Cost
+            var sql = @"SELECT Id,Name,Description,Proveedor FROM Cost
                         WHERE Id = @id";
             return await _dbConnection.QueryFirstOrDefaultAsync<Cost>(sql, new { Id=id });
         }
@@ -46,7 +46,7 @@ namespace blazormovie.repository.Repository.ModBudget
                         COUNT(*)
                         FROM Cost
 
-                       Select a.Id, a.Name, isNull(a.Description,'') as Description
+                       Select a.Id, a.Name, isNull(a.Description,'') as Description, isNull(a.Proveedor,'') as Proveedor
                         from Cost a
                         order by a.Id Desc
                         OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY";
@@ -63,14 +63,15 @@ namespace blazormovie.repository.Repository.ModBudget
         public async Task<bool> Insert(Cost cost)
         {
            
-            var sql = @" INSERT INTO   Cost( Name,  Description) 
-                                    Values(@Name, @Description)";
+            var sql = @" INSERT INTO   Cost( Name,  Description,Proveedor) 
+                                    Values(@Name, @Description,@Proveedor)";
 
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
                     Name = cost.Name,
-                    Description = cost.Description
+                    Description = cost.Description,
+                    Proveedor = cost.Proveedor
                 });
 
             return result > 0;
@@ -91,7 +92,8 @@ namespace blazormovie.repository.Repository.ModBudget
             var sql = @" 
                         Update Cost
                             Set Name = @Name,
-                                Description = @Description
+                                Description = @Description,
+                                Proveedor = @Proveedor
                             Where Id = @Id ";
 
             var result = await _dbConnection.ExecuteAsync(sql,
@@ -99,7 +101,8 @@ namespace blazormovie.repository.Repository.ModBudget
                 {
                     cost.Name,
                     cost.Description,
-                    cost.Id
+                    cost.Id,
+                    cost.Proveedor
                 });
 
             return result > 0;

@@ -123,11 +123,13 @@
                         <HeaderContent>
                             <MudTh>Cost Type</MudTh>
                             <MudTh>Description</MudTh>
+                            <MudTh>Supplier</MudTh>
                             <MudTh>Amount</MudTh>
                         </HeaderContent>
                         <RowTemplate Context="CostContext">
                             <MudTd DataLabel="Cost Type">@CostContext.Name </MudTd>
                             <MudTd DataLabel="Description">@CostContext.Description</MudTd>
+                            <MudTd DataLabel="Supplier">@CostContext.Proveedor</MudTd>
                             <MudTd DataLabel="Amount">@CostContext.Amount 
                                 <MudIcon Icon="@Icons.Material.Filled.Euro" Color="Color.Primary" Class="mx-4" Style="width:21px; height:21px;"></MudIcon>
                             </MudTd>
@@ -229,11 +231,24 @@ else
             oCost.DateOfCost = DateTime.Now;
             oCost.ProjectId = Project.Id;
             Project.Costs.Add(oCost);
+            //await ProjectCostService.Save();
         }
     }   
     protected async Task SaveCost()
     {
-        await ProjectCostService.Save(Project.Costs);
+        NavigateToHome();
+        foreach(var cost in Project.Costs)
+        {
+            if (cost.Id == 0)
+            {
+                await ProjectCostService.Save(cost);
+            }
+            //NavigateToHome();
+            // if(cost.Id==0)
+            //await ProjectCostService.Save(Project.Costs);
+        }
+        //NavigateToHome();
+        
         Snackbar.Add("All costs saved", Severity.Success, a => a.VisibleStateDuration = 200);
     }
     //protected async Task NewProject()

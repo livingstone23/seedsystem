@@ -7,7 +7,7 @@ namespace blazormovie.Client.Services.Interface.ModBudget
     public interface IProjectCostService
     {
 
-        Task Save(List<ProjectCost> projectCosts);
+        Task Save(ProjectCost projectCosts);
 
         Task Delete(int id);
     }

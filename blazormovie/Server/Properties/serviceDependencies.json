@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "apis1": {
-      "type": "apis"
-    },
     "mssql2": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection1"
+    },
+    "apis1": {
+      "type": "apis"
     }
   }
 }

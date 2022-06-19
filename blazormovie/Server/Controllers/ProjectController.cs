@@ -118,27 +118,73 @@ namespace SeedSystem.Server.Controllers
             return NoContent();
         }
 
+        //[HttpPost("Costs")]
+        //public async Task<IActionResult> CostsPost([FromBody] List<ProjectCost> projectCosts)
+        //{
+        //    if (projectCosts == null || !projectCosts.Any())
+        //        return BadRequest();
+
+        //    //var newProjectCost = projectCosts.Where(x => x.Id == 0); // filter only news
+        //    //foreach (var cost in newProjectCost)
+        //    //{
+        //    //    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        //    //    {
+        //    //        await _projectRepository.InsertProjectCost(cost.ProjectId, cost);
+        //    //        scope.Complete();
+
+        //    //    }
+        //    //}
+        //    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        //    {
+        //        try
+        //        {
+        //            var newProjectCost = projectCosts.Where(x => x.Id == 0); // filter only news
+        //            var tasks = newProjectCost.Select(cost => _projectRepository.InsertProjectCost(cost.ProjectId, cost));
+        //            await Task.WhenAll(tasks);
+
+        //            scope.Complete();
+
+        //        }
+        //        catch (Exception)
+        //        {
+        //            scope.Dispose();
+        //            return BadRequest();
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
         [HttpPost("Costs")]
-        public async Task<IActionResult> CostsPost([FromBody] List<ProjectCost> projectCosts)
+        public async Task<IActionResult> CostsPost([FromBody] ProjectCost projectCosts)
         {
-            if (projectCosts == null || !projectCosts.Any())
+            if (projectCosts == null )
                 return BadRequest();
 
+            //var newProjectCost = projectCosts.Where(x => x.Id == 0); // filter only news
+            //foreach (var cost in newProjectCost)
+            //{
+            //    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            //    {
+            //        await _projectRepository.InsertProjectCost(cost.ProjectId, cost);
+            //        scope.Complete();
+
+            //    }
+            //}
             using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var newProjectCost = projectCosts.Where(x => x.Id == 0); // filter only news
-                    var tasks = newProjectCost.Select(cost => _projectRepository.InsertProjectCost(cost.ProjectId, cost));
-                    await Task.WhenAll(tasks);
+                    await _projectRepository.InsertProjectCost(projectCosts.ProjectId, projectCosts);
+
                     scope.Complete();
+
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     scope.Dispose();
                     return BadRequest();
                 }
-            }            
+            }
 
             return NoContent();
         }

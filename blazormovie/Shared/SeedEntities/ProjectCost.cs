@@ -18,6 +18,8 @@ namespace blazormovie.Shared.SeedEntities
         [NotMapped]
         public string Description { get; set; }
         [NotMapped]
+        public string Proveedor { get; set; }
+        [NotMapped]
         public double Amount { get; set; }
     }
 }

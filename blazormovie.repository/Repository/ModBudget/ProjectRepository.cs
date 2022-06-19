@@ -196,17 +196,19 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<bool> InsertProjectCost(int projectId, ProjectCost cost)
         {
-            var sql = @"INSERT INTO [dbo].[ProjectCost]( ProjectId,  CostId, DateOfCost,amount)
+            //var sql = @"INSERT INTO [dbo].[ProjectCost]( ProjectId,  CostId, DateOfCost,amount)
+            //                              VALUES(@projectId, @costId, @DateOfCost, @Amount)";
+
+            var sql = @"INSERT INTO ProjectCost( ProjectId,  CostId, DateOfCost,amount)
                                           VALUES(@projectId, @costId, @DateOfCost, @Amount)";
-
-
             var result = await _dbConnection.ExecuteAsync(sql,
                 new
                 {
                     projectId = projectId,
                     costId = cost.CostId,
                     DateOfCost = DateTime.Now,
-                    Amount = cost.Amount
+                    Amount = cost.Amount,
+                    
                 });
 
             return result > 0;
@@ -224,7 +226,7 @@ namespace blazormovie.repository.Repository.ModBudget
 
         public async Task<IEnumerable<ProjectCost>> GetCostByProject(int projectId)
         {
-            var sql = @" Select b.Id, a.Name, a.Description,b.Amount, b.DateOfCost,b.ProjectId,b.CostId
+            var sql = @" Select b.Id, a.Name, a.Description,b.Amount, b.DateOfCost,b.ProjectId,b.CostId,a.Proveedor
                         from Cost a
                         inner join ProjectCost b on a.Id = b.CostId
                         Where b.ProjectId = @Id ";
