@@ -176,7 +176,7 @@
         return  base.OnAfterRenderAsync(firstRender);
     }
 
-   
+
     public async Task<TableData<Cost>> LoadTodos(TableState state)
     {
 
@@ -256,8 +256,8 @@
         else
         {
             await CostService.Delete(id);
-            await table.ReloadServerData();
             Snackbar.Add("The Cost has been deleted.", MudBlazor.Severity.Success, a => a.VisibleStateDuration = 350);
+            table.ReloadServerData();
         }
     }
 
