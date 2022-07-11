@@ -82,6 +82,7 @@ namespace blazormovie.Server
             services.AddScoped<IPOSPayRepository, POSPayRepository>();
             services.AddScoped<IExchangeRepository, ExchangeRepository>();
             services.AddScoped<ICostRepository, CostRepository>();
+            services.AddScoped<IFacturaRepository, FacturaRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

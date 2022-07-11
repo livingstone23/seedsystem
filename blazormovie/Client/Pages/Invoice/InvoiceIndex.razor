@@ -1,0 +1,29 @@
+﻿@page "/invoice"
+
+<MudGrid Style="text-align:center;padding:40px;width:100%">
+    <MudItem md="12">
+        <p><MudButton>Export</MudButton></p>
+        @*<p style="color:red;">@error_export</p>*@
+@*        @if (exportready)
+        {
+            <p><MudLink Target="_blank" Href=@"/downloadgeneratedpdf"</p>
+        }*@
+        <p>Total: @oFactura.Total</p>
+    </MudItem>
+    <MudItem md="4">
+        <MudTextField Value="@oFactura.Direccion" Variant="Variant.Filled"/>
+    </MudItem>
+</MudGrid>
+@code {
+    Factura oFactura = new Factura();
+    FacturaLinea oLinea = new FacturaLinea();
+    bool bExportar = false;
+    DateTime lastExport;
+    [Parameter]
+    public int facturaId { get; set; }
+    
+    protected async override Task OnInitializedAsync()
+    {
+        
+    }
+}
