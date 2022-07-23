@@ -32,6 +32,7 @@ namespace blazormovie.Shared.SeedEntities
         public string NumeroFactura { get; set; }
         
         public int IdCliente { get; set; }
+        public string NombreCliente { get; set; }
         public string Comment { get; set; }
         public string Direccion { get; set; }
         public string LogoId{ get; set; }
@@ -41,7 +42,7 @@ namespace blazormovie.Shared.SeedEntities
         public double Descuento { get; set; }
         public double Total => CalculateTotal(FacturaLinea);
         [NotMapped]
-        public List<FacturaLinea> FacturaLinea { get; set; }
+        public List<FacturaLinea> FacturaLinea { get; set; } = new List<FacturaLinea>();
         [NotMapped]
         public Client cliente { get; set; }
 

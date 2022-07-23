@@ -1,8 +1,9 @@
 ﻿@page "/invoice"
-
+@inject IClientService clientService;
+@inject IJSRuntime JsRuntime
 <MudGrid Style="text-align:center;padding:40px;width:100%">
     <MudItem md="12">
-        <p><MudButton>Export</MudButton></p>
+        <p><MudButton @onclick="export">Export</MudButton></p>
         @*<p style="color:red;">@error_export</p>*@
 @*        @if (exportready)
         {
@@ -11,8 +12,61 @@
         <p>Total: @oFactura.Total</p>
     </MudItem>
     <MudItem md="4">
-        <MudTextField Value="@oFactura.Direccion" Variant="Variant.Filled"/>
+        <MudTextField Value="@oFactura.Direccion" Variant="Variant.Filled" Lines="6" Label="Address" T="string"/>
     </MudItem>
+    <MudItem md="4">
+        <MudDatePicker Date="@oFactura.FechaVencimiento" Label="Date Due"/>
+        <br />
+        <br />
+        <label>Client</label>
+        <select class="form-control" @bind="@oFactura.IdCliente">
+            @foreach(var item in clientes)
+            {
+                 <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </MudItem>
+    
+    <MudItem md="4">
+        <MudTextField Value="@oFactura.Comment" Variant="Variant.Filled" Lines="6" Label="Comments" T="string"/>
+    </MudItem>
+    <MudItem md="12">New Item</MudItem>
+    <MudItem md="4">
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Precio" Label="Price" T="double "/>
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Cantidad" Label="Quantity" T="double" />
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Impuestos" Label="Tax" T="double "/>
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Descuento" Label="Discount" T="double "/>
+    </MudItem>
+    <MudItem md="4">
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Titulo" Label="Title" T="string "/>
+        <MudTextField Variant="Variant.Filled" @bind-Value="@oLinea.Descripcion" Label="Description" T="string "/>
+    </MudItem>
+    <MudItem md="4">
+        <p>Total: @oLinea.Total</p>
+        <MudButton @onclick="@AddItem">Add</MudButton>
+        @*<p style="color:red;">@error_additem</p>*@
+    </MudItem>
+    <MudItem md="12">
+        <MudTable Items="oFactura.FacturaLinea" Hover="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>Title</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>Price</MudTh>
+                <MudTh>Discount</MudTh>
+                <MudTh>Total</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Titulo</MudTd>
+                <MudTd>@context.Descripcion</MudTd>
+                <MudTd>@context.Precio</MudTd>
+                <MudTd>@context.Descuento</MudTd>
+                <MudTd>@context.Total</MudTd>
+
+            </RowTemplate>
+        </MudTable>
+        
+    </MudItem>
+
 </MudGrid>
 @code {
     Factura oFactura = new Factura();
@@ -21,9 +75,38 @@
     DateTime lastExport;
     [Parameter]
     public int facturaId { get; set; }
-    
+    public IEnumerable<Client> clientes =  new List<Client>();
+    public string Message  { get; set; }
+    public string error_addItem {  get;  set; }
     protected async override Task OnInitializedAsync()
     {
+        try
+        {
+            // Alert
+            clientes = await clientService.Get();
+            oFactura.FechaVencimiento = DateTime.Now.AddDays(7);
+            oFactura.IdCliente = clientes.FirstOrDefault().Id;
+        }catch(Exception ex)
+        {
+            Message = "There was an error..." + ex.Message;
+        }
+    }
+    void AddItem()
+    {
+        error_addItem = "";
+        try
+        {
+            
+        }catch(Exception ex)
+        {
+            error_addItem = ex.Message;
+        }
+    }
+    void export()
+    {
+        JsRuntime.InvokeVoidAsync("alert", "Warning!");
+        JsRuntime.InvokeVoidAsync("alert", oFactura.IdCliente);
         
+
     }
 }
